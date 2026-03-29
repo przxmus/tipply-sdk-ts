@@ -1,3 +1,9 @@
+export { TipplyClient } from "./client";
 export * from "./core/errors";
 export type * from "./core/types";
 export type * from "./types/common";
+export type * from "./types/dashboard";
+export type * from "./types/goals";
+export type * from "./types/identity";
+export type * from "./types/profile";
+export type * from "./types/tips";
