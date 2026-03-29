@@ -1,14 +1,6 @@
 import { assertArray, assertPlainObject, assertString } from "../core/runtime";
 import type { HttpClient } from "../core/http";
-import type { GoalRecord, GoalVotingConfiguration } from "../types/goals";
-
-export interface CreateGoalRequest {
-  title: string;
-  target: number;
-  initial_value: number;
-  without_commission: boolean;
-  template_id: string;
-}
+import type { CreateGoalRequest, GoalRecord, GoalVotingConfiguration } from "../types/goals";
 
 function assertGoalRecord(value: unknown): asserts value is GoalRecord {
   const context = { method: "GET", url: "/user/goals" };

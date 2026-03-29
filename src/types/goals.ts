@@ -12,6 +12,14 @@ export interface GoalRecord {
   is_default: boolean;
 }
 
+export interface CreateGoalRequest {
+  title: string;
+  target: MinorUnitAmount;
+  initial_value: MinorUnitAmount;
+  without_commission: boolean;
+  template_id: string;
+}
+
 export interface GoalStats {
   amount: MinorUnitAmount;
   commission: MinorUnitAmount;

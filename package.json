@@ -4,6 +4,13 @@
   "description": "TypeScript SDK for the Tipply API",
   "type": "module",
   "license": "UNLICENSED",
+  "keywords": [
+    "tipply",
+    "sdk",
+    "typescript",
+    "api",
+    "streaming"
+  ],
   "files": [
     "dist"
   ],
