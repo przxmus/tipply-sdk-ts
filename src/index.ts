@@ -1,0 +1,1 @@
+// Tipply SDK entrypoint.
