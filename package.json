@@ -24,8 +24,8 @@
     "build:types": "bunx tsc --project tsconfig.types.json",
     "clean": "rm -rf dist",
     "typecheck": "bunx tsc --project tsconfig.json --noEmit",
-    "test": "bun test",
-    "test:live": "bun test tests/live"
+    "test": "bun run build && bun test",
+    "test:live": "bun run build && bun test tests/live"
   },
   "devDependencies": {
     "typescript": "^5.9.3"
