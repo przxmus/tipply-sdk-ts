@@ -1,4 +1,5 @@
 import type { ISODateString, LiteralUnion, MinorUnitAmount, UUID } from "./common";
+import type { JsonObject } from "./common";
 import type { GoalRecord } from "./goals";
 
 export type TipFilter = LiteralUnion<"default" | "amount" | "paymentMethod">;
@@ -25,3 +26,14 @@ export interface TipRecord {
   created_at: ISODateString;
   human_method_name: string;
 }
+
+export interface ListTipsQuery {
+  limit?: number;
+  offset?: number;
+  filter?: TipFilter;
+  search?: string;
+}
+
+export interface TipsModerationRecord extends JsonObject {}
+
+export interface TipsPendingRecord extends JsonObject {}
