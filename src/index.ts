@@ -8,4 +8,5 @@ export type * from "./types/goals";
 export type * from "./types/identity";
 export type * from "./types/payments";
 export type * from "./types/profile";
+export type * from "./types/templates";
 export type * from "./types/tips";
