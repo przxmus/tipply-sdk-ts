@@ -1,13 +1,17 @@
 import { HttpClient } from "./core/http";
 import type { TipplyClientOptions } from "./core/types";
+import { ConfigurationsApi } from "./resources/configurations";
 import { DashboardApi } from "./resources/dashboard";
 import { IdentityApi } from "./resources/identity";
+import { PaymentMethodsApi } from "./resources/payment-methods";
 import { ProfileApi } from "./resources/profile";
 
 export class TipplyClient {
   readonly identity: IdentityApi;
   readonly dashboard: DashboardApi;
   readonly profile: ProfileApi;
+  readonly paymentMethods: PaymentMethodsApi;
+  readonly configurations: ConfigurationsApi;
 
   private readonly options: TipplyClientOptions;
   private readonly httpClient: HttpClient;
@@ -18,6 +22,8 @@ export class TipplyClient {
     this.identity = new IdentityApi(this.httpClient);
     this.dashboard = new DashboardApi(this.httpClient);
     this.profile = new ProfileApi(this.httpClient);
+    this.paymentMethods = new PaymentMethodsApi(this.httpClient);
+    this.configurations = new ConfigurationsApi(this.httpClient);
   }
 
   withAccessToken(accessToken: string): TipplyClient {
