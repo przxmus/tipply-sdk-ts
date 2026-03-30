@@ -119,15 +119,49 @@ export interface MediaFormatEntry {
 
 export type MediaFormats = Record<string, MediaFormatEntry>;
 
+export type TemplateFontFamily = "Sora" | "Lato" | (string & {});
+export type TemplateFontStyle = "normal" | (string & {});
+export type TemplateTextAlign = "left" | "center" | "right" | (string & {});
+
 export interface TemplateElementPosition {
   x: number;
   y: number;
   [key: string]: unknown;
 }
 
+export interface TemplateElementAnimation {
+  enable?: boolean;
+  [key: string]: unknown;
+}
+
+export interface TemplateElementSize {
+  width?: number;
+  height?: number;
+  [key: string]: unknown;
+}
+
+export interface TemplateElementStyles extends UnknownTemplateStyles {
+  color?: string;
+  fontFamily?: TemplateFontFamily;
+  fontSize?: number;
+  fontStyle?: TemplateFontStyle;
+  fontWeight?: number;
+  textAlign?: TemplateTextAlign;
+  textShadow?: string;
+  width?: number;
+  zIndex?: number;
+}
+
 export interface TemplateElementOption {
-  styles?: UnknownTemplateStyles;
+  styles?: TemplateElementStyles;
   position?: TemplateElementPosition;
+  animation?: TemplateElementAnimation;
+  size?: TemplateElementSize;
+  children?: Record<string, TemplateElementOption>;
+  gradientColor?: string;
+  progressColor?: string;
+  stripes?: boolean;
+  changePosition?: boolean;
   isVisible?: boolean;
   textValue?: string;
   [key: string]: unknown;
@@ -149,7 +183,20 @@ export interface CounterTemplateElementsOptions {
   [key: string]: unknown;
 }
 
+export interface TipsGoalTemplateConfig {
+  title: string;
+  editable: boolean;
+  elementsOptions: TipsGoalTemplateElementsOptions;
+}
+
 export interface UserTemplate<TType extends string = UserTemplateType, TConfig = UnknownTemplateConfig> {
+  id: TemplateId;
+  type: TType;
+  updatedAt: IsoDateString;
+  config: TConfig;
+}
+
+export interface PublicTemplate<TType extends string = PublicTemplateType, TConfig = UnknownTemplateConfig> {
   id: TemplateId;
   type: TType;
   updatedAt: IsoDateString;

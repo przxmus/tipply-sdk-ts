@@ -26,10 +26,12 @@ import type {
   PaymentMethodsConfiguration,
   ProfanityFilterSettings,
   PublicGoalWidget,
+  PublicTemplate,
   Tip,
   TipAlertConfiguration,
   ToggleDisabledResult,
   TipsGoalConfiguration,
+  TipsGoalTemplateConfig,
   UserConfiguration,
   UserPaymentMethod,
   UserPaymentMethods,
@@ -523,10 +525,66 @@ export const rawTemplateFixture = {
   },
 };
 
-export const publicGoalTemplatesFixture: UserTemplate[] = [templateFixture];
-export const rawPublicGoalTemplatesFixture = [rawTemplateFixture];
+export const publicGoalTemplateFixture: PublicTemplate<"TIPS_GOAL", TipsGoalTemplateConfig> = {
+  id: asTemplateId("template-123"),
+  type: "TIPS_GOAL",
+  updatedAt: "2026-03-30T00:49:33+02:00",
+  config: {
+    title: "Goal Template",
+    editable: true,
+    elementsOptions: {
+      goalName: {
+        isVisible: true,
+        position: { x: 0, y: 210 },
+        styles: {
+          color: "#fff",
+          fontFamily: "Sora",
+          fontSize: 35,
+          fontStyle: "normal",
+          fontWeight: 900,
+          textAlign: "center",
+          textShadow: "0px 0px 8px rgba(0, 0, 0, 0.67)",
+          width: 800,
+          zIndex: 3,
+        },
+        textValue: "Goal Template",
+      },
+    },
+  },
+};
 
-export const publicVotingTemplatesFixture: UserTemplate[] = [
+export const rawPublicGoalTemplateFixture = {
+  id: "template-123",
+  type: "TIPS_GOAL",
+  updated_at: "2026-03-30T00:49:33+02:00",
+  config: {
+    title: "Goal Template",
+    editable: true,
+    elementsOptions: {
+      goalName: {
+        isVisible: true,
+        position: { x: 0, y: 210 },
+        styles: {
+          color: "#fff",
+          fontFamily: "Sora",
+          fontSize: 35,
+          fontStyle: "normal",
+          fontWeight: 900,
+          textAlign: "center",
+          textShadow: "0px 0px 8px rgba(0, 0, 0, 0.67)",
+          width: 800,
+          zIndex: 3,
+        },
+        textValue: "Goal Template",
+      },
+    },
+  },
+};
+
+export const publicGoalTemplatesFixture: PublicTemplate<"TIPS_GOAL", TipsGoalTemplateConfig>[] = [publicGoalTemplateFixture];
+export const rawPublicGoalTemplatesFixture = [rawPublicGoalTemplateFixture];
+
+export const publicVotingTemplatesFixture: PublicTemplate<"GOAL_VOTING">[] = [
   {
     id: asTemplateId("template-voting-1"),
     type: "GOAL_VOTING",

@@ -12,7 +12,9 @@ import {
   type MediaFormats,
   type PaymentMethodsConfiguration,
   type PublicGoalWidget,
+  type PublicTemplate,
   type Tip,
+  type TipsGoalTemplateConfig,
   type UserPaymentMethod,
   type Withdrawal,
 } from "..";
@@ -38,6 +40,7 @@ expectType<Promise<UserPaymentMethod>>(client.paymentMethods.method("paypal").up
 expectType<Promise<PublicGoalWidget>>(client.public.user(asUserId("user-1")).goals.id(asGoalId("goal-1")).widget.get());
 expectType<Promise<boolean>>(publicClient.user(asUserId("user-1")).widgetMessage.get());
 expectType<Promise<string>>(publicClient.user(asUserId("user-1")).templateFonts.get());
+expectType<Promise<PublicTemplate<"TIPS_GOAL", TipsGoalTemplateConfig>[]>>(publicClient.user(asUserId("user-1")).goals.templates.list());
 expectType<Promise<MediaFormats>>(client.media.id(asMediaId(1)).formats.get());
 expectType<Promise<ArrayBuffer>>(client.withdrawals.id(asWithdrawalId("withdrawal-1")).confirmationPdf.get());
 

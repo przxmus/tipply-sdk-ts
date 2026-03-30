@@ -3,9 +3,9 @@ import { z } from "zod";
 import type { RequestOptions } from "../../core/types";
 import { TipplyTransport } from "../../core/transport";
 import { tipsGoalConfigurationSchema } from "../../domain/settings-schemas";
-import { goalVotingConfigurationSchema, publicGoalWidgetSchema, userTemplateSchema } from "../../domain/shared-schemas";
+import { goalVotingConfigurationSchema, publicGoalWidgetSchema, publicTemplateSchema, publicTipsGoalTemplateSchema } from "../../domain/shared-schemas";
 import type { GoalId, UserId } from "../../domain/ids";
-import type { GoalVotingConfiguration, PublicGoalWidget, UserTemplate } from "../../domain/shared";
+import type { GoalVotingConfiguration, PublicGoalWidget, PublicTemplate, TipsGoalTemplateConfig } from "../../domain/shared";
 import type { TipsGoalConfiguration } from "../../domain/settings";
 import { requestAndParse } from "../request";
 
@@ -45,7 +45,7 @@ class PublicGoalsTemplatesResource {
     private readonly userId: UserId,
   ) {}
 
-  list(requestOptions?: RequestOptions): Promise<UserTemplate[]> {
+  list(requestOptions?: RequestOptions): Promise<PublicTemplate<"TIPS_GOAL", TipsGoalTemplateConfig>[]> {
     return requestAndParse(
       this.transport,
       {
@@ -53,7 +53,7 @@ class PublicGoalsTemplatesResource {
         path: `/templates/TIPS_GOAL/${this.userId}`,
         scope: "public",
       },
-      z.array(userTemplateSchema),
+      z.array(publicTipsGoalTemplateSchema),
       requestOptions,
       "Invalid public goal templates response.",
     );
@@ -104,7 +104,7 @@ class PublicVotingTemplatesResource {
     private readonly userId: UserId,
   ) {}
 
-  list(requestOptions?: RequestOptions): Promise<UserTemplate[]> {
+  list(requestOptions?: RequestOptions): Promise<PublicTemplate<"GOAL_VOTING">[]> {
     return requestAndParse(
       this.transport,
       {
@@ -112,10 +112,10 @@ class PublicVotingTemplatesResource {
         path: `/templates/GOAL_VOTING/${this.userId}`,
         scope: "public",
       },
-      z.array(userTemplateSchema),
+      z.array(publicTemplateSchema),
       requestOptions,
       "Invalid public voting templates response.",
-    );
+    ) as Promise<PublicTemplate<"GOAL_VOTING">[]>;
   }
 }
 

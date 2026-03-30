@@ -1,15 +1,11 @@
 import type {
   CounterTemplateElementsOptions,
   TemplateElementOption,
-  TipsGoalTemplateElementsOptions,
+  TipsGoalTemplateConfig,
   UnknownTemplateConfig,
 } from "./shared";
 
-export interface TipsGoalTemplateReplacementInput {
-  title: string;
-  editable: boolean;
-  elementsOptions: TipsGoalTemplateElementsOptions;
-}
+export interface TipsGoalTemplateReplacementInput extends TipsGoalTemplateConfig {}
 
 export interface CounterTemplateReplacementInput {
   title: string;

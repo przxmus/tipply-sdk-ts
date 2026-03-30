@@ -26,8 +26,10 @@ import type {
   PaymentMethodConfigurationEntry,
   PaymentMethodsConfiguration,
   PublicGoalWidget,
+  PublicTemplate,
   Report,
   Tip,
+  TipsGoalTemplateConfig,
   UserPaymentMethod,
   UserPaymentMethods,
   UserTemplate,
@@ -163,6 +165,75 @@ export const mediaFormatsSchema = z
     ),
   );
 
+const templateElementPositionSchema = z
+  .object({
+    x: z.number(),
+    y: z.number(),
+  })
+  .partial()
+  .passthrough();
+
+const templateElementAnimationSchema = z
+  .object({
+    enable: z.boolean().optional(),
+  })
+  .passthrough();
+
+const templateElementSizeSchema = z
+  .object({
+    width: z.number().optional(),
+    height: z.number().optional(),
+  })
+  .passthrough();
+
+const templateElementStylesSchema = z
+  .object({
+    color: z.string().optional(),
+    fontFamily: z.string().optional(),
+    fontSize: z.number().optional(),
+    fontStyle: z.string().optional(),
+    fontWeight: z.number().optional(),
+    textAlign: z.string().optional(),
+    textShadow: z.string().optional(),
+    width: z.number().optional(),
+    zIndex: z.number().optional(),
+  })
+  .passthrough();
+
+const templateElementOptionSchema: z.ZodTypeAny = z.lazy((): z.ZodTypeAny =>
+  z
+    .object({
+      styles: templateElementStylesSchema.optional(),
+      position: templateElementPositionSchema.optional(),
+      animation: templateElementAnimationSchema.optional(),
+      size: templateElementSizeSchema.optional(),
+      children: z.record(z.string(), templateElementOptionSchema).optional(),
+      gradientColor: z.string().optional(),
+      progressColor: z.string().optional(),
+      stripes: z.boolean().optional(),
+      changePosition: z.boolean().optional(),
+      isVisible: z.boolean().optional(),
+      textValue: z.string().optional(),
+    })
+    .passthrough(),
+);
+
+const tipsGoalTemplateConfigSchema = z
+  .object({
+    title: z.string(),
+    editable: z.boolean(),
+    elementsOptions: z
+      .object({
+        goalName: templateElementOptionSchema.optional(),
+        amountPaid: templateElementOptionSchema.optional(),
+        goalNumbers: templateElementOptionSchema.optional(),
+        progressBar: templateElementOptionSchema.optional(),
+        visualObject: templateElementOptionSchema.optional(),
+      })
+      .passthrough(),
+  })
+  .passthrough();
+
 const userTemplateWireSchema = z
   .object({
     id: z.string(),
@@ -178,6 +249,28 @@ export const userTemplateSchema = userTemplateWireSchema.transform<UserTemplate>
   updatedAt: wire.updated_at,
   config: wire.config,
 }));
+
+export const publicTemplateSchema = userTemplateWireSchema.transform<PublicTemplate>((wire) => ({
+  id: asTemplateId(wire.id),
+  type: wire.type,
+  updatedAt: wire.updated_at,
+  config: wire.config,
+}));
+
+export const publicTipsGoalTemplateSchema = z
+  .object({
+    id: z.string(),
+    type: z.literal("TIPS_GOAL"),
+    updated_at: isoDateStringSchema,
+    config: tipsGoalTemplateConfigSchema,
+  })
+  .passthrough()
+  .transform<PublicTemplate<"TIPS_GOAL", TipsGoalTemplateConfig>>((wire) => ({
+    id: asTemplateId(wire.id),
+    type: wire.type,
+    updatedAt: wire.updated_at,
+    config: wire.config as TipsGoalTemplateConfig,
+  }));
 
 export const publicGoalWidgetSchema = z
   .object({
