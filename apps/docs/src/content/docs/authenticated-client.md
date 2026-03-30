@@ -13,6 +13,44 @@ const client = createTipplyClient({
 });
 ```
 
+## Zarządzanie życiem `auth_token`
+
+Klient auth potrafi automatycznie odświeżać token sesji na trzy sposoby:
+
+- `auth.refreshTokenOnRequests`: domyślnie `true`; każda odpowiedź z `Set-Cookie: auth_token=...` aktualizuje token trzymany przez klienta
+- `auth.refreshTokenEvery`: domyślnie wyłączone; po włączeniu klient cyklicznie robi `GET https://proxy.tipply.pl/user`, żeby dostać nowy `Set-Cookie`
+- `auth.reconnectTries`: domyślnie `3`; przy błędach auth i retryable błędach transportu klient ponawia request co sekundę, a przed ostatnią próbą najpierw robi refresh przez `/user`
+
+```ts
+const client = createTipplyClient({
+  authCookie: process.env.TIPPLY_AUTH_COOKIE!,
+  auth: {
+    refreshTokenOnRequests: true,
+    refreshTokenEvery: true,
+    reconnectTries: 3,
+  },
+});
+```
+
+Jeżeli chcesz ustawić własny interwał zamiast domyślnych 5 minut:
+
+```ts
+const client = createTipplyClient({
+  authCookie: process.env.TIPPLY_AUTH_COOKIE!,
+  auth: {
+    refreshTokenEvery: {
+      intervalMs: 60_000,
+    },
+  },
+});
+```
+
+Jeżeli włączyłeś background refresh i kończysz pracę z klientem, wywołaj:
+
+```ts
+client.close();
+```
+
 ## Najczęstsze scenariusze
 
 ### Bieżący użytkownik i profil

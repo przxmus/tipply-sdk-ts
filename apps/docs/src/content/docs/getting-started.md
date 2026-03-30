@@ -22,6 +22,9 @@ import { createTipplyClient } from "tipply-sdk-ts";
 
 const client = createTipplyClient({
   authCookie: process.env.TIPPLY_AUTH_COOKIE!,
+  auth: {
+    reconnectTries: 3,
+  },
 });
 
 const me = await client.me.get();

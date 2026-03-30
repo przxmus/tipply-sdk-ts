@@ -23,6 +23,27 @@ const recentTips = await client.dashboard.tips.recent.list();
 console.log(me.username, recentTips.length);
 ```
 
+## Automatyczne odświeżanie `auth_token`
+
+Auth client potrafi sam utrzymywać świeży `auth_token`:
+
+- `auth.refreshTokenOnRequests`: domyślnie `true`, przechwytuje `Set-Cookie` z odpowiedzi i podmienia token używany przez kolejne requesty
+- `auth.refreshTokenEvery`: domyślnie wyłączone, po włączeniu wysyła cykliczny request do `/user`; `true` oznacza domyślne `5` minut, a `{ intervalMs }` pozwala ustawić własny interwał
+- `auth.reconnectTries`: domyślnie `3`; przy błędach auth, timeoutach i wybranych błędach transportu klient ponawia request, a przed ostatnią próbą najpierw odświeża sesję przez `/user`
+
+```ts
+const client = createTipplyClient({
+  authCookie: process.env.TIPPLY_AUTH_COOKIE!,
+  auth: {
+    refreshTokenOnRequests: true,
+    refreshTokenEvery: { intervalMs: 60_000 },
+    reconnectTries: 3,
+  },
+});
+```
+
+Jeżeli włączysz `auth.refreshTokenEvery`, możesz zatrzymać background refresh przez `client.close()`.
+
 ```ts
 import { asTipId, createTipplyClient } from "tipply-sdk-ts";
 
