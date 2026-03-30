@@ -9,6 +9,41 @@ import type {
   TipplyTransportResponseContext,
 } from "./types";
 
+const AUTH_REFRESH_PATH = "/user";
+const RECONNECT_DELAY_MS = 1_000;
+
+function getSetCookieHeaders(headers: Headers): string[] {
+  if (typeof headers.getSetCookie === "function") {
+    return headers.getSetCookie();
+  }
+
+  const setCookie = headers.get("set-cookie");
+  return setCookie ? [setCookie] : [];
+}
+
+function readCookieValue(cookie: string, cookieName: string): string | undefined {
+  const [cookiePair] = cookie.split(";", 1);
+
+  if (!cookiePair) {
+    return undefined;
+  }
+
+  const separatorIndex = cookiePair.indexOf("=");
+
+  if (separatorIndex === -1) {
+    return undefined;
+  }
+
+  const name = cookiePair.slice(0, separatorIndex).trim();
+
+  if (name !== cookieName) {
+    return undefined;
+  }
+
+  const value = cookiePair.slice(separatorIndex + 1).trim();
+  return value.length > 0 ? value : undefined;
+}
+
 function toHeadersObject(headers: Headers): Record<string, string> {
   const output: Record<string, string> = {};
 
@@ -79,11 +114,42 @@ function createAbortSignal(timeoutMs: number, signal: AbortSignal | undefined): 
   };
 }
 
+async function sleep(ms: number, signal: AbortSignal | undefined): Promise<void> {
+  if (signal?.aborted) {
+    throw new DOMException("Request aborted.", "AbortError");
+  }
+
+  await new Promise<void>((resolve, reject) => {
+    const handle = setTimeout(() => {
+      signal?.removeEventListener("abort", abortHandler);
+      resolve();
+    }, ms);
+
+    const abortHandler = () => {
+      clearTimeout(handle);
+      reject(new DOMException("Request aborted.", "AbortError"));
+    };
+
+    signal?.addEventListener("abort", abortHandler, { once: true });
+  });
+}
+
 export class TipplyTransport {
   private readonly resolvedOptions: ReturnType<typeof resolveClientOptions>;
+  private authCookieOverride: string | undefined;
+  private authCookieOverrideActive = false;
+  private periodicRefreshTimer: ReturnType<typeof setInterval> | undefined;
+  private refreshInFlight: Promise<void> | null = null;
 
   constructor(options: TipplyClientOptions = {}) {
     this.resolvedOptions = resolveClientOptions(options);
+
+    if (this.resolvedOptions.session && "authCookie" in this.resolvedOptions.session) {
+      this.authCookieOverride = this.resolvedOptions.session.authCookie;
+      this.authCookieOverrideActive = true;
+    }
+
+    this.startPeriodicRefresh();
   }
 
   withOptions(options: TipplyClientOptions): TipplyTransport {
@@ -94,7 +160,88 @@ export class TipplyTransport {
     return this.resolvedOptions;
   }
 
+  /** Stops background auth refresh timers created for this transport. */
+  close(): void {
+    if (this.periodicRefreshTimer !== undefined) {
+      clearInterval(this.periodicRefreshTimer);
+      this.periodicRefreshTimer = undefined;
+    }
+  }
+
   async request<TResponse>(request: TipplyTransportRequest<TResponse>, requestOptions: RequestOptions = {}): Promise<TResponse> {
+    if (!request.auth || this.resolvedOptions.auth.reconnectTries <= 1) {
+      return this.executeRequest<TResponse>(request, requestOptions);
+    }
+
+    let attempt = 1;
+    let lastError: unknown;
+
+    while (attempt <= this.resolvedOptions.auth.reconnectTries) {
+      if (attempt === this.resolvedOptions.auth.reconnectTries && attempt > 1) {
+        await this.refreshViaUser({ swallowErrors: true });
+      }
+
+      try {
+        return await this.executeRequest<TResponse>(request, requestOptions);
+      } catch (error) {
+        lastError = error;
+
+        if (!this.shouldRetryRequest(error, attempt, requestOptions.signal)) {
+          throw error;
+        }
+
+        attempt += 1;
+        await sleep(RECONNECT_DELAY_MS, requestOptions.signal);
+      }
+    }
+
+    throw lastError;
+  }
+
+  private startPeriodicRefresh(): void {
+    if (this.resolvedOptions.auth.refreshTokenEveryMs === undefined) {
+      return;
+    }
+
+    if (!this.canSendAuthenticatedRequests()) {
+      return;
+    }
+
+    this.periodicRefreshTimer = setInterval(() => {
+      void this.refreshViaUser({ swallowErrors: true });
+    }, this.resolvedOptions.auth.refreshTokenEveryMs);
+
+    this.periodicRefreshTimer.unref?.();
+  }
+
+  private canSendAuthenticatedRequests(): boolean {
+    return this.resolvedOptions.session !== undefined;
+  }
+
+  private shouldRetryRequest(error: unknown, attempt: number, signal: AbortSignal | undefined): boolean {
+    if (signal?.aborted || attempt >= this.resolvedOptions.auth.reconnectTries) {
+      return false;
+    }
+
+    if (error instanceof TipplyAuthenticationError) {
+      return true;
+    }
+
+    if (!(error instanceof TipplyHttpError)) {
+      return false;
+    }
+
+    if (error.status === undefined) {
+      return true;
+    }
+
+    return error.status === 408 || error.status === 429 || error.status >= 500;
+  }
+
+  private async executeRequest<TResponse>(
+    request: TipplyTransportRequest<TResponse>,
+    requestOptions: RequestOptions,
+  ): Promise<TResponse> {
     const scope = request.scope ?? "proxy";
     const baseUrl = resolveBaseUrl(scope, this.resolvedOptions);
     const url = `${baseUrl}${request.path}${serializeQuery(request.query)}`;
@@ -114,7 +261,7 @@ export class TipplyTransport {
         headers.set("Origin", this.resolvedOptions.transport.appOrigin);
       }
 
-      const authCookie = await resolveSessionCookie(this.resolvedOptions.session);
+      const authCookie = await this.resolveAuthCookie();
 
       if (authCookie) {
         headers.set("Cookie", `${this.resolvedOptions.transport.cookieName}=${authCookie}`);
@@ -145,6 +292,7 @@ export class TipplyTransport {
       }
 
       const response = await this.resolvedOptions.transport.fetch(url, requestInit);
+      this.captureAuthCookie(response.headers);
 
       const responseBody = await parseResponseBodyAs(response, request.responseType ?? "auto");
       const context: TipplyTransportResponseContext = {
@@ -195,6 +343,64 @@ export class TipplyTransport {
       );
     } finally {
       cleanup();
+    }
+  }
+
+  private async resolveAuthCookie(): Promise<string | undefined> {
+    if (this.authCookieOverrideActive) {
+      return this.authCookieOverride;
+    }
+
+    return resolveSessionCookie(this.resolvedOptions.session);
+  }
+
+  private captureAuthCookie(headers: Headers): void {
+    if (!this.resolvedOptions.auth.refreshTokenOnRequests) {
+      return;
+    }
+
+    for (const setCookie of getSetCookieHeaders(headers)) {
+      const authCookie = readCookieValue(setCookie, this.resolvedOptions.transport.cookieName);
+
+      if (!authCookie) {
+        continue;
+      }
+
+      this.authCookieOverride = authCookie;
+      this.authCookieOverrideActive = true;
+      return;
+    }
+  }
+
+  private async refreshViaUser(options: { swallowErrors: boolean }): Promise<void> {
+    if (this.refreshInFlight) {
+      if (options.swallowErrors) {
+        await this.refreshInFlight.catch(() => undefined);
+        return;
+      }
+
+      await this.refreshInFlight;
+      return;
+    }
+
+    this.refreshInFlight = this.executeRequest(
+      {
+        method: "GET",
+        path: AUTH_REFRESH_PATH,
+        auth: true,
+      },
+      {},
+    ).then(() => undefined);
+
+    try {
+      if (options.swallowErrors) {
+        await this.refreshInFlight.catch(() => undefined);
+        return;
+      }
+
+      await this.refreshInFlight;
+    } finally {
+      this.refreshInFlight = null;
     }
   }
 }

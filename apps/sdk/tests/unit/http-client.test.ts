@@ -7,12 +7,13 @@ import {
   publicGoalConfigurationFixture,
   publicTemplateFontsFixture,
   rawCurrentUserFixture,
+  rawProfileFixture,
   rawPublicGoalConfigurationFixture,
   rawPublicGoalTemplatesFixture,
   rawPublicGoalWidgetFixture,
   rawPublicVotingTemplatesFixture,
 } from "../fixtures/sanitized";
-import { createMockFetch, emptyResponse, expectAuthCookie, jsonResponse } from "../support/mock-fetch";
+import { createMockFetch, emptyResponse, expectAuthCookie, jsonResponse, jsonResponseWithAuthCookie } from "../support/mock-fetch";
 
 describe("http transport", () => {
   test("adds auth cookie only for authenticated endpoints", async () => {
@@ -83,6 +84,89 @@ describe("http transport", () => {
     expect(requests[0]!.credentials).toBe("include");
   });
 
+  test("refreshes the managed auth token from authenticated responses by default", async () => {
+    const { fetch, requests } = createMockFetch((request) => {
+      if (request.url.pathname === "/user") {
+        return jsonResponseWithAuthCookie(rawCurrentUserFixture, "cookie-456");
+      }
+
+      if (request.url.pathname === "/user/profile") {
+        return jsonResponse(rawProfileFixture);
+      }
+
+      throw new Error(`Unhandled request: ${request.method} ${request.url.pathname}`);
+    });
+
+    const client = createTipplyClient({ authCookie: "cookie-123", fetch });
+
+    await client.me.get();
+    await client.profile.get();
+
+    expectAuthCookie(requests[0]!.headers, "cookie-123");
+    expectAuthCookie(requests[1]!.headers, "cookie-456");
+  });
+
+  test("can disable auth token refresh from response cookies", async () => {
+    const { fetch, requests } = createMockFetch((request) => {
+      if (request.url.pathname === "/user") {
+        return jsonResponseWithAuthCookie(rawCurrentUserFixture, "cookie-456");
+      }
+
+      if (request.url.pathname === "/user/profile") {
+        return jsonResponse(rawProfileFixture);
+      }
+
+      throw new Error(`Unhandled request: ${request.method} ${request.url.pathname}`);
+    });
+
+    const client = createTipplyClient({
+      authCookie: "cookie-123",
+      fetch,
+      auth: {
+        refreshTokenOnRequests: false,
+      },
+    });
+
+    await client.me.get();
+    await client.profile.get();
+
+    expectAuthCookie(requests[0]!.headers, "cookie-123");
+    expectAuthCookie(requests[1]!.headers, "cookie-123");
+  });
+
+  test("can refresh the auth token periodically through the user endpoint", async () => {
+    let refreshCalls = 0;
+    const { fetch, requests } = createMockFetch((request) => {
+      if (request.url.pathname === "/user") {
+        refreshCalls += 1;
+        return jsonResponseWithAuthCookie(rawCurrentUserFixture, refreshCalls === 1 ? "cookie-456" : "cookie-789");
+      }
+
+      if (request.url.pathname === "/user/profile") {
+        return jsonResponse(rawProfileFixture);
+      }
+
+      throw new Error(`Unhandled request: ${request.method} ${request.url.pathname}`);
+    });
+
+    const client = createTipplyClient({
+      authCookie: "cookie-123",
+      fetch,
+      auth: {
+        refreshTokenEvery: {
+          intervalMs: 20,
+        },
+      },
+    });
+
+    await new Promise((resolve) => setTimeout(resolve, 30));
+    await client.profile.get();
+    client.close();
+
+    expect(refreshCalls).toBeGreaterThanOrEqual(1);
+    expectAuthCookie(requests.at(-1)!.headers, "cookie-456");
+  });
+
   test("maps oauth failures to TipplyAuthenticationError", async () => {
     const { fetch } = createMockFetch(() =>
       jsonResponse(
@@ -94,9 +178,59 @@ describe("http transport", () => {
       ),
     );
 
-    const client = createTipplyClient({ authCookie: "bad-cookie", fetch });
+    const client = createTipplyClient({
+      authCookie: "bad-cookie",
+      fetch,
+      auth: {
+        reconnectTries: false,
+      },
+    });
 
     await expect(client.me.get()).rejects.toBeInstanceOf(TipplyAuthenticationError);
+  });
+
+  test("retries authenticated requests and refreshes through /user before the last attempt", async () => {
+    let targetAttempts = 0;
+    const requestPaths: string[] = [];
+    const { fetch, requests } = createMockFetch((request) => {
+      requestPaths.push(request.url.pathname);
+
+      if (request.method === "POST" && request.url.pathname === "/test-tip") {
+        targetAttempts += 1;
+
+        if (targetAttempts < 3) {
+          return jsonResponse(
+            {
+              error: "access_denied",
+              error_description: "OAuth2 authentication required",
+            },
+            { status: 401 },
+          );
+        }
+
+        return jsonResponse({ ok: true, id: "test-tip-123" });
+      }
+
+      if (request.method === "GET" && request.url.pathname === "/user") {
+        return jsonResponseWithAuthCookie(rawCurrentUserFixture, "cookie-456");
+      }
+
+      throw new Error(`Unhandled request: ${request.method} ${request.url.pathname}`);
+    });
+
+    const client = createTipplyClient({ authCookie: "cookie-123", fetch });
+
+    await expect(
+      client.tips.sendTest({
+        message: "testowa wiadomosc",
+        amount: 1500,
+      }),
+    ).resolves.toEqual({ ok: true, id: "test-tip-123" });
+
+    expect(requestPaths).toEqual(["/test-tip", "/test-tip", "/user", "/test-tip"]);
+    expectAuthCookie(requests[0]!.headers, "cookie-123");
+    expectAuthCookie(requests[1]!.headers, "cookie-123");
+    expectAuthCookie(requests[3]!.headers, "cookie-456");
   });
 
   test("serializes repeated status query params for withdrawals builder", async () => {

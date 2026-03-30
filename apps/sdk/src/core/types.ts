@@ -33,6 +33,18 @@ export type TipplySessionOptions =
       browserSession: true;
     };
 
+/** Enables periodic auth token refreshes through the authenticated `/user` endpoint. */
+export interface TipplyTokenRefreshIntervalOptions {
+  intervalMs?: number;
+}
+
+/** Auth token lifecycle and retry behavior for authenticated HTTP requests. */
+export interface TipplyAuthLifecycleOptions {
+  refreshTokenOnRequests?: boolean;
+  refreshTokenEvery?: boolean | TipplyTokenRefreshIntervalOptions;
+  reconnectTries?: number | false;
+}
+
 /** Low-level transport overrides for HTTP and websocket endpoints. */
 export interface TipplyTransportOptions {
   fetch?: FetchLike;
@@ -56,6 +68,7 @@ export interface RequestOptions {
 export interface TipplyClientOptions {
   session?: TipplySessionOptions;
   transport?: TipplyTransportOptions;
+  auth?: TipplyAuthLifecycleOptions;
   validation?: boolean;
   authCookie?: string;
   getAuthCookie?: () => MaybePromise<string | null | undefined>;

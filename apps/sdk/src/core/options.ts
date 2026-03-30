@@ -1,9 +1,17 @@
-import type { FetchLike, MaybePromise, TipplyClientOptions, TipplySessionOptions, TipplyTransportOptions } from "./types";
+import type { FetchLike, MaybePromise, TipplyAuthLifecycleOptions, TipplyClientOptions, TipplySessionOptions, TipplyTransportOptions } from "./types";
 
 export interface ResolvedTipplyClientOptions {
   session: TipplySessionOptions | undefined;
+  auth: ResolvedTipplyAuthLifecycleOptions;
   transport: ResolvedTipplyTransportOptions;
   validation: boolean;
+}
+
+/** Normalized auth lifecycle controls used by the transport layer. */
+export interface ResolvedTipplyAuthLifecycleOptions {
+  refreshTokenOnRequests: boolean;
+  refreshTokenEveryMs: number | undefined;
+  reconnectTries: number;
 }
 
 export interface ResolvedTipplyTransportOptions {
@@ -20,6 +28,26 @@ export interface ResolvedTipplyTransportOptions {
 
 function normalizeBaseUrl(value: string): string {
   return value.endsWith("/") ? value.slice(0, -1) : value;
+}
+
+function resolveAuthLifecycle(options: TipplyAuthLifecycleOptions | undefined): ResolvedTipplyAuthLifecycleOptions {
+  const refreshTokenEvery = options?.refreshTokenEvery;
+  let refreshTokenEveryMs: number | undefined;
+
+  if (refreshTokenEvery === true) {
+    refreshTokenEveryMs = 300_000;
+  } else if (typeof refreshTokenEvery === "object" && refreshTokenEvery !== null) {
+    refreshTokenEveryMs = Math.max(1, Math.trunc(refreshTokenEvery.intervalMs ?? 300_000));
+  }
+
+  const reconnectTries =
+    options?.reconnectTries === false ? 1 : Math.max(1, Math.trunc(options?.reconnectTries ?? 3));
+
+  return {
+    refreshTokenOnRequests: options?.refreshTokenOnRequests ?? true,
+    refreshTokenEveryMs,
+    reconnectTries,
+  };
 }
 
 function resolveSession(options: TipplyClientOptions): TipplySessionOptions | undefined {
@@ -53,6 +81,7 @@ export function resolveClientOptions(options: TipplyClientOptions = {}): Resolve
 
   return {
     session: resolveSession(options),
+    auth: resolveAuthLifecycle(options.auth),
     transport: {
       fetch: fetchImpl,
       proxyBaseUrl: normalizeBaseUrl(transportOptions.proxyBaseUrl ?? "https://proxy.tipply.pl"),
