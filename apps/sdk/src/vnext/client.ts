@@ -11,6 +11,7 @@ import { PublicRootResource } from "./resources/public";
 import { ReportsResource } from "./resources/reports";
 import { SettingsResource } from "./resources/settings";
 import { TemplatesResource } from "./resources/templates";
+import { AuthenticatedTipAlertsResource } from "./resources/tip-alerts";
 import { TipsResource } from "./resources/tips";
 import { WithdrawalsResource } from "./resources/withdrawals";
 
@@ -30,6 +31,7 @@ export class TipplyClientVNext {
   readonly media: MediaResource;
   readonly withdrawals: WithdrawalsResource;
   readonly reports: ReportsResource;
+  readonly tipAlerts: AuthenticatedTipAlertsResource;
   readonly public: PublicRootResource;
 
   private readonly options: TipplyClientOptions;
@@ -50,6 +52,7 @@ export class TipplyClientVNext {
     this.media = new MediaResource(this.transport);
     this.withdrawals = new WithdrawalsResource(this.transport);
     this.reports = new ReportsResource(this.transport);
+    this.tipAlerts = new AuthenticatedTipAlertsResource(this.transport, this.me);
     this.public = new PublicRootResource(this.transport);
   }
 

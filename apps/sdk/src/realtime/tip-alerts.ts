@@ -1,6 +1,6 @@
 import io from "socket.io-client";
 
-import type { UserId } from "../domain/ids";
+import { asUserId, type UserId } from "../domain/ids";
 import { parseTipAlertDonation } from "../domain/alerts-schemas";
 import type { TipAlertDonation } from "../domain/alerts";
 import { TypedEventEmitter } from "./typed-event-emitter";
@@ -25,6 +25,8 @@ export interface TipAlertsListenerEvents {
 export interface TipAlertsListenerOptions {
   reconnect?: boolean;
 }
+
+export type TipAlertsWidgetUrl = string | URL;
 
 export interface TipAlertsListener {
   readonly userId: UserId;
@@ -51,6 +53,29 @@ function toError(error: unknown): Error {
   }
 
   return new Error("Unknown tip alerts socket error.");
+}
+
+export function parseTipAlertsWidgetUrl(widgetUrl: TipAlertsWidgetUrl): UserId {
+  const pathname =
+    widgetUrl instanceof URL
+      ? widgetUrl.pathname
+      : (() => {
+          try {
+            return new URL(widgetUrl).pathname;
+          } catch {
+            return widgetUrl;
+          }
+        })();
+
+  const segments = pathname.split("/").filter(Boolean);
+
+  if (segments[0] !== "TIP_ALERT" || !segments[1]) {
+    throw new Error(
+      "Invalid TIP_ALERT widget URL. Expected a path like https://widgets.tipply.pl/TIP_ALERT/<userId>.",
+    );
+  }
+
+  return asUserId(segments[1]);
 }
 
 export class PublicTipAlertsListener
@@ -181,4 +206,12 @@ export class PublicTipAlertsListener
     this.resolveConnect = null;
     this.rejectConnect = null;
   }
+}
+
+export function createTipAlertsListenerFromWidgetUrl(
+  widgetUrl: TipAlertsWidgetUrl,
+  socketBaseUrl: string,
+  options?: TipAlertsListenerOptions,
+): TipAlertsListener {
+  return new PublicTipAlertsListener(parseTipAlertsWidgetUrl(widgetUrl), socketBaseUrl, options);
 }
