@@ -1,40 +1,18 @@
 {
-  "name": "tipply-sdk-ts",
-  "version": "0.1.0",
-  "description": "TypeScript SDK for the Tipply API",
+  "name": "tipply-monorepo",
+  "private": true,
   "type": "module",
-  "license": "UNLICENSED",
-  "keywords": [
-    "tipply",
-    "sdk",
-    "typescript",
-    "api",
-    "streaming"
+  "packageManager": "bun@1.1.0",
+  "workspaces": [
+    "apps/*"
   ],
-  "files": [
-    "dist"
-  ],
-  "sideEffects": false,
-  "engines": {
-    "node": ">=18"
-  },
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
-    }
-  },
-  "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "bun run clean && bun run build:js && bun run build:types",
-    "build:js": "bun run scripts/build.mjs",
-    "build:types": "bunx tsc --project tsconfig.types.json",
-    "clean": "rm -rf dist",
-    "typecheck": "bunx tsc --project tsconfig.json --noEmit",
-    "test": "bun run build && bun test",
-    "test:live": "bun run build && bun test tests/live"
+    "build": "turbo run build",
+    "dev": "turbo run dev --parallel",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck"
   },
   "devDependencies": {
-    "typescript": "^5.9.3"
+    "turbo": "^2.5.8"
   }
 }

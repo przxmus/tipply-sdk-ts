@@ -1,5 +1,8 @@
 node_modules
 dist
-coverage
-.DS_Store
-.env
+.turbo
+apps/**/node_modules
+apps/**/dist
+apps/**/.astro
+apps/**/.vercel
+apps/**/.astro
