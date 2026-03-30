@@ -6,9 +6,11 @@ import { reportSchema } from "../../domain/shared-schemas";
 import type { Report } from "../../domain/shared";
 import { requestAndParse } from "../request";
 
+/** Authenticated access to generated account reports. */
 export class ReportsResource {
   constructor(private readonly transport: TipplyTransport) {}
 
+  /** Lists reports available for download by the authenticated user. */
   list(requestOptions?: RequestOptions): Promise<Report[]> {
     return requestAndParse(
       this.transport,

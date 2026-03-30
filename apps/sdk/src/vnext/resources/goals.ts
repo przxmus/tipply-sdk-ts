@@ -14,6 +14,7 @@ class GoalScope {
     private readonly goalId: GoalId,
   ) {}
 
+  /** Updates an existing goal. */
   update(input: UpdateGoalInput, requestOptions?: RequestOptions): Promise<void> {
     return this.transport.request(
       {
@@ -26,6 +27,7 @@ class GoalScope {
     );
   }
 
+  /** Resets the selected goal progress. */
   reset(requestOptions?: RequestOptions): Promise<void> {
     return this.transport.request(
       {
@@ -41,6 +43,7 @@ class GoalScope {
 class GoalVotingResource {
   constructor(private readonly transport: TipplyTransport) {}
 
+  /** Returns the authenticated user's goal voting configuration. */
   get(requestOptions?: RequestOptions): Promise<GoalVotingConfiguration> {
     return requestAndParse(
       this.transport,
@@ -57,12 +60,14 @@ class GoalVotingResource {
 }
 
 export class GoalsResource {
+  /** Goal voting configuration endpoints. */
   readonly voting: GoalVotingResource;
 
   constructor(private readonly transport: TipplyTransport) {
     this.voting = new GoalVotingResource(transport);
   }
 
+  /** Lists the authenticated user's goals. */
   list(requestOptions?: RequestOptions): Promise<Goal[]> {
     return requestAndParse(
       this.transport,
@@ -77,6 +82,7 @@ export class GoalsResource {
     );
   }
 
+  /** Creates a new goal for the authenticated user. */
   create(input: CreateGoalInput, requestOptions?: RequestOptions): Promise<Goal> {
     return requestAndParse(
       this.transport,
@@ -92,6 +98,7 @@ export class GoalsResource {
     );
   }
 
+  /** Opens the scope for a specific goal identifier. */
   id(goalId: GoalId): GoalScope {
     return new GoalScope(this.transport, goalId);
   }
