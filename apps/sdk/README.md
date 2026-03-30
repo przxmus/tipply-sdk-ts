@@ -72,6 +72,28 @@ const isWidgetMessageEnabled = await user.widgetMessage.get();
 const templateFontsCss = await user.templateFonts.get();
 ```
 
+### Realtime tip alerts
+
+```ts
+import { asUserId } from "tipply-sdk-ts";
+import { createTipplyPublicClient } from "tipply-sdk-ts/public";
+
+const client = createTipplyPublicClient();
+const listener = client.user(asUserId("user-123")).tipAlerts.createListener();
+
+listener.on("ready", () => {
+  console.log("Tip alerts listener connected");
+});
+
+listener.on("donation", (donation) => {
+  console.log(donation);
+});
+
+listener.on("error", console.error);
+
+await listener.connect();
+```
+
 ### Payment method update
 
 ```ts
@@ -116,6 +138,7 @@ Public user scope additions:
 
 - `client.public.user(userId).templateFonts.get()`
 - `client.public.user(userId).goals.configuration.get()` parses both legacy raw config payloads and the wrapped `{ type, config }` response documented in `tipply_new_openapi.yaml`
+- `client.public.user(userId).tipAlerts.createListener(options?)` listens for realtime `TIP_ALERT` donations
 
 ## Auth Model
 
@@ -151,6 +174,7 @@ The live suite only performs authenticated reads by default and discovers `userI
 - Dates are returned as ISO 8601 strings.
 - Template updates are modeled as full payload replacement for `PUT /templates/{uuid}`.
 - Response schemas tolerate additional unknown fields returned by Tipply.
+- Realtime tip alerts are officially supported in Bun, Node.js, and browser runtimes. Edge-style runtimes are not an official websocket target for this API.
 
 ### Browser session cookies
 

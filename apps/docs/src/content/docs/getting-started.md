@@ -51,4 +51,28 @@ const publicUser = publicClient.user(asUserId("user-123"));
 const enabled = await publicUser.widgetMessage.get();
 ```
 
+## Realtime tip alerts
+
+```ts
+import { asUserId } from "tipply-sdk-ts";
+import { createTipplyPublicClient } from "tipply-sdk-ts/public";
+
+const client = createTipplyPublicClient();
+const listener = client.user(asUserId("user-123")).tipAlerts.createListener();
+
+listener.on("ready", () => {
+  console.log("Connected");
+});
+
+listener.on("donation", (donation) => {
+  console.log(donation);
+});
+
+listener.on("error", console.error);
+
+await listener.connect();
+```
+
+Realtime tip alerts are officially supported in Bun, Node.js, and browser runtimes. Edge runtimes are outside the supported websocket target for this API.
+
 Continue to the [SDK Reference](/sdk-reference/) for the full namespace list.

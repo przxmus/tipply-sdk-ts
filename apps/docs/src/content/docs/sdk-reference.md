@@ -34,18 +34,38 @@ The authenticated client exposes:
 - `client.tips.list().filter("amount").search("abc").limit(20).get()`
 - `client.withdrawals.list().status("accepted", "transferred").limit(20).get()`
 - `client.public.user(userId).goals.id(goalId).widget.get()`
+- `client.public.user(userId).tipAlerts.createListener(options?)`
+
+## Realtime Tip Alerts
+
+`client.public.user(userId).tipAlerts.createListener(options?)` returns a typed realtime listener with:
+
+- `connect()`
+- `destroy()`
+- `on(...)`
+- `once(...)`
+- `off(...)`
+- `removeAllListeners(...)`
+
+Supported events:
+
+- `ready`
+- `donation`
+- `disconnect`
+- `error`
 
 ## Example
 
 ```ts
-import { asGoalId, asUserId, createTipplyClient } from "tipply-sdk-ts";
+import { asUserId } from "tipply-sdk-ts";
+import { createTipplyPublicClient } from "tipply-sdk-ts/public";
 
-const client = createTipplyClient({
-  session: {
-    authCookie: process.env.TIPPLY_AUTH_COOKIE!,
-  },
+const client = createTipplyPublicClient();
+const listener = client.user(asUserId("user-123")).tipAlerts.createListener();
+
+listener.on("donation", (donation) => {
+  console.log(donation);
 });
 
-const profile = await client.profile.get();
-const widget = await client.public.user(asUserId("user-123")).goals.id(asGoalId("goal-123")).widget.get();
+await listener.connect();
 ```
