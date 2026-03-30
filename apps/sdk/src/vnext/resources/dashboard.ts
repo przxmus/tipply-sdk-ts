@@ -9,7 +9,6 @@ import { TipplyTransport } from "../../core/transport";
 class DashboardAnnouncementsResource {
   constructor(private readonly transport: TipplyTransport) {}
 
-  /** Lists dashboard announcements shown in the authenticated panel. */
   list(requestOptions?: RequestOptions): Promise<DashboardAnnouncement[]> {
     return requestAndParse(
       this.transport,
@@ -20,7 +19,6 @@ class DashboardAnnouncementsResource {
     );
   }
 
-  /** Lists the extra dashboard announcement feed. */
   listExtra(requestOptions?: RequestOptions): Promise<DashboardAnnouncement[]> {
     return requestAndParse(
       this.transport,
@@ -35,7 +33,6 @@ class DashboardAnnouncementsResource {
 class DashboardIncomeStatsResource {
   constructor(private readonly transport: TipplyTransport) {}
 
-  /** Returns income summary statistics for the authenticated user. */
   get(requestOptions?: RequestOptions): Promise<IncomeStatistics> {
     return requestAndParse(
       this.transport,
@@ -50,7 +47,6 @@ class DashboardIncomeStatsResource {
 class DashboardTipStatsResource {
   constructor(private readonly transport: TipplyTransport) {}
 
-  /** Returns tip volume and message statistics for the authenticated user. */
   get(requestOptions?: RequestOptions): Promise<TipStatistics> {
     return requestAndParse(
       this.transport,
@@ -63,9 +59,7 @@ class DashboardTipStatsResource {
 }
 
 class DashboardStatsResource {
-  /** Income summary statistics. */
   readonly income: DashboardIncomeStatsResource;
-  /** Tip count and message statistics. */
   readonly tips: DashboardTipStatsResource;
 
   constructor(transport: TipplyTransport) {
@@ -77,7 +71,6 @@ class DashboardStatsResource {
 class DashboardPointsResource {
   constructor(private readonly transport: TipplyTransport) {}
 
-  /** Returns the user's current Tipply points balance. */
   get(requestOptions?: RequestOptions): Promise<number> {
     return requestAndParse(
       this.transport,
@@ -92,7 +85,6 @@ class DashboardPointsResource {
 class DashboardRecentTipsResource {
   constructor(private readonly transport: TipplyTransport) {}
 
-  /** Lists the latest tips shown on the dashboard, limited to 12 items. */
   list(requestOptions?: RequestOptions): Promise<RecentTip[]> {
     return requestAndParse(
       this.transport,
@@ -110,7 +102,6 @@ class DashboardRecentTipsResource {
 }
 
 class DashboardTipsResource {
-  /** Recently received tips for the dashboard view. */
   readonly recent: DashboardRecentTipsResource;
 
   constructor(transport: TipplyTransport) {
@@ -121,7 +112,6 @@ class DashboardTipsResource {
 class DashboardNotificationsResource {
   constructor(private readonly transport: TipplyTransport) {}
 
-  /** Lists dashboard notifications for the authenticated user. */
   list(requestOptions?: RequestOptions): Promise<DashboardNotification[]> {
     return requestAndParse(
       this.transport,
@@ -137,15 +127,10 @@ class DashboardNotificationsResource {
  * Dashboard-oriented authenticated reads.
  */
 export class DashboardResource {
-  /** Dashboard announcement feeds. */
   readonly announcements: DashboardAnnouncementsResource;
-  /** Dashboard statistics grouped by category. */
   readonly stats: DashboardStatsResource;
-  /** Tipply points balance. */
   readonly points: DashboardPointsResource;
-  /** Dashboard-specific tip feeds. */
   readonly tips: DashboardTipsResource;
-  /** Dashboard notifications. */
   readonly notifications: DashboardNotificationsResource;
 
   constructor(transport: TipplyTransport) {

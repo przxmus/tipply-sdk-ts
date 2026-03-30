@@ -12,7 +12,6 @@ import type { WithdrawalId } from "../../domain/ids";
 class WithdrawalAccountsResource {
   constructor(private readonly transport: TipplyTransport) {}
 
-  /** Lists payout accounts available to the authenticated user. */
   list(requestOptions?: RequestOptions): Promise<Account[]> {
     return requestAndParse(
       this.transport,
@@ -31,7 +30,6 @@ class WithdrawalAccountsResource {
 class WithdrawalMethodsConfigurationResource {
   constructor(private readonly transport: TipplyTransport) {}
 
-  /** Returns payout-method configuration metadata. */
   get(requestOptions?: RequestOptions): Promise<WithdrawalMethodsConfiguration> {
     return requestAndParse(
       this.transport,
@@ -48,7 +46,6 @@ class WithdrawalMethodsConfigurationResource {
 }
 
 class WithdrawalMethodsResource {
-  /** Payout-method configuration metadata. */
   readonly configuration: WithdrawalMethodsConfigurationResource;
 
   constructor(transport: TipplyTransport) {
@@ -59,7 +56,6 @@ class WithdrawalMethodsResource {
 class LatestWithdrawalsResource {
   constructor(private readonly transport: TipplyTransport) {}
 
-  /** Lists the most recent withdrawals. */
   list(requestOptions?: RequestOptions): Promise<Withdrawal[]> {
     return requestAndParse(
       this.transport,
@@ -81,22 +77,18 @@ class WithdrawalsListRequestBuilder {
     private readonly query: WithdrawalsListQuery = {},
   ) {}
 
-  /** Filters the withdrawal list by one or more statuses. */
   status(...statuses: WithdrawalStatusFilter[]): WithdrawalsListRequestBuilder {
     return new WithdrawalsListRequestBuilder(this.transport, { ...this.query, statuses });
   }
 
-  /** Limits the number of withdrawals returned by the next `get()` call. */
   limit(limit: number): WithdrawalsListRequestBuilder {
     return new WithdrawalsListRequestBuilder(this.transport, { ...this.query, limit });
   }
 
-  /** Skips the first `offset` withdrawals in the next `get()` call. */
   offset(offset: number): WithdrawalsListRequestBuilder {
     return new WithdrawalsListRequestBuilder(this.transport, { ...this.query, offset });
   }
 
-  /** Executes the withdrawals list request with the accumulated filters. */
   get(requestOptions?: RequestOptions): Promise<Withdrawal[]> {
     return requestAndParse(
       this.transport,
@@ -123,7 +115,6 @@ class WithdrawalConfirmationPdfResource {
     private readonly withdrawalId: WithdrawalId,
   ) {}
 
-  /** Downloads the confirmation PDF for a withdrawal as an `ArrayBuffer`. */
   get(requestOptions?: RequestOptions): Promise<ArrayBuffer> {
     return this.transport.request(
       {
@@ -141,7 +132,6 @@ class WithdrawalConfirmationPdfResource {
 }
 
 class WithdrawalScope {
-  /** Confirmation PDF download for the selected withdrawal. */
   readonly confirmationPdf: WithdrawalConfirmationPdfResource;
 
   constructor(transport: TipplyTransport, withdrawalId: WithdrawalId) {
@@ -150,11 +140,8 @@ class WithdrawalScope {
 }
 
 export class WithdrawalsResource {
-  /** Payout accounts. */
   readonly accounts: WithdrawalAccountsResource;
-  /** Withdrawal method configuration metadata. */
   readonly methods: WithdrawalMethodsResource;
-  /** Recently created withdrawals. */
   readonly latest: LatestWithdrawalsResource;
 
   constructor(private readonly transport: TipplyTransport) {
@@ -163,12 +150,10 @@ export class WithdrawalsResource {
     this.latest = new LatestWithdrawalsResource(transport);
   }
 
-  /** Starts a fluent request builder for listing withdrawals. */
   list(): WithdrawalsListRequestBuilder {
     return new WithdrawalsListRequestBuilder(this.transport);
   }
 
-  /** Opens the scope for a specific withdrawal identifier. */
   id(withdrawalId: WithdrawalId): WithdrawalScope {
     return new WithdrawalScope(this.transport, withdrawalId);
   }

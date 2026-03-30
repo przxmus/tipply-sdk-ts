@@ -7,7 +7,6 @@ import { requestAndParse } from "../request";
 class PaymentMethodsConfigurationResource {
   constructor(private readonly transport: TipplyTransport) {}
 
-  /** Returns configuration metadata for available payment methods. */
   get(requestOptions?: RequestOptions): Promise<PaymentMethodsConfiguration> {
     return requestAndParse(
       this.transport,
@@ -29,7 +28,6 @@ class PaymentMethodScope {
     private readonly methodKey: PaymentMethodKey,
   ) {}
 
-  /** Updates a single payment method toggle or minimum amount. */
   update(input: UpdatePaymentMethodInput, requestOptions?: RequestOptions): Promise<UserPaymentMethod> {
     return requestAndParse(
       this.transport,
@@ -47,14 +45,12 @@ class PaymentMethodScope {
 }
 
 export class PaymentMethodsResource {
-  /** Read-only payment method configuration metadata. */
   readonly configuration: PaymentMethodsConfigurationResource;
 
   constructor(private readonly transport: TipplyTransport) {
     this.configuration = new PaymentMethodsConfigurationResource(transport);
   }
 
-  /** Lists the authenticated user's configured payment methods. */
   list(requestOptions?: RequestOptions): Promise<UserPaymentMethods> {
     return requestAndParse(
       this.transport,
@@ -69,7 +65,6 @@ export class PaymentMethodsResource {
     );
   }
 
-  /** Opens the scope for a specific payment method key. */
   method(methodKey: PaymentMethodKey): PaymentMethodScope {
     return new PaymentMethodScope(this.transport, methodKey);
   }

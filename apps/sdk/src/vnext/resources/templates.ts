@@ -15,7 +15,6 @@ class TemplateScope {
     private readonly templateId: TemplateId,
   ) {}
 
-  /** Replaces the full configuration of an existing template. */
   replace(input: TemplateReplacementInput, requestOptions?: RequestOptions): Promise<void> {
     return this.transport.request(
       {
@@ -32,7 +31,6 @@ class TemplateScope {
 export class TemplatesResource {
   constructor(private readonly transport: TipplyTransport) {}
 
-  /** Lists templates available to the authenticated user. */
   list(requestOptions?: RequestOptions): Promise<UserTemplate[]> {
     return requestAndParse(
       this.transport,
@@ -47,7 +45,6 @@ export class TemplatesResource {
     );
   }
 
-  /** Opens the scope for a specific template identifier. */
   id(templateId: TemplateId): TemplateScope {
     return new TemplateScope(this.transport, templateId);
   }

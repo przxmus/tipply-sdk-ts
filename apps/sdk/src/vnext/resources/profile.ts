@@ -9,7 +9,6 @@ import { requestAndParse } from "../request";
 class ProfilePendingChangesResource {
   constructor(private readonly transport: TipplyTransport) {}
 
-  /** Checks whether the authenticated profile has pending moderation changes. */
   async check(requestOptions?: RequestOptions): Promise<boolean> {
     const response = await this.transport.request<unknown>(
       {
@@ -28,7 +27,6 @@ class ProfilePendingChangesResource {
 class ProfilePageResource {
   constructor(private readonly transport: TipplyTransport) {}
 
-  /** Updates page-level profile settings such as description and emote replacement. */
   updateSettings(input: UpdatePageSettingsInput, requestOptions?: RequestOptions): Promise<UserProfile> {
     return requestAndParse(
       this.transport,
@@ -51,7 +49,6 @@ class PublicProfileSocialLinksResource {
     private readonly slug: string,
   ) {}
 
-  /** Lists public social media links for a profile slug. */
   list(requestOptions?: RequestOptions): Promise<PublicSocialMediaLink[]> {
     return requestAndParse(
       this.transport,
@@ -68,7 +65,6 @@ class PublicProfileSocialLinksResource {
 }
 
 class PublicProfileScope {
-  /** Public social media links for the selected profile slug. */
   readonly socialLinks: PublicProfileSocialLinksResource;
 
   constructor(transport: TipplyTransport, slug: string) {
@@ -80,9 +76,7 @@ class PublicProfileScope {
  * Authenticated and public profile operations.
  */
 export class ProfileResource {
-  /** Profile moderation and pending-change helpers. */
   readonly pendingChanges: ProfilePendingChangesResource;
-  /** Page settings update helpers. */
   readonly page: ProfilePageResource;
 
   constructor(private readonly transport: TipplyTransport) {
@@ -90,7 +84,6 @@ export class ProfileResource {
     this.page = new ProfilePageResource(transport);
   }
 
-  /** Returns the authenticated user's profile. */
   get(requestOptions?: RequestOptions): Promise<UserProfile> {
     return requestAndParse(
       this.transport,
@@ -105,7 +98,6 @@ export class ProfileResource {
     );
   }
 
-  /** Opens the public profile scope for a profile slug. */
   public(slug: string): PublicProfileScope {
     return new PublicProfileScope(this.transport, slug);
   }

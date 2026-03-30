@@ -23,7 +23,6 @@ class PublicGoalWidgetResource {
     private readonly goalId: GoalId,
   ) {}
 
-  /** Returns the public widget payload for a specific goal and user. */
   get(requestOptions?: RequestOptions): Promise<PublicGoalWidget> {
     return requestAndParse(
       this.transport,
@@ -40,7 +39,6 @@ class PublicGoalWidgetResource {
 }
 
 class PublicGoalScope {
-  /** Goal widget payload for the selected goal. */
   readonly widget: PublicGoalWidgetResource;
 
   constructor(transport: TipplyTransport, userId: UserId, goalId: GoalId) {
@@ -54,7 +52,6 @@ class PublicGoalsTemplatesResource {
     private readonly userId: UserId,
   ) {}
 
-  /** Lists public `TIPS_GOAL` templates for the selected user. */
   list(requestOptions?: RequestOptions): Promise<PublicTemplate<"TIPS_GOAL", TipsGoalTemplateConfig>[]> {
     return requestAndParse(
       this.transport,
@@ -76,7 +73,6 @@ class PublicGoalsConfigurationResource {
     private readonly userId: UserId,
   ) {}
 
-  /** Returns the public `TIPS_GOAL` configuration for the selected user. */
   get(requestOptions?: RequestOptions): Promise<TipsGoalConfiguration> {
     return requestAndParse(
       this.transport,
@@ -93,9 +89,7 @@ class PublicGoalsConfigurationResource {
 }
 
 class PublicGoalsResource {
-  /** Public `TIPS_GOAL` templates. */
   readonly templates: PublicGoalsTemplatesResource;
-  /** Public `TIPS_GOAL` configuration. */
   readonly configuration: PublicGoalsConfigurationResource;
 
   constructor(
@@ -106,7 +100,6 @@ class PublicGoalsResource {
     this.configuration = new PublicGoalsConfigurationResource(transport, userId);
   }
 
-  /** Opens the scope for a specific public goal. */
   id(goalId: GoalId): PublicGoalScope {
     return new PublicGoalScope(this.transport, this.userId, goalId);
   }
@@ -118,7 +111,6 @@ class PublicVotingTemplatesResource {
     private readonly userId: UserId,
   ) {}
 
-  /** Lists public `GOAL_VOTING` templates for the selected user. */
   list(requestOptions?: RequestOptions): Promise<PublicTemplate<"GOAL_VOTING">[]> {
     return requestAndParse(
       this.transport,
@@ -140,7 +132,6 @@ class PublicVotingConfigurationResource {
     private readonly userId: UserId,
   ) {}
 
-  /** Returns the public goal voting configuration for the selected user. */
   get(requestOptions?: RequestOptions): Promise<GoalVotingConfiguration> {
     return requestAndParse(
       this.transport,
@@ -157,9 +148,7 @@ class PublicVotingConfigurationResource {
 }
 
 class PublicVotingResource {
-  /** Public `GOAL_VOTING` templates. */
   readonly templates: PublicVotingTemplatesResource;
-  /** Public goal voting configuration. */
   readonly configuration: PublicVotingConfigurationResource;
 
   constructor(transport: TipplyTransport, userId: UserId) {
@@ -174,7 +163,6 @@ class PublicTemplateFontsResource {
     private readonly userId: UserId,
   ) {}
 
-  /** Downloads the raw CSS for the selected user's template fonts. */
   get(requestOptions?: RequestOptions): Promise<string> {
     return this.transport.request(
       {
@@ -197,7 +185,6 @@ class PublicWidgetMessageResource {
     private readonly userId: UserId,
   ) {}
 
-  /** Returns whether the public widget message feature is enabled for the selected user. */
   get(requestOptions?: RequestOptions): Promise<boolean> {
     return requestAndParse(
       this.transport,
@@ -219,7 +206,6 @@ class PublicTipAlertsResource {
     private readonly userId: UserId,
   ) {}
 
-  /** Creates a public `TIP_ALERT` listener for the selected user. */
   createListener(options?: TipAlertsListenerOptions): TipAlertsListener {
     return new PublicTipAlertsListener(this.userId, this.transport.config.transport.alertSocketBaseUrl, options);
   }
@@ -228,22 +214,16 @@ class PublicTipAlertsResource {
 export class PublicRootTipAlertsResource {
   constructor(private readonly transport: TipplyTransport) {}
 
-  /** Creates a public `TIP_ALERT` listener from a widget URL. */
   fromWidgetUrl(widgetUrl: TipAlertsWidgetUrl, options?: TipAlertsListenerOptions): TipAlertsListener {
     return createTipAlertsListenerFromWidgetUrl(widgetUrl, this.transport.config.transport.alertSocketBaseUrl, options);
   }
 }
 
 export class PublicUserScope {
-  /** Public goal endpoints for the selected user. */
   readonly goals: PublicGoalsResource;
-  /** Public goal voting endpoints for the selected user. */
   readonly voting: PublicVotingResource;
-  /** Raw CSS font definitions for public widgets. */
   readonly templateFonts: PublicTemplateFontsResource;
-  /** Public widget message availability flag. */
   readonly widgetMessage: PublicWidgetMessageResource;
-  /** Public realtime tip alerts helpers. */
   readonly tipAlerts: PublicTipAlertsResource;
 
   constructor(transport: TipplyTransport, userId: UserId) {
@@ -256,14 +236,12 @@ export class PublicUserScope {
 }
 
 export class PublicRootResource {
-  /** Root realtime helpers for public tip alerts. */
   readonly tipAlerts: PublicRootTipAlertsResource;
 
   constructor(private readonly transport: TipplyTransport) {
     this.tipAlerts = new PublicRootTipAlertsResource(transport);
   }
 
-  /** Opens the public resource scope for a specific user. */
   user(userId: UserId): PublicUserScope {
     return new PublicUserScope(this.transport, userId);
   }
