@@ -109,6 +109,20 @@ const client = createTipplyClient({
 });
 ```
 
+### Zmiana sesji na istniejącym kliencie
+
+```ts
+const baseClient = createTipplyClient({
+  authCookie: process.env.TIPPLY_AUTH_COOKIE!,
+});
+
+const anotherClient = baseClient.withAuthCookie(process.env.OTHER_TIPPLY_AUTH_COOKIE!);
+
+const sessionBackedClient = baseClient.withSession({
+  getAuthCookie: async () => process.env.OTHER_TIPPLY_AUTH_COOKIE,
+});
+```
+
 ## Klient publiczny
 
 Klient publiczny nie wymaga `auth_token` i nadaje się do odczytu widgetów, template fonts, konfiguracji votingu oraz `TIP_ALERT`.
@@ -124,7 +138,7 @@ const widgetEnabled = await user.widgetMessage.get();
 const goalWidget = await user.goals.id(asGoalId("goal-123")).widget.get();
 const fontsCss = await user.templateFonts.get();
 
-console.log(widgetEnabled, goalWidget.title, fontsCss.slice(0, 80));
+console.log(widgetEnabled, goalWidget.config.title, fontsCss.slice(0, 80));
 ```
 
 ## Praktyczne przykłady

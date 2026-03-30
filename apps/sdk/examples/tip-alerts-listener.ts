@@ -5,31 +5,41 @@ const authCookie = process.env.TIPPLY_AUTH_COOKIE;
 const widgetUrl = process.env.TIPPLY_WIDGET_URL;
 
 if (!authCookie && !widgetUrl) {
-  throw new Error("Set either TIPPLY_AUTH_COOKIE or TIPPLY_WIDGET_URL.");
+  throw new Error("Set TIPPLY_AUTH_COOKIE or TIPPLY_WIDGET_URL before running this example.");
 }
 
 const listener = authCookie
   ? await createTipplyClient({
-      session: {
-        authCookie,
-      },
+      authCookie,
     }).tipAlerts.createListener()
   : createTipplyPublicClient().tipAlerts.fromWidgetUrl(widgetUrl!);
 
 listener.on("ready", () => {
-  console.log(`Listening for donations on user ${listener.userId}`);
+  console.log(`Connected to TIP_ALERT for user ${listener.userId}`);
 });
 
 listener.on("donation", (donation) => {
-  console.log("Received donation:", donation);
+  console.log(
+    JSON.stringify(
+      {
+        id: donation.id,
+        nickname: donation.nickname,
+        amount: donation.amount,
+        message: donation.message,
+        createdAt: donation.createdAt,
+      },
+      null,
+      2,
+    ),
+  );
 });
 
 listener.on("disconnect", (reason) => {
-  console.log("Tip alerts socket disconnected:", reason);
+  console.log(`Socket disconnected: ${reason}`);
 });
 
 listener.on("error", (error) => {
-  console.error("Tip alerts socket error:", error);
+  console.error("Socket error:", error);
 });
 
 const shutdown = () => {

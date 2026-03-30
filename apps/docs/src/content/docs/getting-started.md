@@ -1,29 +1,49 @@
 ---
 title: Getting Started
-description: Install the package and create a Tipply client with the vNext factory API.
+description: Instalacja, pierwszy klient i najszybsza ścieżka do pierwszego działającego requestu.
 ---
 
-## Install
+## Instalacja
 
 ```bash
 bun add tipply-sdk-ts
 ```
 
-## Create a client
+## Wymagania
+
+- `bun` albo Node.js 18+
+- środowisko z `fetch`
+- aktywna sesja Tipply, jeśli chcesz wykonywać requesty auth
+
+## Najprostszy klient auth
 
 ```ts
 import { createTipplyClient } from "tipply-sdk-ts";
 
 const client = createTipplyClient({
-  session: {
-    authCookie: process.env.TIPPLY_AUTH_COOKIE!,
-  },
+  authCookie: process.env.TIPPLY_AUTH_COOKIE!,
 });
+
+const me = await client.me.get();
+
+console.log(me.username);
 ```
 
-## What you get
+## Najprostszy klient publiczny
 
-The authenticated client exposes typed resource groups for:
+```ts
+import { asUserId } from "tipply-sdk-ts";
+import { createTipplyPublicClient } from "tipply-sdk-ts/public";
+
+const client = createTipplyPublicClient();
+const user = client.user(asUserId("user-123"));
+
+const widgetMessageEnabled = await user.widgetMessage.get();
+
+console.log(widgetMessageEnabled);
+```
+
+## Co dostajesz po stronie auth
 
 - Me
 - Dashboard
@@ -39,19 +59,17 @@ The authenticated client exposes typed resource groups for:
 - Reports
 - Public endpoints
 
-## Public-only client
+## Co dostajesz po stronie publicznej
 
-```ts
-import { asUserId } from "tipply-sdk-ts";
-import { createTipplyPublicClient } from "tipply-sdk-ts/public";
+- widget celu użytkownika
+- konfigurację celów
+- szablony `TIPS_GOAL`
+- konfigurację i szablony `GOAL_VOTING`
+- CSS z fontami szablonów
+- flagę `widgetMessage`
+- realtime `TIP_ALERT`
 
-const publicClient = createTipplyPublicClient();
-const publicUser = publicClient.user(asUserId("user-123"));
-
-const enabled = await publicUser.widgetMessage.get();
-```
-
-## Realtime tip alerts
+## Realtime `TIP_ALERT`
 
 ```ts
 import { createTipplyClient } from "tipply-sdk-ts";
@@ -80,7 +98,11 @@ listener.on("error", console.error);
 await listener.connect();
 ```
 
-Realtime tip alerts are officially supported in Bun, Node.js, and browser runtimes. Edge runtimes are outside the supported websocket target for this API.
-If you only have a widget URL, you do not need to extract the user ID manually. The SDK can create the listener directly from the `TIP_ALERT` link.
+Realtime `TIP_ALERT` działa oficjalnie w Bun, Node.js i przeglądarkach. Jeżeli masz tylko widget URL, SDK potrafi sam wyciągnąć `userId` z linku `TIP_ALERT`.
 
-Continue to the [SDK Reference](/sdk-reference/) for the full namespace list.
+## Co przeczytać dalej
+
+- [Authentication](/authentication/) jeżeli nie masz jeszcze `auth_token`
+- [Authenticated Client](/authenticated-client/) jeżeli pracujesz na prywatnych endpointach
+- [Public Client](/public-client/) jeżeli korzystasz z widgetów i publicznych danych
+- [SDK Reference](/sdk-reference/) dla pełnej listy metod
