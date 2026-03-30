@@ -2,7 +2,47 @@ name: CI
 
 on:
   push:
+    paths:
+      - "package.json"
+      - "bun.lock"
+      - "turbo.json"
+      - "apps/sdk/package.json"
+      - "apps/sdk/bun.lock"
+      - "apps/sdk/tsconfig.json"
+      - "apps/sdk/tsconfig.types.json"
+      - "apps/sdk/scripts/**"
+      - "apps/sdk/src/**"
+      - "apps/sdk/tests/**"
+      - "apps/sdk/test-d/**"
+      - "apps/sdk/examples/**"
+      - "apps/docs/package.json"
+      - "apps/docs/astro.config.mjs"
+      - "apps/docs/tsconfig.json"
+      - "apps/docs/src/**/*.ts"
+      - "apps/docs/src/**/*.tsx"
+      - "apps/docs/src/**/*.mjs"
+      - "apps/docs/src/**/*.js"
   pull_request:
+    paths:
+      - "package.json"
+      - "bun.lock"
+      - "turbo.json"
+      - "apps/sdk/package.json"
+      - "apps/sdk/bun.lock"
+      - "apps/sdk/tsconfig.json"
+      - "apps/sdk/tsconfig.types.json"
+      - "apps/sdk/scripts/**"
+      - "apps/sdk/src/**"
+      - "apps/sdk/tests/**"
+      - "apps/sdk/test-d/**"
+      - "apps/sdk/examples/**"
+      - "apps/docs/package.json"
+      - "apps/docs/astro.config.mjs"
+      - "apps/docs/tsconfig.json"
+      - "apps/docs/src/**/*.ts"
+      - "apps/docs/src/**/*.tsx"
+      - "apps/docs/src/**/*.mjs"
+      - "apps/docs/src/**/*.js"
   workflow_dispatch:
 
 permissions:
