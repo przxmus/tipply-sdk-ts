@@ -23,6 +23,17 @@ const recentTips = await client.dashboard.tips.recent.list();
 console.log(me.username, recentTips.length);
 ```
 
+```ts
+import { asTipId, createTipplyClient } from "tipply-sdk-ts";
+
+const client = createTipplyClient({
+  authCookie: process.env.TIPPLY_AUTH_COOKIE!,
+});
+
+await client.tips.id(asTipId("tip-123")).resend();
+await client.tipAlerts.skipCurrent();
+```
+
 ## Klient publiczny
 
 ```ts
@@ -63,6 +74,7 @@ Aktualne przykłady znajdziesz w `apps/sdk/examples`:
 
 - `dashboard-summary.ts`
 - `public-goal-widget.ts`
+- `tip-controls.ts`
 - `tip-alerts-listener.ts`
 
 ## Skrypty workspace

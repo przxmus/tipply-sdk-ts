@@ -100,6 +100,19 @@ await listener.connect();
 
 Realtime `TIP_ALERT` działa oficjalnie w Bun, Node.js i przeglądarkach. Jeżeli masz tylko widget URL, SDK potrafi sam wyciągnąć `userId` z linku `TIP_ALERT`.
 
+## Kontrola tipów
+
+```ts
+import { asTipId, createTipplyClient } from "tipply-sdk-ts";
+
+const client = createTipplyClient({
+  authCookie: process.env.TIPPLY_AUTH_COOKIE!,
+});
+
+await client.tips.id(asTipId("tip-123")).resend();
+await client.tipAlerts.skipCurrent();
+```
+
 ## Co przeczytać dalej
 
 - [Authentication](/authentication/) jeżeli nie masz jeszcze `auth_token`

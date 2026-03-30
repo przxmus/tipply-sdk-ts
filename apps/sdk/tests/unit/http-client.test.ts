@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 
-import { TipplyAuthenticationError, asGoalId, asUserId, asWithdrawalId, createTipplyClient } from "../../src";
+import { TipplyAuthenticationError, asGoalId, asTipId, asUserId, asWithdrawalId, createTipplyClient } from "../../src";
 import { createTipplyPublicClient } from "../../src/public";
 import {
   currentUserFixture,
@@ -178,6 +178,24 @@ describe("http transport", () => {
 
     expect(requests[0]!.headers.get("origin")).toBe("https://app.tipply.pl");
     expect(requests[0]!.headers.get("referer")).toBe("https://app.tipply.pl/");
+  });
+
+  test("resends a specific tip through the authenticated proxy API", async () => {
+    const { fetch, requests } = createMockFetch((request) => {
+      if (request.method === "POST" && request.url.pathname === "/tip/tip-123/resend") {
+        return emptyResponse(204);
+      }
+
+      throw new Error(`Unhandled request: ${request.method} ${request.url.pathname}`);
+    });
+
+    const client = createTipplyClient({ authCookie: "cookie-123", fetch });
+
+    await client.tips.id(asTipId("tip-123")).resend();
+
+    expect(requests[0]!.url.pathname).toBe("/tip/tip-123/resend");
+    expect(requests[0]!.headers.get("origin")).toBe("https://app.tipply.pl");
+    expectAuthCookie(requests[0]!.headers, "cookie-123");
   });
 
   test("reads current user through the root factory", async () => {

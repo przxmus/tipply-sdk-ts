@@ -4,6 +4,7 @@ import {
   asGoalId,
   asMediaId,
   asTemplateId,
+  asTipId,
   asUserId,
   asWithdrawalId,
   createTipplyClient,
@@ -29,6 +30,7 @@ expectType<Promise<CurrentUser>>(client.me.get());
 expectType<Promise<TipAlertsListener>>(client.tipAlerts.createListener());
 expectType<Promise<Goal[]>>(client.goals.list());
 expectType<Promise<void>>(client.goals.id(asGoalId("goal-1")).reset());
+expectType<Promise<void>>(client.tipAlerts.skipCurrent());
 expectType<Promise<void>>(
   client.templates.id(asTemplateId("template-1")).replace({
     title: "Template",
@@ -37,6 +39,7 @@ expectType<Promise<void>>(
   }),
 );
 expectType<Promise<Tip[]>>(client.tips.list().filter("amount").search("abc").limit(20).get());
+expectType<Promise<void>>(client.tips.id(asTipId("tip-1")).resend());
 expectType<Promise<Withdrawal[]>>(client.withdrawals.list().status("accepted", "transferred").limit(10).get());
 expectType<Promise<PaymentMethodsConfiguration>>(client.paymentMethods.configuration.get());
 expectType<Promise<UserPaymentMethod>>(client.paymentMethods.method("paypal").update({ minimalAmount: 1500 }));

@@ -84,6 +84,7 @@ Aktualne przykłady źródłowe znajdziesz w `apps/sdk/examples`:
 
 - `dashboard-summary.ts`
 - `public-goal-widget.ts`
+- `tip-controls.ts`
 - `tip-alerts-listener.ts`
 
 Te przykłady są celowo krótkie i skupione na realnych scenariuszach użycia.

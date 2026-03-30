@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 
 import { asUserId } from "../../src";
 import { parseTipAlertDonation } from "../../src/domain/alerts-schemas";
+import { TipAlertCommandClient } from "../../src/realtime/tip-alert-commands";
 import { parseTipAlertsWidgetUrl, PublicTipAlertsListener } from "../../src/realtime/tip-alerts";
 
 const rawDonationPayload = {
@@ -67,6 +68,67 @@ class MockSocket {
   }
 
   emit(event: string, ...args: any[]): void {
+    if (event === "connect") {
+      this.connected = true;
+    }
+
+    if (event === "disconnect") {
+      this.connected = false;
+    }
+
+    for (const listener of this.listeners.get(event) ?? []) {
+      listener(...args);
+    }
+  }
+}
+
+class MockCommandSocket {
+  connected = false;
+  connectCalls = 0;
+  disconnectCalls = 0;
+  readonly emitted: Array<{ event: string; args: any[] }> = [];
+  private readonly listeners = new Map<string, Set<(...args: any[]) => void>>();
+
+  on(event: string, listener: (...args: any[]) => void): this {
+    const existing = this.listeners.get(event) ?? new Set();
+    existing.add(listener);
+    this.listeners.set(event, existing);
+    return this;
+  }
+
+  off(event: string, listener?: (...args: any[]) => void): this {
+    if (!listener) {
+      this.listeners.delete(event);
+      return this;
+    }
+
+    const existing = this.listeners.get(event);
+    existing?.delete(listener);
+
+    if (existing?.size === 0) {
+      this.listeners.delete(event);
+    }
+
+    return this;
+  }
+
+  connect(): this {
+    this.connectCalls += 1;
+    return this;
+  }
+
+  disconnect(): this {
+    this.disconnectCalls += 1;
+    this.connected = false;
+    return this;
+  }
+
+  emit(event: string, ...args: any[]): this {
+    this.emitted.push({ event, args });
+    return this;
+  }
+
+  trigger(event: string, ...args: any[]): void {
     if (event === "connect") {
       this.connected = true;
     }
@@ -309,5 +371,78 @@ describe("public tip alerts listener", () => {
     expect(socket.disconnectCalls).toBe(1);
     expect(listener.connected).toBe(false);
     expect(calls).toBe(0);
+  });
+});
+
+describe("tip alert command client", () => {
+  test("sends skipMessage over the commands socket with auth headers", async () => {
+    const socket = new MockCommandSocket();
+    let socketUrl = "";
+    let socketOptions: Record<string, unknown> | undefined;
+
+    const client = new TipAlertCommandClient(
+      asUserId("user-123"),
+      "https://ws.tipply.pl",
+      {
+        appOrigin: "https://app.tipply.pl",
+        authCookie: "cookie-123",
+        cookieName: "auth_token",
+        timeoutMs: 500,
+      },
+      (url, options) => {
+        socketUrl = url;
+        socketOptions = options as unknown as Record<string, unknown>;
+        return socket;
+      },
+    );
+
+    const skipPromise = client.skipCurrent();
+    socket.trigger("connect");
+    await skipPromise;
+
+    expect(socketUrl).toBe("https://ws.tipply.pl");
+    expect(socket.connectCalls).toBe(1);
+    expect(socket.disconnectCalls).toBe(1);
+    expect(socket.emitted).toHaveLength(1);
+    expect(socket.emitted[0]!.event).toBe("commands");
+    expect(socket.emitted[0]!.args[0]).toBe("user-123");
+    expect(socket.emitted[0]!.args[1]).toEqual({ command: "skipMessage" });
+    expect(typeof socket.emitted[0]!.args[2]).toBe("function");
+    expect(socketOptions).toMatchObject({
+      path: "/socket.io",
+      reconnection: false,
+      timeout: 500,
+      transports: ["websocket"],
+      transportOptions: {
+        websocket: {
+          extraHeaders: {
+            Cookie: "auth_token=cookie-123",
+            Origin: "https://app.tipply.pl",
+            Referer: "https://app.tipply.pl/",
+          },
+        },
+      },
+    });
+  });
+
+  test("rejects when the commands socket fails to connect", async () => {
+    const socket = new MockCommandSocket();
+
+    const client = new TipAlertCommandClient(
+      asUserId("user-123"),
+      "https://ws.tipply.pl",
+      {
+        appOrigin: "https://app.tipply.pl",
+        cookieName: "auth_token",
+        timeoutMs: 500,
+      },
+      () => socket,
+    );
+
+    const skipPromise = client.skipCurrent();
+    socket.trigger("connect_error", new Error("boom"));
+
+    await expect(skipPromise).rejects.toThrow("boom");
+    expect(socket.disconnectCalls).toBe(1);
   });
 });

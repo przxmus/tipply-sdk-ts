@@ -49,6 +49,17 @@ const filteredTips = await client.tips
   .get();
 ```
 
+### Resendowanie tipa i skip aktualnego alertu
+
+```ts
+import { asTipId } from "tipply-sdk-ts";
+
+await client.tips.id(asTipId("tip-123")).resend();
+await client.tipAlerts.skipCurrent();
+```
+
+`resend()` działa dla konkretnego `tipId`, a `skipCurrent()` skipuje tip, który jest aktualnie wyświetlany przez alerty.
+
 ### Metody płatności
 
 ```ts

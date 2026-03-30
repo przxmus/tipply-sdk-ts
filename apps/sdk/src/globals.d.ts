@@ -7,6 +7,7 @@ declare module "bun:test" {
 declare module "socket.io-client" {
   interface SocketIoClientLike {
     connected: boolean;
+    emit(event: string, ...args: any[]): this;
     on(event: string, listener: (...args: any[]) => void): this;
     off(event: string, listener?: (...args: any[]) => void): this;
     connect(): this;
@@ -18,6 +19,14 @@ declare module "socket.io-client" {
     options?: {
       autoConnect?: boolean;
       reconnection?: boolean;
+      path?: string;
+      transports?: string[];
+      timeout?: number;
+      transportOptions?: {
+        websocket?: {
+          extraHeaders?: Record<string, string>;
+        };
+      };
     },
   ): SocketIoClientLike;
 }

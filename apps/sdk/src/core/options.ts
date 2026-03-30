@@ -11,6 +11,7 @@ export interface ResolvedTipplyTransportOptions {
   proxyBaseUrl: string;
   publicBaseUrl: string;
   alertSocketBaseUrl: string;
+  commandsSocketBaseUrl: string;
   appOrigin: string;
   cookieName: string;
   includeCredentials: boolean;
@@ -57,6 +58,7 @@ export function resolveClientOptions(options: TipplyClientOptions = {}): Resolve
       proxyBaseUrl: normalizeBaseUrl(transportOptions.proxyBaseUrl ?? "https://proxy.tipply.pl"),
       publicBaseUrl: normalizeBaseUrl(transportOptions.publicBaseUrl ?? "https://tipply.pl/api"),
       alertSocketBaseUrl: normalizeBaseUrl(transportOptions.alertSocketBaseUrl ?? "https://alert-ws.tipply.pl"),
+      commandsSocketBaseUrl: normalizeBaseUrl(transportOptions.commandsSocketBaseUrl ?? "https://ws.tipply.pl"),
       appOrigin: normalizeBaseUrl(transportOptions.appOrigin ?? "https://app.tipply.pl"),
       cookieName: transportOptions.cookieName ?? "auth_token",
       includeCredentials: transportOptions.includeCredentials ?? true,

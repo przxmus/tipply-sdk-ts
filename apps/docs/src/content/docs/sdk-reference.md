@@ -92,6 +92,7 @@ Ta referencja obejmuje wyłącznie metody, które są faktycznie zaimplementowan
 | Metoda | Zwraca |
 | --- | --- |
 | `client.tips.list().filter(filter).search(search).limit(limit).offset(offset).get(requestOptions?)` | `Promise<Tip[]>` |
+| `client.tips.id(tipId).resend(requestOptions?)` | `Promise<void>` |
 | `client.tips.moderation.listQueue(requestOptions?)` | `Promise<TipModerationItem[]>` |
 | `client.tips.moderation.listBasket(requestOptions?)` | `Promise<TipModerationItem[]>` |
 | `client.tips.pending.list(requestOptions?)` | `Promise<PendingTip[]>` |
@@ -148,6 +149,7 @@ Dozwolone statusy buildera:
 | Metoda | Zwraca |
 | --- | --- |
 | `client.tipAlerts.createListener(options?)` | `Promise<TipAlertsListener>` |
+| `client.tipAlerts.skipCurrent()` | `Promise<void>` |
 | `client.tipAlerts.fromWidgetUrl(widgetUrl, options?)` | `TipAlertsListener` |
 
 ### `public`
@@ -224,6 +226,8 @@ type RequestOptions = {
 - `authCookie` to sama wartość `auth_token`
 - publiczne endpointy korzystają z `https://tipply.pl/api`
 - endpointy auth korzystają z `https://proxy.tipply.pl`
+- listener `TIP_ALERT` korzysta z `https://alert-ws.tipply.pl`
+- komendy realtime dla `skipCurrent()` korzystają z `https://ws.tipply.pl`
 - `templateFonts.get()` zwraca surowy CSS
 - `confirmationPdf.get()` zwraca `ArrayBuffer`
 - walidacja odpowiedzi jest domyślnie włączona
