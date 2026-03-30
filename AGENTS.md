@@ -1,7 +1,6 @@
 # Repository Guidelines
 
 - Use `bun` and `bunx` for installs, scripts, checks, and local tooling unless a task explicitly requires something else.
-- Prefer `localhost` over `127.0.0.1` in docs, config, examples, and local instructions.
 - Keep commits small, focused, and frequent. Do not batch unrelated work together.
 - Never revert unrelated user changes in the working tree.
 - If a change affects public usage, always review and update all relevant docs before finishing:
