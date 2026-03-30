@@ -56,6 +56,9 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
+      - name: Copy root README into package directory
+        run: cp README.md apps/sdk/README.md
+
       - name: Validate requested version
         env:
           RELEASE_TYPE: ${{ inputs.release_type }}
@@ -171,6 +174,10 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: bun publish --access public --tag "${{ inputs.npm_tag }}"
+
+      - name: Remove copied package README
+        if: always()
+        run: rm -f apps/sdk/README.md
 
       - name: Push commit and tag
         env:
