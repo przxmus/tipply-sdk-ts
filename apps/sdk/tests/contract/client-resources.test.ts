@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 
 import { asGoalId, asMediaId, asModeratorId, asTemplateId, asUserId, asWithdrawalId, createTipplyClient } from "../../src";
+import { createTipplyPublicClient } from "../../src/public";
 import {
   accountFixture,
   countdownConfigurationFixture,
@@ -212,6 +213,15 @@ describe("resource namespaces", () => {
     await expect(client.settings.alertSound.toggle(false)).resolves.toEqual(toggleDisabledFixture);
     await expect(client.settings.forbiddenWords.get()).resolves.toEqual(forbiddenWordsFixture);
     await expect(client.settings.profanityFilter.get()).resolves.toEqual(profanityFilterFixture);
+  });
+
+  test("public client exposes the tip alert listener factory", () => {
+    const client = createTipplyPublicClient();
+    const listener = client.user(asUserId("user-123")).tipAlerts.createListener();
+
+    expect(typeof listener.connect).toBe("function");
+    expect(typeof listener.destroy).toBe("function");
+    expect(typeof listener.on).toBe("function");
   });
 
   test("settings list tolerates malformed known config records", async () => {

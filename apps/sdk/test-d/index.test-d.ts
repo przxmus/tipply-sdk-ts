@@ -13,6 +13,8 @@ import {
   type PaymentMethodsConfiguration,
   type PublicGoalWidget,
   type PublicTemplate,
+  type TipAlertDonation,
+  type TipAlertsListener,
   type Tip,
   type TipsGoalTemplateConfig,
   type UserPaymentMethod,
@@ -41,8 +43,20 @@ expectType<Promise<PublicGoalWidget>>(client.public.user(asUserId("user-1")).goa
 expectType<Promise<boolean>>(publicClient.user(asUserId("user-1")).widgetMessage.get());
 expectType<Promise<string>>(publicClient.user(asUserId("user-1")).templateFonts.get());
 expectType<Promise<PublicTemplate<"TIPS_GOAL", TipsGoalTemplateConfig>[]>>(publicClient.user(asUserId("user-1")).goals.templates.list());
+expectType<TipAlertsListener>(publicClient.user(asUserId("user-1")).tipAlerts.createListener());
 expectType<Promise<MediaFormats>>(client.media.id(asMediaId(1)).formats.get());
 expectType<Promise<ArrayBuffer>>(client.withdrawals.id(asWithdrawalId("withdrawal-1")).confirmationPdf.get());
+
+const tipAlertsListener = publicClient.user(asUserId("user-1")).tipAlerts.createListener();
+
+expectType<Promise<void>>(tipAlertsListener.connect());
+tipAlertsListener.on("donation", (donation) => {
+  expectType<TipAlertDonation>(donation);
+});
+tipAlertsListener.on("error", (error) => {
+  expectType<Error>(error);
+});
+expectError(tipAlertsListener.on("unknown", () => {}));
 
 expectError(client.public.user(asGoalId("goal-1")));
 expectError(client.goals.id(asUserId("user-1")));
