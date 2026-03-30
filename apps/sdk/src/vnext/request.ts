@@ -4,7 +4,6 @@ import { parseWithSchema } from "../domain/parsing";
 import type { RequestOptions, TipplyTransportRequest } from "../core/types";
 import { TipplyTransport } from "../core/transport";
 
-/** Executes a transport request and parses the response with the provided Zod schema. */
 export async function requestAndParse<TOutput>(
   transport: TipplyTransport,
   request: TipplyTransportRequest<unknown>,

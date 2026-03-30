@@ -1,7 +1,6 @@
 import type { GoalId, PaymentId, TipId, UserId } from "./ids";
 import type { IsoDateString, MinorUnitAmount } from "./shared";
 
-/** Parsed donation payload emitted by the realtime `TIP_ALERT` listener. */
 export interface TipAlertDonation {
   id: TipId;
   receiverId: UserId;
