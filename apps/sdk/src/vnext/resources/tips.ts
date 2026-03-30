@@ -6,7 +6,8 @@ import { unknownRecordSchema } from "../../domain/parsing";
 import { tipSchema } from "../../domain/shared-schemas";
 import type { Tip } from "../../domain/shared";
 import type { TipId } from "../../domain/ids";
-import type { PendingTip, TipFilter, TipModerationItem, TipsListQuery } from "../../domain/tips";
+import type { PendingTip, SendTestTipInput, SendTestTipResult, TipFilter, TipModerationItem, TipsListQuery } from "../../domain/tips";
+import { toSendTestTipWire } from "../../domain/tips";
 import { requestAndParse } from "../request";
 
 class TipsListRequestBuilder {
@@ -225,6 +226,28 @@ export class TipsResource {
    */
   list(): TipsListRequestBuilder {
     return new TipsListRequestBuilder(this.transport);
+  }
+
+  /**
+   * Sends a test tip through Tipply's testing endpoint.
+   *
+   * @param input - The test tip payload to send.
+   * @param requestOptions - Per-request timeout and abort overrides.
+   * @returns The raw JSON payload returned by Tipply.
+   */
+  sendTest(input: SendTestTipInput, requestOptions?: RequestOptions): Promise<SendTestTipResult> {
+    return requestAndParse(
+      this.transport,
+      {
+        method: "POST",
+        path: "/test-tip",
+        body: toSendTestTipWire(input),
+        auth: true,
+      },
+      unknownRecordSchema,
+      requestOptions,
+      "Invalid test tip response.",
+    );
   }
 
   /**

@@ -55,10 +55,14 @@ const filteredTips = await client.tips
 import { asTipId } from "tipply-sdk-ts";
 
 await client.tips.id(asTipId("tip-123")).resend();
+await client.tips.sendTest({
+  message: "SDK test tip",
+  amount: 1500,
+});
 await client.tipAlerts.skipCurrent();
 ```
 
-`resend()` działa dla konkretnego `tipId`, a `skipCurrent()` skipuje tip, który jest aktualnie wyświetlany przez alerty.
+`resend()` działa dla konkretnego `tipId`, `sendTest()` wysyła testowego tipa przez endpoint testowy Tipply, a `skipCurrent()` skipuje tip, który jest aktualnie wyświetlany przez alerty.
 
 ### Metody płatności
 
