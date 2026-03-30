@@ -1,0 +1,194 @@
+name: Publish SDK
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: Typ podbicia wersji
+        required: true
+        default: patch
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+          - custom
+      custom_version:
+        description: Dokładna wersja semver, wymagana tylko dla release_type=custom
+        required: false
+        type: string
+      npm_tag:
+        description: Tag npm dla publikacji
+        required: true
+        default: latest
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-sdk
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish SDK
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.1.0
+
+      - name: Setup Node.js for npm registry
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Validate requested version
+        env:
+          RELEASE_TYPE: ${{ inputs.release_type }}
+          CUSTOM_VERSION: ${{ inputs.custom_version }}
+        run: |
+          if [ "${GITHUB_REF_NAME}" != "${{ github.event.repository.default_branch }}" ]; then
+            echo "Run this workflow from the default branch: ${{ github.event.repository.default_branch }}" >&2
+            exit 1
+          fi
+
+          if [ "$RELEASE_TYPE" = "custom" ] && [ -z "$CUSTOM_VERSION" ]; then
+            echo "custom_version is required when release_type=custom" >&2
+            exit 1
+          fi
+
+      - name: Run verification checks
+        run: |
+          bun run typecheck
+          bun run test
+          bun run build
+          bunx publint apps/sdk
+
+      - name: Compute next version
+        id: version
+        env:
+          RELEASE_TYPE: ${{ inputs.release_type }}
+          CUSTOM_VERSION: ${{ inputs.custom_version }}
+        run: |
+          NEXT_VERSION="$(bun -e '
+            import fs from "node:fs";
+
+            const packageJson = JSON.parse(fs.readFileSync("apps/sdk/package.json", "utf8"));
+            const currentVersion = packageJson.version;
+            const releaseType = process.env.RELEASE_TYPE;
+            const customVersion = process.env.CUSTOM_VERSION;
+            const semverPattern = /^(\d+)\.(\d+)\.(\d+)(?:-[0-9A-Za-z.-]+)?$/;
+
+            function fail(message) {
+              console.error(message);
+              process.exit(1);
+            }
+
+            if (!semverPattern.test(currentVersion)) {
+              fail(`Unsupported current version: ${currentVersion}`);
+            }
+
+            let nextVersion = customVersion?.trim();
+
+            if (releaseType !== "custom") {
+              const match = currentVersion.match(semverPattern);
+              if (!match) fail(`Invalid current version: ${currentVersion}`);
+
+              let [, major, minor, patch] = match;
+              let nextMajor = Number(major);
+              let nextMinor = Number(minor);
+              let nextPatch = Number(patch);
+
+              if (releaseType === "patch") nextPatch += 1;
+              else if (releaseType === "minor") {
+                nextMinor += 1;
+                nextPatch = 0;
+              } else if (releaseType === "major") {
+                nextMajor += 1;
+                nextMinor = 0;
+                nextPatch = 0;
+              } else {
+                fail(`Unsupported release_type: ${releaseType}`);
+              }
+
+              nextVersion = `${nextMajor}.${nextMinor}.${nextPatch}`;
+            }
+
+            if (!nextVersion || !semverPattern.test(nextVersion)) {
+              fail(`Invalid next version: ${nextVersion ?? "<empty>"}`);
+            }
+
+            if (nextVersion === currentVersion) {
+              fail("Next version must be different from the current version.");
+            }
+
+            console.log(nextVersion);
+          ')"
+
+          echo "next_version=$NEXT_VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag_name=v$NEXT_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Bump package version
+        env:
+          NEXT_VERSION: ${{ steps.version.outputs.next_version }}
+        run: |
+          bun -e '
+            import fs from "node:fs";
+
+            const packagePath = "apps/sdk/package.json";
+            const packageJson = JSON.parse(fs.readFileSync(packagePath, "utf8"));
+            packageJson.version = process.env.NEXT_VERSION;
+            fs.writeFileSync(packagePath, `${JSON.stringify(packageJson, null, 2)}\n`);
+          '
+
+      - name: Commit version bump and tag release
+        env:
+          NEXT_VERSION: ${{ steps.version.outputs.next_version }}
+          TAG_NAME: ${{ steps.version.outputs.tag_name }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/sdk/package.json
+          git commit -m "chore(release): publish v$NEXT_VERSION" -m "Release version $NEXT_VERSION of tipply-sdk-ts.\n\nCo-Authored-By: codex <codex@openai.com>"
+          git tag "$TAG_NAME"
+
+      - name: Publish package to npm
+        working-directory: apps/sdk
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: bun publish --access public --tag "${{ inputs.npm_tag }}"
+
+      - name: Push commit and tag
+        env:
+          TAG_NAME: ${{ steps.version.outputs.tag_name }}
+        run: |
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+          git push origin "$TAG_NAME"
+
+      - name: Write workflow summary
+        env:
+          NEXT_VERSION: ${{ steps.version.outputs.next_version }}
+          TAG_NAME: ${{ steps.version.outputs.tag_name }}
+        run: |
+          {
+            echo "## Published SDK"
+            echo
+            echo "- Package: \`tipply-sdk-ts\`"
+            echo "- Version: \`$NEXT_VERSION\`"
+            echo "- Git tag: \`$TAG_NAME\`"
+            echo "- npm tag: \`${{ inputs.npm_tag }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
