@@ -4,6 +4,7 @@ import type { RequestOptions } from "../../core/types";
 import { TipplyTransport } from "../../core/transport";
 import { moderatorSchema } from "../../domain/shared-schemas";
 import type { Moderator } from "../../domain/shared";
+import type { ModeratorId } from "../../domain/ids";
 import type { CreateModeratorInput } from "../../domain/moderators";
 import { toCreateModeratorWire } from "../../domain/moderators";
 import { requestAndParse } from "../request";
@@ -11,7 +12,7 @@ import { requestAndParse } from "../request";
 class ModeratorScope {
   constructor(
     private readonly transport: TipplyTransport,
-    private readonly moderatorId: string,
+    private readonly moderatorId: ModeratorId,
   ) {}
 
   remove(requestOptions?: RequestOptions): Promise<void> {
@@ -77,7 +78,7 @@ export class ModeratorsResource {
     );
   }
 
-  id(moderatorId: string): ModeratorScope {
+  id(moderatorId: ModeratorId): ModeratorScope {
     return new ModeratorScope(this.transport, moderatorId);
   }
 }

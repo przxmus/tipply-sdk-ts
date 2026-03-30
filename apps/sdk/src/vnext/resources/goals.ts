@@ -3,6 +3,7 @@ import { TipplyTransport } from "../../core/transport";
 import { goalSchema, goalVotingConfigurationSchema } from "../../domain/shared-schemas";
 import type { Goal, GoalVotingConfiguration } from "../../domain/shared";
 import type { CreateGoalInput, UpdateGoalInput } from "../../domain/goals";
+import type { GoalId } from "../../domain/ids";
 import { toCreateGoalWire, toUpdateGoalWire } from "../../domain/goals";
 import { requestAndParse } from "../request";
 import { z } from "zod";
@@ -10,7 +11,7 @@ import { z } from "zod";
 class GoalScope {
   constructor(
     private readonly transport: TipplyTransport,
-    private readonly goalId: string,
+    private readonly goalId: GoalId,
   ) {}
 
   update(input: UpdateGoalInput, requestOptions?: RequestOptions): Promise<void> {
@@ -91,7 +92,7 @@ export class GoalsResource {
     );
   }
 
-  id(goalId: string): GoalScope {
+  id(goalId: GoalId): GoalScope {
     return new GoalScope(this.transport, goalId);
   }
 }

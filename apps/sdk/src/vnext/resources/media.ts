@@ -4,6 +4,7 @@ import type { RequestOptions } from "../../core/types";
 import { TipplyTransport } from "../../core/transport";
 import { mediaFormatsSchema, mediaItemSchema, mediaUsageSchema } from "../../domain/shared-schemas";
 import type { MediaFormats, MediaItem, MediaUsage } from "../../domain/shared";
+import type { MediaId } from "../../domain/ids";
 import { requestAndParse } from "../request";
 
 class MediaUsageResource {
@@ -27,7 +28,7 @@ class MediaUsageResource {
 class MediaFormatsResource {
   constructor(
     private readonly transport: TipplyTransport,
-    private readonly mediaId: number,
+    private readonly mediaId: MediaId,
   ) {}
 
   get(requestOptions?: RequestOptions): Promise<MediaFormats> {
@@ -48,7 +49,7 @@ class MediaFormatsResource {
 class MediaScope {
   readonly formats: MediaFormatsResource;
 
-  constructor(transport: TipplyTransport, mediaId: number) {
+  constructor(transport: TipplyTransport, mediaId: MediaId) {
     this.formats = new MediaFormatsResource(transport, mediaId);
   }
 }
@@ -74,7 +75,7 @@ export class MediaResource {
     );
   }
 
-  id(mediaId: number): MediaScope {
+  id(mediaId: MediaId): MediaScope {
     return new MediaScope(this.transport, mediaId);
   }
 }

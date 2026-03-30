@@ -1,30 +1,48 @@
+import {
+  asAccountId,
+  asGoalId,
+  asMediaId,
+  asModeratorId,
+  asPaymentId,
+  asReportId,
+  asTemplateId,
+  asTipId,
+  asUserId,
+  asWithdrawalId,
+} from "../../src";
 import type {
+  Account,
   CounterToEndLiveConfiguration,
-  ForbiddenWordsResponse,
-  GoalRecord,
+  CurrentUser,
+  DashboardAnnouncement,
+  DashboardNotification,
+  ForbiddenWordsSettings,
+  Goal,
   GoalVotingConfiguration,
-  NotificationRecord,
+  MediaFormats,
+  MediaItem,
+  MediaUsage,
+  Moderator,
   PaymentMethodsConfiguration,
-  ProfanityFilterResponse,
-  PublicGoalTemplateRecord,
-  PublicGoalWidgetResponse,
-  PublicTipsGoalConfigurationRecord,
-  PublicVotingTemplateRecord,
-  ReportRecord,
+  ProfanityFilterSettings,
+  PublicGoalWidget,
+  Tip,
   TipAlertConfiguration,
-  TipRecord,
-  ToggleDisabledResponse,
-  UserConfigurationRecord,
+  ToggleDisabledResult,
+  TipsGoalConfiguration,
+  UserConfiguration,
   UserPaymentMethod,
   UserPaymentMethods,
   UserProfile,
-  UserTemplateRecord,
+  UserTemplate,
+  Withdrawal,
   WithdrawalMethodsConfiguration,
-  WithdrawalRecord,
 } from "../../src";
-import type { AccountRecord, CreateModeratorRequest, CurrentUser, MediaUsage, MediumFormats, MediumRecord, ModeratorRecord } from "../../src";
+import type { CreateGoalInput } from "../../src";
+import type { CreateModeratorInput } from "../../src";
+import type { Report } from "../../src";
 
-export const currentUserFixture: CurrentUser = {
+export const rawCurrentUserFixture = {
   id: "user-123",
   username: "streamer",
   email: "streamer@example.com",
@@ -60,7 +78,43 @@ export const currentUserFixture: CurrentUser = {
   validated_with_bank_transfer: true,
 };
 
-export const profileFixture: UserProfile = {
+export const currentUserFixture: CurrentUser = {
+  id: asUserId("user-123"),
+  username: "streamer",
+  email: "streamer@example.com",
+  lastLogin: "2026-03-30T00:49:33+02:00",
+  isVerified: true,
+  googleAuthEnabled: false,
+  hasPendingBankTransferValidationRequest: false,
+  emailAuthEnabled: true,
+  googleId: null,
+  verifiedAt: "2026-03-01T08:00:00+01:00",
+  withdrawal2faEnabled: false,
+  commissionThreshold: 500,
+  paymentsDisabled: false,
+  widgetMessageDisabled: false,
+  widgetAlertsDisabled: false,
+  widgetAlertsSoundDisabled: false,
+  missingPersonalData: false,
+  redirectToMissingDataForm: false,
+  newStatueAccepted: true,
+  fraud: false,
+  fraudAmount: 0,
+  moderationMode: false,
+  messageAudio: true,
+  colorTheme: "light",
+  minimalAmountAllowed: 100,
+  synthMigration: false,
+  bankStandardDisabled: false,
+  bankExpressDisabled: false,
+  paypalStandardDisabled: false,
+  paypalExpressDisabled: false,
+  fraudCheckTime: "2026-03-30T00:00:00+02:00",
+  bankTransferValidationRequested: false,
+  validatedWithBankTransfer: true,
+};
+
+export const rawProfileFixture = {
   id: "user-123",
   link: "streamer",
   description: "Example profile description",
@@ -106,7 +160,98 @@ export const profileFixture: UserProfile = {
   show_ranking_and_messages: true,
 };
 
+export const profileFixture: UserProfile = {
+  id: asUserId("user-123"),
+  link: "streamer",
+  description: "Example profile description",
+  fullname: "Example Streamer",
+  fullnameLocked: true,
+  personalNumber: null,
+  address: {
+    city: "Warsaw",
+    street: "Example Street 1",
+    postalCode: "00-001",
+    country: "PL",
+  },
+  bankNumber: null,
+  bankNumberModificationDate: null,
+  paypalEmail: "streamer@example.com",
+  googleAvatarUrl: null,
+  avatar: {
+    providerMetadata: { filename: "avatar.png" },
+    name: "avatar.png",
+    enabled: true,
+    providerName: "sonata.media.provider.user_image",
+    providerStatus: 1,
+    providerReference: "avatar.png",
+    width: 256,
+    height: 256,
+    context: "user",
+    updatedAt: "2026-03-30T00:49:33+02:00",
+    createdAt: "2026-03-30T00:49:33+02:00",
+    contentType: "image/png",
+    size: 1024,
+    id: 101,
+  },
+  themeColor: "blue",
+  hits: 42,
+  socialMediaLink: "https://twitch.tv/streamer",
+  isCompany: false,
+  contactName: "Example Streamer",
+  contactEmail: "streamer@example.com",
+  replaceEmotes: true,
+  emotesId: "streamer",
+  emotesInit: true,
+  socialMediaLinks: [{ label: "Twitch", url: "https://twitch.tv/streamer" }],
+  showRankingAndMessages: true,
+};
+
 export const tipAlertConfigurationFixture: TipAlertConfiguration = {
+  voiceMessages: {
+    enabled: true,
+    amount: 1500,
+  },
+  delayingTips: {
+    enabled: false,
+    delay: 0,
+  },
+  displaySettings: {
+    defaults: {
+      sounds: {
+        fileId: "",
+        fileName: "",
+        volume: 0.5,
+        mediumId: 101,
+      },
+      templates: {
+        templateId: "template-default",
+      },
+    },
+    thresholds: {
+      sounds: [],
+      templates: [],
+      synth: [
+        {
+          options: {
+            volume: 0.4,
+            readAmount: false,
+            readMessage: true,
+            readNickname: false,
+            readLink: false,
+            interLink: false,
+          },
+          voiceType: "GOOGLE_POLISH_FEMALE",
+          amount: 0,
+          templateId: "DEFAULT_TIP_ALERT_1",
+        },
+      ],
+    },
+  },
+  twitchActivityTimer: 0,
+  kickActivityTimer: 0,
+};
+
+export const rawTipAlertConfigurationFixture = {
   voiceMessages: {
     enable: true,
     amount: 1500,
@@ -162,16 +307,13 @@ export const countdownConfigurationFixture: CounterToEndLiveConfiguration = {
   isCountdownRunning: false,
 };
 
-export const configurationsFixture: UserConfigurationRecord[] = [
-  {
-    type: "COUNTER_TO_END_LIVE",
-    config: countdownConfigurationFixture,
-  },
+export const settingsFixture: UserConfiguration[] = [
+  { type: "COUNTER_TO_END_LIVE", config: countdownConfigurationFixture },
   {
     type: "GLOBAL",
     config: {
-      forbidden_words: ["blocked-word"],
-      profanity_filter_enabled: true,
+      forbiddenWords: ["blocked-word"],
+      profanityFilterEnabled: true,
     },
   },
   {
@@ -201,7 +343,49 @@ export const configurationsFixture: UserConfigurationRecord[] = [
   },
 ];
 
+export const rawSettingsFixture = [
+  { type: "COUNTER_TO_END_LIVE", config: countdownConfigurationFixture },
+  {
+    type: "GLOBAL",
+    config: {
+      forbidden_words: ["blocked-word"],
+      profanity_filter_enabled: true,
+    },
+  },
+  { type: "LARGEST_DONATES", config: { mode: "latest" } },
+  { type: "LATEST_DONATES", config: { mode: "latest" } },
+  { type: "TIP_ALERT", config: rawTipAlertConfigurationFixture },
+  {
+    type: "TIPS_GOAL",
+    config: {
+      goalValue: 20000,
+      goalName: "New microphone",
+      sumPaymentsFrom: "ALL",
+      amountWithoutCommission: true,
+    },
+  },
+];
+
 export const paymentMethodsConfigurationFixture: PaymentMethodsConfiguration = {
+  cashbill: {
+    state: "enabled",
+    minimalAmount: 100,
+  },
+  cashbill_bpp: {
+    state: "enabled",
+    minimalAmount: 4000,
+  },
+  paypal: {
+    state: "enabled",
+    minimalAmount: 1500,
+  },
+  gt_psc: {
+    state: false,
+    minimalAmount: 100,
+  },
+};
+
+export const rawPaymentMethodsConfigurationFixture = {
   cashbill: {
     state: "enabled",
     minimal_amount: 100,
@@ -222,6 +406,12 @@ export const paymentMethodsConfigurationFixture: PaymentMethodsConfiguration = {
 
 export const userPaymentMethodFixture: UserPaymentMethod = {
   enabled: true,
+  minimalAmount: 1500,
+  humanMethodName: "PayPal",
+};
+
+export const rawUserPaymentMethodFixture = {
+  enabled: true,
   minimal_amount: 1500,
   human_method_name: "PayPal",
 };
@@ -230,12 +420,33 @@ export const userPaymentMethodsFixture: UserPaymentMethods = {
   paypal: userPaymentMethodFixture,
   cashbill: {
     enabled: true,
+    minimalAmount: 100,
+    humanMethodName: "Przelew",
+  },
+};
+
+export const rawUserPaymentMethodsFixture = {
+  paypal: rawUserPaymentMethodFixture,
+  cashbill: {
+    enabled: true,
     minimal_amount: 100,
     human_method_name: "Przelew",
   },
 };
 
-export const goalFixture: GoalRecord = {
+export const goalFixture: Goal = {
+  id: asGoalId("goal-123"),
+  templateId: asTemplateId("template-123"),
+  title: "New microphone",
+  target: 20000,
+  initialValue: 0,
+  withoutCommission: true,
+  countFrom: "2026-03-30T00:49:33+02:00",
+  createdAt: "2026-03-30T00:49:33+02:00",
+  isDefault: true,
+};
+
+export const rawGoalFixture = {
   id: "goal-123",
   template_id: "template-123",
   title: "New microphone",
@@ -245,6 +456,25 @@ export const goalFixture: GoalRecord = {
   count_from: "2026-03-30T00:49:33+02:00",
   created: "2026-03-30T00:49:33+02:00",
   is_default: true,
+};
+
+export const createGoalFixture: CreateGoalInput = {
+  title: "New microphone",
+  target: 20000,
+  initialValue: 0,
+  withoutCommission: true,
+  templateId: asTemplateId("template-123"),
+};
+
+export const updateGoalFixture = {
+  title: "New microphone",
+  target: 20000,
+  initialValue: 0,
+  withoutCommission: true,
+  templateId: asTemplateId("template-123"),
+  countFrom: "2026-03-30T00:49:33+02:00",
+  createdAt: "2026-03-30T00:49:33+02:00",
+  isDefault: true,
 };
 
 export const votingFixture: GoalVotingConfiguration = {
@@ -260,7 +490,30 @@ export const votingFixture: GoalVotingConfiguration = {
   ],
 };
 
-export const templateFixture: UserTemplateRecord = {
+export const rawVotingFixture = {
+  goals: [
+    {
+      goal: rawGoalFixture,
+      color: "#007FFF",
+      stats: {
+        amount: 1000,
+        commission: 50,
+      },
+    },
+  ],
+};
+
+export const templateFixture: UserTemplate = {
+  id: asTemplateId("template-123"),
+  type: "TIPS_GOAL",
+  updatedAt: "2026-03-30T00:49:33+02:00",
+  config: {
+    title: "Goal Template",
+    editable: true,
+  },
+};
+
+export const rawTemplateFixture = {
   id: "template-123",
   type: "TIPS_GOAL",
   updated_at: "2026-03-30T00:49:33+02:00",
@@ -270,9 +523,21 @@ export const templateFixture: UserTemplateRecord = {
   },
 };
 
-export const publicGoalTemplatesFixture: PublicGoalTemplateRecord[] = [templateFixture];
+export const publicGoalTemplatesFixture: UserTemplate[] = [templateFixture];
+export const rawPublicGoalTemplatesFixture = [rawTemplateFixture];
 
-export const publicVotingTemplatesFixture: PublicVotingTemplateRecord[] = [
+export const publicVotingTemplatesFixture: UserTemplate[] = [
+  {
+    id: asTemplateId("template-voting-1"),
+    type: "GOAL_VOTING",
+    updatedAt: "2026-03-30T00:49:33+02:00",
+    config: {
+      title: "Voting Template",
+    },
+  },
+];
+
+export const rawPublicVotingTemplatesFixture = [
   {
     id: "template-voting-1",
     type: "GOAL_VOTING",
@@ -283,17 +548,21 @@ export const publicVotingTemplatesFixture: PublicVotingTemplateRecord[] = [
   },
 ];
 
-export const publicGoalConfigurationFixture: PublicTipsGoalConfigurationRecord = {
-  type: "TIPS_GOAL",
-  config: {
-    goalValue: 20000,
-    goalName: "New microphone",
-    sumPaymentsFrom: "ALL",
-    amountWithoutCommission: true,
-  },
+export const publicGoalConfigurationFixture: TipsGoalConfiguration = {
+  goalValue: 20000,
+  goalName: "New microphone",
+  sumPaymentsFrom: "ALL",
+  amountWithoutCommission: true,
 };
 
-export const publicGoalWidgetFixture: PublicGoalWidgetResponse = {
+export const rawPublicGoalConfigurationFixture = {
+  goalValue: 20000,
+  goalName: "New microphone",
+  sumPaymentsFrom: "ALL",
+  amountWithoutCommission: true,
+};
+
+export const publicGoalWidgetFixture: PublicGoalWidget = {
   config: goalFixture,
   stats: {
     amount: 1000,
@@ -301,7 +570,38 @@ export const publicGoalWidgetFixture: PublicGoalWidgetResponse = {
   },
 };
 
-export const tipFixture: TipRecord = {
+export const rawPublicGoalWidgetFixture = {
+  config: rawGoalFixture,
+  stats: {
+    amount: 1000,
+    commission: 50,
+  },
+};
+
+export const tipFixture: Tip = {
+  id: asTipId("tip-123"),
+  paymentId: asPaymentId("payment-123"),
+  commission: 50,
+  test: false,
+  resent: false,
+  consumed: false,
+  countPoints: true,
+  source: "internal",
+  referrer: "",
+  deleted: false,
+  nickname: "Supporter",
+  nicknameTts: "",
+  email: "supporter@example.com",
+  amount: 1500,
+  goal: goalFixture,
+  goalTitle: "New microphone",
+  message: "Great stream",
+  messageTts: "",
+  createdAt: "2026-03-30T00:49:33+02:00",
+  humanMethodName: "PayPal",
+};
+
+export const rawTipFixture = {
   payment_id: "payment-123",
   commission: 50,
   test: false,
@@ -316,7 +616,7 @@ export const tipFixture: TipRecord = {
   nickname_tts: "",
   email: "supporter@example.com",
   amount: 1500,
-  goal: goalFixture,
+  goal: rawGoalFixture,
   goal_title: "New microphone",
   message: "Great stream",
   message_tts: "",
@@ -324,7 +624,17 @@ export const tipFixture: TipRecord = {
   human_method_name: "PayPal",
 };
 
-export const moderatorFixture: ModeratorRecord = {
+export const moderatorFixture: Moderator = {
+  id: asModeratorId("moderator-123"),
+  userId: asUserId("user-123"),
+  moderationMode: "1",
+  moderatorName: "Moderator One",
+  linkTime: 100,
+  link: "",
+  createdAt: "2026-03-30T00:49:33+02:00",
+};
+
+export const rawModeratorFixture = {
   user_id: "user-123",
   moderation_mode: "1",
   id: "moderator-123",
@@ -334,13 +644,30 @@ export const moderatorFixture: ModeratorRecord = {
   created: "2026-03-30T00:49:33+02:00",
 };
 
-export const createModeratorFixture: CreateModeratorRequest = {
-  moderator_name: "Moderator One",
-  link_time: 100,
+export const createModeratorFixture: CreateModeratorInput = {
+  moderatorName: "Moderator One",
+  linkTime: 100,
   link: "",
 };
 
-export const mediumFixture: MediumRecord = {
+export const mediaFixture: MediaItem = {
+  id: asMediaId(501),
+  providerMetadata: { filename: "alert.mp3" },
+  name: "alert.mp3",
+  enabled: true,
+  providerName: "sonata.media.provider.audio",
+  providerStatus: 1,
+  providerReference: "alert.mp3",
+  width: 0,
+  height: 0,
+  context: "alerts",
+  updatedAt: "2026-03-30T00:49:33+02:00",
+  createdAt: "2026-03-30T00:49:33+02:00",
+  contentType: "audio/mpeg",
+  size: 2048,
+};
+
+export const rawMediaFixture = {
   provider_metadata: { filename: "alert.mp3" },
   name: "alert.mp3",
   enabled: true,
@@ -362,7 +689,7 @@ export const mediaUsageFixture: MediaUsage = {
   total: 10240,
 };
 
-export const mediumFormatsFixture: MediumFormats = {
+export const mediaFormatsFixture: MediaFormats = {
   reference: {
     url: "https://cdn.example.com/alert.mp3",
     properties: {
@@ -372,7 +699,27 @@ export const mediumFormatsFixture: MediumFormats = {
   },
 };
 
-export const accountFixture: AccountRecord = {
+export const rawMediaFormatsFixture = {
+  reference: {
+    url: "https://cdn.example.com/alert.mp3",
+    properties: {
+      src: "https://cdn.example.com/alert.mp3",
+      title: "alert.mp3",
+    },
+  },
+};
+
+export const accountFixture: Account = {
+  accountId: asAccountId("account-123"),
+  balance: 5000,
+  locked: false,
+  status: "ACTIVE",
+  type: "PRIMARY",
+  openedAt: "2026-03-30T00:49:33+02:00",
+  company: false,
+};
+
+export const rawAccountFixture = {
   account_id: "account-123",
   balance: 5000,
   locked: false,
@@ -382,7 +729,21 @@ export const accountFixture: AccountRecord = {
   company: false,
 };
 
-export const withdrawalFixture: WithdrawalRecord = {
+export const withdrawalFixture: Withdrawal = {
+  withdrawalId: asWithdrawalId("withdrawal-123"),
+  methodName: "paypal",
+  amount: 4000,
+  commission: 100,
+  status: "ACCEPTED",
+  requestedAt: "2026-03-30T00:49:33+02:00",
+  acceptedAt: "2026-03-30T01:00:00+02:00",
+  transferredAt: null,
+  canPrintConfirmation: false,
+  invoiceNumber: null,
+  humanMethodName: "PayPal",
+};
+
+export const rawWithdrawalFixture = {
   withdrawal_id: "withdrawal-123",
   method_name: "paypal",
   amount: 4000,
@@ -405,14 +766,33 @@ export const withdrawalMethodsFixture: WithdrawalMethodsConfiguration = {
   },
 };
 
-export const reportFixture: ReportRecord = {
+export const rawWithdrawalMethodsFixture = withdrawalMethodsFixture;
+
+export const reportFixture: Report = {
+  id: asReportId("report-1"),
+  isDownloadable: true,
+  reportNumber: "RPT-1",
+  generatedAt: "2026-03-30T00:49:33+02:00",
+};
+
+export const rawReportFixture = {
   is_downloadable: true,
   report_number: "RPT-1",
   generated_at: "2026-03-30T00:49:33+02:00",
   id: "report-1",
 };
 
-export const notificationFixture: NotificationRecord = {
+export const notificationFixture: DashboardNotification = {
+  id: "notification-1",
+  type: "user_verified",
+  payload: {
+    message: "Account verified",
+  },
+  createdAt: "2026-03-30T00:49:33+02:00",
+  readAt: null,
+};
+
+export const rawNotificationFixture = {
   id: "notification-1",
   type: "user_verified",
   payload: {
@@ -422,15 +802,18 @@ export const notificationFixture: NotificationRecord = {
   read_at: null,
 };
 
-export const forbiddenWordsFixture: ForbiddenWordsResponse = {
+export const dashboardAnnouncementFixture: DashboardAnnouncement = { id: "announcement-1" };
+export const extraDashboardAnnouncementFixture: DashboardAnnouncement = { id: "announcement-2" };
+
+export const forbiddenWordsFixture: ForbiddenWordsSettings = {
   enabled: true,
   words: ["blocked-word"],
 };
 
-export const profanityFilterFixture: ProfanityFilterResponse = {
+export const profanityFilterFixture: ProfanityFilterSettings = {
   enabled: true,
 };
 
-export const toggleDisabledFixture: ToggleDisabledResponse = {
+export const toggleDisabledFixture: ToggleDisabledResult = {
   disabled: false,
 };

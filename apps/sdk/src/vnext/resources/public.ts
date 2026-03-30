@@ -4,6 +4,7 @@ import type { RequestOptions } from "../../core/types";
 import { TipplyTransport } from "../../core/transport";
 import { tipsGoalConfigurationSchema } from "../../domain/settings-schemas";
 import { goalVotingConfigurationSchema, publicGoalWidgetSchema, userTemplateSchema } from "../../domain/shared-schemas";
+import type { GoalId, UserId } from "../../domain/ids";
 import type { GoalVotingConfiguration, PublicGoalWidget, UserTemplate } from "../../domain/shared";
 import type { TipsGoalConfiguration } from "../../domain/settings";
 import { requestAndParse } from "../request";
@@ -11,8 +12,8 @@ import { requestAndParse } from "../request";
 class PublicGoalWidgetResource {
   constructor(
     private readonly transport: TipplyTransport,
-    private readonly userId: string,
-    private readonly goalId: string,
+    private readonly userId: UserId,
+    private readonly goalId: GoalId,
   ) {}
 
   get(requestOptions?: RequestOptions): Promise<PublicGoalWidget> {
@@ -33,7 +34,7 @@ class PublicGoalWidgetResource {
 class PublicGoalScope {
   readonly widget: PublicGoalWidgetResource;
 
-  constructor(transport: TipplyTransport, userId: string, goalId: string) {
+  constructor(transport: TipplyTransport, userId: UserId, goalId: GoalId) {
     this.widget = new PublicGoalWidgetResource(transport, userId, goalId);
   }
 }
@@ -41,7 +42,7 @@ class PublicGoalScope {
 class PublicGoalsTemplatesResource {
   constructor(
     private readonly transport: TipplyTransport,
-    private readonly userId: string,
+    private readonly userId: UserId,
   ) {}
 
   list(requestOptions?: RequestOptions): Promise<UserTemplate[]> {
@@ -62,7 +63,7 @@ class PublicGoalsTemplatesResource {
 class PublicGoalsConfigurationResource {
   constructor(
     private readonly transport: TipplyTransport,
-    private readonly userId: string,
+    private readonly userId: UserId,
   ) {}
 
   get(requestOptions?: RequestOptions): Promise<TipsGoalConfiguration> {
@@ -86,13 +87,13 @@ class PublicGoalsResource {
 
   constructor(
     private readonly transport: TipplyTransport,
-    private readonly userId: string,
+    private readonly userId: UserId,
   ) {
     this.templates = new PublicGoalsTemplatesResource(transport, userId);
     this.configuration = new PublicGoalsConfigurationResource(transport, userId);
   }
 
-  id(goalId: string): PublicGoalScope {
+  id(goalId: GoalId): PublicGoalScope {
     return new PublicGoalScope(this.transport, this.userId, goalId);
   }
 }
@@ -100,7 +101,7 @@ class PublicGoalsResource {
 class PublicVotingTemplatesResource {
   constructor(
     private readonly transport: TipplyTransport,
-    private readonly userId: string,
+    private readonly userId: UserId,
   ) {}
 
   list(requestOptions?: RequestOptions): Promise<UserTemplate[]> {
@@ -121,7 +122,7 @@ class PublicVotingTemplatesResource {
 class PublicVotingConfigurationResource {
   constructor(
     private readonly transport: TipplyTransport,
-    private readonly userId: string,
+    private readonly userId: UserId,
   ) {}
 
   get(requestOptions?: RequestOptions): Promise<GoalVotingConfiguration> {
@@ -143,7 +144,7 @@ class PublicVotingResource {
   readonly templates: PublicVotingTemplatesResource;
   readonly configuration: PublicVotingConfigurationResource;
 
-  constructor(transport: TipplyTransport, userId: string) {
+  constructor(transport: TipplyTransport, userId: UserId) {
     this.templates = new PublicVotingTemplatesResource(transport, userId);
     this.configuration = new PublicVotingConfigurationResource(transport, userId);
   }
@@ -152,7 +153,7 @@ class PublicVotingResource {
 class PublicWidgetMessageResource {
   constructor(
     private readonly transport: TipplyTransport,
-    private readonly userId: string,
+    private readonly userId: UserId,
   ) {}
 
   get(requestOptions?: RequestOptions): Promise<boolean> {
@@ -175,7 +176,7 @@ export class PublicUserScope {
   readonly voting: PublicVotingResource;
   readonly widgetMessage: PublicWidgetMessageResource;
 
-  constructor(transport: TipplyTransport, userId: string) {
+  constructor(transport: TipplyTransport, userId: UserId) {
     this.goals = new PublicGoalsResource(transport, userId);
     this.voting = new PublicVotingResource(transport, userId);
     this.widgetMessage = new PublicWidgetMessageResource(transport, userId);
@@ -185,7 +186,7 @@ export class PublicUserScope {
 export class PublicRootResource {
   constructor(private readonly transport: TipplyTransport) {}
 
-  user(userId: string): PublicUserScope {
+  user(userId: UserId): PublicUserScope {
     return new PublicUserScope(this.transport, userId);
   }
 }

@@ -1,3 +1,4 @@
+import type { TemplateId } from "./ids";
 import type { IsoDateString, MinorUnitAmount } from "./shared";
 
 export interface CreateGoalInput {
@@ -5,7 +6,7 @@ export interface CreateGoalInput {
   target: MinorUnitAmount;
   initialValue: MinorUnitAmount;
   withoutCommission: boolean;
-  templateId: string;
+  templateId: TemplateId;
 }
 
 export interface UpdateGoalInput extends CreateGoalInput {

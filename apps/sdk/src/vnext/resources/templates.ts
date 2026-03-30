@@ -4,6 +4,7 @@ import type { RequestOptions } from "../../core/types";
 import { TipplyTransport } from "../../core/transport";
 import { userTemplateSchema } from "../../domain/shared-schemas";
 import type { UserTemplate } from "../../domain/shared";
+import type { TemplateId } from "../../domain/ids";
 import type { TemplateReplacementInput } from "../../domain/templates";
 import { toTemplateReplacementWire } from "../../domain/templates";
 import { requestAndParse } from "../request";
@@ -11,7 +12,7 @@ import { requestAndParse } from "../request";
 class TemplateScope {
   constructor(
     private readonly transport: TipplyTransport,
-    private readonly templateId: string,
+    private readonly templateId: TemplateId,
   ) {}
 
   replace(input: TemplateReplacementInput, requestOptions?: RequestOptions): Promise<void> {
@@ -44,7 +45,7 @@ export class TemplatesResource {
     );
   }
 
-  id(templateId: string): TemplateScope {
+  id(templateId: TemplateId): TemplateScope {
     return new TemplateScope(this.transport, templateId);
   }
 }

@@ -1,5 +1,6 @@
 import type { TipplyClientOptions } from "../core/types";
 import { TipplyTransport } from "../core/transport";
+import type { UserId } from "../domain/ids";
 import { PublicRootResource } from "./resources/public";
 
 export class TipplyPublicClient {
@@ -12,7 +13,7 @@ export class TipplyPublicClient {
     this.public = new PublicRootResource(this.transport);
   }
 
-  user(userId: string) {
+  user(userId: UserId) {
     return this.public.user(userId);
   }
 }
