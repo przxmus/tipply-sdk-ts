@@ -179,10 +179,42 @@ jobs:
           git push origin "HEAD:${GITHUB_REF_NAME}"
           git push origin "$TAG_NAME"
 
+      - name: Generate release notes
+        id: release_notes
+        env:
+          TAG_NAME: ${{ steps.version.outputs.tag_name }}
+        run: |
+          bun scripts/generate-release-notes.mjs > release-notes.md
+          echo "notes_path=release-notes.md" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub release
+        id: github_release
+        uses: actions/github-script@v7
+        env:
+          TAG_NAME: ${{ steps.version.outputs.tag_name }}
+          NOTES_PATH: ${{ steps.release_notes.outputs.notes_path }}
+        with:
+          script: |
+            const fs = require("node:fs");
+
+            const body = fs.readFileSync(process.env.NOTES_PATH, "utf8");
+            const release = await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: process.env.TAG_NAME,
+              name: process.env.TAG_NAME,
+              body,
+              draft: false,
+              prerelease: false,
+            });
+
+            core.setOutput("html_url", release.data.html_url);
+
       - name: Write workflow summary
         env:
           NEXT_VERSION: ${{ steps.version.outputs.next_version }}
           TAG_NAME: ${{ steps.version.outputs.tag_name }}
+          RELEASE_URL: ${{ steps.github_release.outputs.html_url }}
         run: |
           {
             echo "## Published SDK"
@@ -191,4 +223,5 @@ jobs:
             echo "- Version: \`$NEXT_VERSION\`"
             echo "- Git tag: \`$TAG_NAME\`"
             echo "- npm tag: \`${{ inputs.npm_tag }}\`"
+            echo "- GitHub release: $RELEASE_URL"
           } >> "$GITHUB_STEP_SUMMARY"
