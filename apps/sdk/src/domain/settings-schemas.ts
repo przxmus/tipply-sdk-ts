@@ -216,22 +216,22 @@ function parseKnownUserConfiguration(type: string, config: unknown): UserConfigu
   switch (type) {
     case "COUNTER_TO_END_LIVE": {
       const parsed = counterToEndLiveConfigurationSchema.safeParse(config);
-      return parsed.success ? parsed.data : unknownRecordSchema.parse(config);
+      return parsed.success ? parsed.data : (config as UserConfiguration["config"]);
     }
     case "GLOBAL": {
       const parsed = globalConfigurationSchema.safeParse(config);
-      return parsed.success ? parsed.data : unknownRecordSchema.parse(config);
+      return parsed.success ? parsed.data : (config as UserConfiguration["config"]);
     }
     case "TIP_ALERT": {
       const parsed = tipAlertConfigurationSchema.safeParse(config);
-      return parsed.success ? parsed.data : unknownRecordSchema.parse(config);
+      return parsed.success ? parsed.data : (config as UserConfiguration["config"]);
     }
     case "TIPS_GOAL": {
       const parsed = tipsGoalConfigurationSchema.safeParse(config);
-      return parsed.success ? parsed.data : unknownRecordSchema.parse(config);
+      return parsed.success ? parsed.data : (config as UserConfiguration["config"]);
     }
     default:
-      return unknownRecordSchema.parse(config);
+      return config as UserConfiguration["config"];
   }
 }
 

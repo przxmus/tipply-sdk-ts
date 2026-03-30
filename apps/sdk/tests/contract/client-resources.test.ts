@@ -237,6 +237,30 @@ describe("resource namespaces", () => {
     ]);
   });
 
+  test("settings list tolerates array config payloads for known records", async () => {
+    const { fetch } = createMockFetch((request) => {
+      if (request.method === "GET" && request.url.pathname === "/user/configuration") {
+        return jsonResponse([
+          {
+            type: "GLOBAL",
+            config: ["unexpected", "array"],
+          },
+        ]);
+      }
+
+      throw new Error(`Unhandled request: ${request.method} ${request.url.pathname}`);
+    });
+
+    const client = createTipplyClient({ authCookie: "cookie-123", fetch });
+
+    await expect(client.settings.list()).resolves.toEqual([
+      {
+        type: "GLOBAL",
+        config: ["unexpected", "array"],
+      },
+    ]);
+  });
+
   test("goals namespace supports list create update reset and voting", async () => {
     const { client } = createFixtureClient();
     await expect(client.goals.list()).resolves.toEqual([goalFixture]);
