@@ -1,10 +1,15 @@
+/** A value that can be produced synchronously or asynchronously. */
 export type MaybePromise<T> = T | Promise<T>;
+/** A `fetch`-compatible implementation used by the SDK transport layer. */
 export type FetchLike = typeof fetch;
 
+/** Assertion function used to validate transport responses. */
 export type Validator<T> = (value: unknown) => asserts value is T;
 
+/** Selects whether a request should use the authenticated proxy or public API. */
 export type TipplyRequestScope = "proxy" | "public";
 
+/** Supported query value shapes accepted by SDK request builders. */
 export type RequestQueryValue =
   | string
   | number
@@ -13,8 +18,10 @@ export type RequestQueryValue =
   | undefined
   | readonly (string | number | boolean | null | undefined)[];
 
+/** Object form used to serialize URL query parameters. */
 export type RequestQuery = Record<string, RequestQueryValue>;
 
+/** Session strategies supported by authenticated clients. */
 export type TipplySessionOptions =
   | {
       authCookie: string;
@@ -26,6 +33,7 @@ export type TipplySessionOptions =
       browserSession: true;
     };
 
+/** Low-level transport overrides for HTTP and websocket endpoints. */
 export interface TipplyTransportOptions {
   fetch?: FetchLike;
   proxyBaseUrl?: string;
@@ -38,11 +46,13 @@ export interface TipplyTransportOptions {
   timeoutMs?: number;
 }
 
+/** Per-request overrides accepted by resource methods. */
 export interface RequestOptions {
   signal?: AbortSignal;
   timeoutMs?: number;
 }
 
+/** Top-level configuration accepted by {@link createTipplyClient} and {@link createTipplyPublicClient}. */
 export interface TipplyClientOptions {
   session?: TipplySessionOptions;
   transport?: TipplyTransportOptions;
@@ -58,6 +68,7 @@ export interface TipplyClientOptions {
   validateResponses?: boolean;
 }
 
+/** Normalized request metadata used by high-level request helpers. */
 export interface TipplyRequestOptions<TResponse> {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   path: string;
@@ -68,6 +79,7 @@ export interface TipplyRequestOptions<TResponse> {
   validator?: Validator<TResponse>;
 }
 
+/** Low-level transport request descriptor. */
 export interface TipplyTransportRequest<TResponse> {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   path: string;
@@ -79,6 +91,7 @@ export interface TipplyTransportRequest<TResponse> {
   responseType?: "auto" | "text" | "arrayBuffer";
 }
 
+/** Context captured for transport and validation errors. */
 export interface TipplyTransportResponseContext {
   method: string;
   url: string;
@@ -87,4 +100,5 @@ export interface TipplyTransportResponseContext {
   body?: unknown;
 }
 
+/** Backward-compatible alias for HTTP error context. */
 export type TipplyHttpErrorContext = TipplyTransportResponseContext;

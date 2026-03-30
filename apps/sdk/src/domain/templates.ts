@@ -5,8 +5,10 @@ import type {
   UnknownTemplateConfig,
 } from "./shared";
 
+/** Replacement input for `TIPS_GOAL` templates. */
 export interface TipsGoalTemplateReplacementInput extends TipsGoalTemplateConfig {}
 
+/** Replacement input for counter-based templates such as latest or largest donations. */
 export interface CounterTemplateReplacementInput {
   title: string;
   editable: boolean;
@@ -23,19 +25,28 @@ export interface CounterTemplateReplacementInput {
   mode?: string;
 }
 
+/** Fallback replacement input for templates with an unmodeled config shape. */
 export interface GenericTemplateReplacementInput {
   title: string;
   editable: boolean;
   elementsOptions: UnknownTemplateConfig;
 }
 
+/** Supported template replacement payloads accepted by `client.templates.id(templateId).replace()`. */
 export type TemplateReplacementInput =
   | TipsGoalTemplateReplacementInput
   | CounterTemplateReplacementInput
   | GenericTemplateReplacementInput;
 
+/**
+ * Passes a template replacement payload through to Tipply's expected wire shape.
+ *
+ * @param input - The template replacement payload to serialize.
+ * @returns A wire-format object ready to send to Tipply.
+ */
 export function toTemplateReplacementWire(input: TemplateReplacementInput): Record<string, unknown> {
   return input as unknown as Record<string, unknown>;
 }
 
+/** Alias for a single template element configuration node. */
 export type TemplateElement = TemplateElementOption;

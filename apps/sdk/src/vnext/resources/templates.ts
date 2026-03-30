@@ -15,6 +15,13 @@ class TemplateScope {
     private readonly templateId: TemplateId,
   ) {}
 
+  /**
+   * Replaces the full configuration of an existing template.
+   *
+   * @param input - The replacement payload accepted by Tipply for the template type.
+   * @param requestOptions - Per-request timeout and abort overrides.
+   * @returns A promise that resolves when Tipply accepts the replacement.
+   */
   replace(input: TemplateReplacementInput, requestOptions?: RequestOptions): Promise<void> {
     return this.transport.request(
       {
@@ -31,6 +38,12 @@ class TemplateScope {
 export class TemplatesResource {
   constructor(private readonly transport: TipplyTransport) {}
 
+  /**
+   * Lists templates available to the authenticated user.
+   *
+   * @param requestOptions - Per-request timeout and abort overrides.
+   * @returns The list of user-owned templates.
+   */
   list(requestOptions?: RequestOptions): Promise<UserTemplate[]> {
     return requestAndParse(
       this.transport,
@@ -45,6 +58,12 @@ export class TemplatesResource {
     );
   }
 
+  /**
+   * Opens the scope for a single template.
+   *
+   * @param templateId - The Tipply template identifier.
+   * @returns A scoped helper for the selected template.
+   */
   id(templateId: TemplateId): TemplateScope {
     return new TemplateScope(this.transport, templateId);
   }

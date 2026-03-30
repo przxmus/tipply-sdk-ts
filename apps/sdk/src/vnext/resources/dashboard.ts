@@ -9,6 +9,12 @@ import { TipplyTransport } from "../../core/transport";
 class DashboardAnnouncementsResource {
   constructor(private readonly transport: TipplyTransport) {}
 
+  /**
+   * Lists the primary dashboard announcements.
+   *
+   * @param requestOptions - Per-request timeout and abort overrides.
+   * @returns The announcements shown in the authenticated dashboard.
+   */
   list(requestOptions?: RequestOptions): Promise<DashboardAnnouncement[]> {
     return requestAndParse(
       this.transport,
@@ -19,6 +25,12 @@ class DashboardAnnouncementsResource {
     );
   }
 
+  /**
+   * Lists the extra dashboard announcements feed.
+   *
+   * @param requestOptions - Per-request timeout and abort overrides.
+   * @returns Additional announcements returned by Tipply.
+   */
   listExtra(requestOptions?: RequestOptions): Promise<DashboardAnnouncement[]> {
     return requestAndParse(
       this.transport,
@@ -33,6 +45,12 @@ class DashboardAnnouncementsResource {
 class DashboardIncomeStatsResource {
   constructor(private readonly transport: TipplyTransport) {}
 
+  /**
+   * Loads dashboard income statistics.
+   *
+   * @param requestOptions - Per-request timeout and abort overrides.
+   * @returns Aggregated income metrics for the authenticated user.
+   */
   get(requestOptions?: RequestOptions): Promise<IncomeStatistics> {
     return requestAndParse(
       this.transport,
@@ -47,6 +65,12 @@ class DashboardIncomeStatsResource {
 class DashboardTipStatsResource {
   constructor(private readonly transport: TipplyTransport) {}
 
+  /**
+   * Loads dashboard tip statistics.
+   *
+   * @param requestOptions - Per-request timeout and abort overrides.
+   * @returns Aggregated tip metrics for the authenticated user.
+   */
   get(requestOptions?: RequestOptions): Promise<TipStatistics> {
     return requestAndParse(
       this.transport,
@@ -71,6 +95,12 @@ class DashboardStatsResource {
 class DashboardPointsResource {
   constructor(private readonly transport: TipplyTransport) {}
 
+  /**
+   * Loads the user's current Tipply points balance.
+   *
+   * @param requestOptions - Per-request timeout and abort overrides.
+   * @returns The current points balance.
+   */
   get(requestOptions?: RequestOptions): Promise<number> {
     return requestAndParse(
       this.transport,
@@ -85,6 +115,12 @@ class DashboardPointsResource {
 class DashboardRecentTipsResource {
   constructor(private readonly transport: TipplyTransport) {}
 
+  /**
+   * Lists recent dashboard tips.
+   *
+   * @param requestOptions - Per-request timeout and abort overrides.
+   * @returns Up to 12 recent tips returned by the dashboard endpoint.
+   */
   list(requestOptions?: RequestOptions): Promise<RecentTip[]> {
     return requestAndParse(
       this.transport,
@@ -112,6 +148,12 @@ class DashboardTipsResource {
 class DashboardNotificationsResource {
   constructor(private readonly transport: TipplyTransport) {}
 
+  /**
+   * Lists dashboard notifications.
+   *
+   * @param requestOptions - Per-request timeout and abort overrides.
+   * @returns The authenticated user's dashboard notifications.
+   */
   list(requestOptions?: RequestOptions): Promise<DashboardNotification[]> {
     return requestAndParse(
       this.transport,

@@ -11,7 +11,20 @@ export class MeResource {
   constructor(private readonly transport: TipplyTransport) {}
 
   /**
-   * Reads the current authenticated Tipply user.
+   * Loads the current authenticated Tipply user.
+   *
+   * @param requestOptions - Per-request timeout and abort overrides.
+   * @returns The current authenticated user profile.
+   *
+   * @throws {TipplyAuthenticationError} If the current session is missing or rejected.
+   * @throws {TipplyHttpError} If the request fails or times out.
+   * @throws {TipplyValidationError} If response validation is enabled and the payload cannot be parsed.
+   *
+   * @example
+   * ```typescript
+   * const me = await client.me.get();
+   * console.log(me.username);
+   * ```
    */
   get(requestOptions?: RequestOptions): Promise<CurrentUser> {
     return requestAndParse(

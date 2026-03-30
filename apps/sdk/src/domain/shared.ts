@@ -11,8 +11,11 @@ import type {
   WithdrawalId,
 } from "./ids";
 
+/** ISO-8601 date string returned by Tipply APIs. */
 export type IsoDateString = string;
+/** Monetary amount expressed in minor units. */
 export type MinorUnitAmount = number;
+/** Generic record used when Tipply returns an unmodeled object. */
 export type UnknownRecord = Record<string, unknown>;
 export type UnknownProviderMetadata = UnknownRecord;
 export type UnknownNotificationPayload = UnknownRecord;
@@ -23,6 +26,7 @@ export type UnknownThresholdEntry = UnknownRecord;
 export type UnknownWithdrawalMethodConfiguration = UnknownRecord;
 export type UnknownConfiguration = UnknownRecord;
 
+/** Payment method keys currently recognized by the SDK. */
 export type PaymentMethodKey =
   | "cashbill"
   | "cashbill_blik"
@@ -52,6 +56,7 @@ export type UserConfigurationType =
 export type UserTemplateType = "TIP_ALERT" | "TIPS_GOAL" | "LATEST_DONATES" | "LARGEST_DONATES" | (string & {});
 export type PublicTemplateType = "TIPS_GOAL" | "GOAL_VOTING" | (string & {});
 
+/** Goal definition returned by Tipply. */
 export interface Goal {
   id: GoalId;
   templateId: TemplateId;
@@ -64,21 +69,25 @@ export interface Goal {
   isDefault: boolean;
 }
 
+/** Current progress statistics for a goal. */
 export interface GoalStats {
   amount: MinorUnitAmount;
   commission: MinorUnitAmount;
 }
 
+/** Voting entry combining a goal, color, and current stats. */
 export interface GoalVotingEntry {
   goal: Goal;
   color: string;
   stats: GoalStats;
 }
 
+/** Goal voting configuration returned by Tipply. */
 export interface GoalVotingConfiguration {
   goals: GoalVotingEntry[];
 }
 
+/** Media library item owned by the authenticated user. */
 export interface MediaItem {
   id: MediaId;
   providerMetadata: UnknownProviderMetadata;
@@ -96,6 +105,7 @@ export interface MediaItem {
   size: number;
 }
 
+/** Summary of current media storage usage. */
 export interface MediaUsage {
   usage: number;
   total: number;
@@ -112,11 +122,13 @@ export interface MediaFormatProperties {
   [key: string]: unknown;
 }
 
+/** Derived media format entry returned by Tipply. */
 export interface MediaFormatEntry {
   url: string;
   properties: MediaFormatProperties;
 }
 
+/** Media formats keyed by format name. */
 export type MediaFormats = Record<string, MediaFormatEntry>;
 
 export type TemplateFontFamily = "Sora" | "Lato" | (string & {});
@@ -189,6 +201,7 @@ export interface TipsGoalTemplateConfig {
   elementsOptions: TipsGoalTemplateElementsOptions;
 }
 
+/** Template owned by the authenticated user. */
 export interface UserTemplate<TType extends string = UserTemplateType, TConfig = UnknownTemplateConfig> {
   id: TemplateId;
   type: TType;
@@ -196,6 +209,7 @@ export interface UserTemplate<TType extends string = UserTemplateType, TConfig =
   config: TConfig;
 }
 
+/** Template exposed through the public API. */
 export interface PublicTemplate<TType extends string = PublicTemplateType, TConfig = UnknownTemplateConfig> {
   id: TemplateId;
   type: TType;
@@ -203,17 +217,20 @@ export interface PublicTemplate<TType extends string = PublicTemplateType, TConf
   config: TConfig;
 }
 
+/** Public goal widget payload containing configuration and current stats. */
 export interface PublicGoalWidget {
   config: Goal;
   stats: GoalStats;
 }
 
+/** User-configurable payment method entry. */
 export interface UserPaymentMethod {
   enabled: boolean;
   minimalAmount: MinorUnitAmount;
   humanMethodName: string;
 }
 
+/** Payment methods configured for the authenticated user. */
 export type UserPaymentMethods = Partial<Record<PaymentMethodKey, UserPaymentMethod>>;
 
 export interface PaymentMethodConfigurationEntry {
@@ -231,8 +248,10 @@ export interface PaymentMethodConfigurationEntry {
 
 export type PaymentMethodsConfiguration = Partial<Record<PaymentMethodConfigurationKey, PaymentMethodConfigurationEntry>>;
 
+/** Input used to update a single payment method. */
 export type UpdatePaymentMethodInput = { enabled: boolean } | { minimalAmount: MinorUnitAmount };
 
+/** Payout account returned by withdrawal endpoints. */
 export interface Account {
   accountId: AccountId;
   balance: MinorUnitAmount;
@@ -243,6 +262,7 @@ export interface Account {
   company: boolean;
 }
 
+/** Withdrawal record returned by Tipply. */
 export interface Withdrawal {
   withdrawalId: WithdrawalId;
   methodName: string;
@@ -259,6 +279,7 @@ export interface Withdrawal {
 
 export type WithdrawalMethodsConfiguration = Partial<Record<WithdrawalMethodKey, UnknownWithdrawalMethodConfiguration>>;
 
+/** Generated report entry available to the authenticated user. */
 export interface Report {
   id: ReportId;
   isDownloadable: boolean;
@@ -266,6 +287,7 @@ export interface Report {
   generatedAt: IsoDateString;
 }
 
+/** Dashboard notification entry returned by Tipply. */
 export interface Notification {
   id: string | number;
   type: NotificationType;
@@ -274,6 +296,7 @@ export interface Notification {
   readAt?: IsoDateString | null;
 }
 
+/** Tip record returned by list and dashboard endpoints. */
 export interface Tip {
   id: TipId;
   paymentId: PaymentId;
@@ -297,6 +320,7 @@ export interface Tip {
   humanMethodName: string;
 }
 
+/** Moderator link returned by moderator management endpoints. */
 export interface Moderator {
   id: ModeratorId;
   userId: UserId;

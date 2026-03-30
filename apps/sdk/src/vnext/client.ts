@@ -16,7 +16,22 @@ import { TipsResource } from "./resources/tips";
 import { WithdrawalsResource } from "./resources/withdrawals";
 
 /**
- * Internal vNext client under active migration.
+ * Authenticated Tipply SDK client.
+ *
+ * This class exposes the full authenticated SDK surface, including account
+ * data, settings, moderation, tips, withdrawals, and public read endpoints
+ * that can share the same transport configuration.
+ *
+ * @example
+ * ```typescript
+ * import { createTipplyClient } from "tipply-sdk-ts";
+ *
+ * const client = createTipplyClient({
+ *   authCookie: process.env.TIPPLY_AUTH_COOKIE!,
+ * });
+ *
+ * const profile = await client.profile.get();
+ * ```
  */
 export class TipplyClientVNext {
   readonly me: MeResource;
@@ -56,6 +71,19 @@ export class TipplyClientVNext {
     this.public = new PublicRootResource(this.transport);
   }
 
+  /**
+   * Clones the client with a different session strategy.
+   *
+   * @param session - The session configuration to use in the cloned client.
+   * @returns A new {@link TipplyClientVNext} instance that reuses the current transport options.
+   *
+   * @example
+   * ```typescript
+   * const impersonatedClient = client.withSession({
+   *   getAuthCookie: async () => process.env.OTHER_TIPPLY_AUTH_COOKIE,
+   * });
+   * ```
+   */
   withSession(session: TipplySessionOptions): TipplyClientVNext {
     return new TipplyClientVNext({
       ...this.options,
@@ -63,6 +91,12 @@ export class TipplyClientVNext {
     });
   }
 
+  /**
+   * Clones the client with a static auth cookie.
+   *
+   * @param authCookie - The raw Tipply `auth_token` cookie value.
+   * @returns A new {@link TipplyClientVNext} instance that authenticates with the provided cookie.
+   */
   withAuthCookie(authCookie: string): TipplyClientVNext {
     return this.withSession({ authCookie });
   }

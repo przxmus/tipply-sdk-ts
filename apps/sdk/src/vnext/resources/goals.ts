@@ -14,6 +14,13 @@ class GoalScope {
     private readonly goalId: GoalId,
   ) {}
 
+  /**
+   * Updates an existing goal.
+   *
+   * @param input - The full goal payload expected by Tipply.
+   * @param requestOptions - Per-request timeout and abort overrides.
+   * @returns A promise that resolves when Tipply accepts the update.
+   */
   update(input: UpdateGoalInput, requestOptions?: RequestOptions): Promise<void> {
     return this.transport.request(
       {
@@ -26,6 +33,12 @@ class GoalScope {
     );
   }
 
+  /**
+   * Resets the selected goal progress.
+   *
+   * @param requestOptions - Per-request timeout and abort overrides.
+   * @returns A promise that resolves when Tipply accepts the reset.
+   */
   reset(requestOptions?: RequestOptions): Promise<void> {
     return this.transport.request(
       {
@@ -41,6 +54,12 @@ class GoalScope {
 class GoalVotingResource {
   constructor(private readonly transport: TipplyTransport) {}
 
+  /**
+   * Loads the authenticated user's goal voting configuration.
+   *
+   * @param requestOptions - Per-request timeout and abort overrides.
+   * @returns The goal voting configuration returned by Tipply.
+   */
   get(requestOptions?: RequestOptions): Promise<GoalVotingConfiguration> {
     return requestAndParse(
       this.transport,
@@ -63,6 +82,12 @@ export class GoalsResource {
     this.voting = new GoalVotingResource(transport);
   }
 
+  /**
+   * Lists the authenticated user's goals.
+   *
+   * @param requestOptions - Per-request timeout and abort overrides.
+   * @returns The goals visible to the authenticated user.
+   */
   list(requestOptions?: RequestOptions): Promise<Goal[]> {
     return requestAndParse(
       this.transport,
@@ -77,6 +102,24 @@ export class GoalsResource {
     );
   }
 
+  /**
+   * Creates a new goal.
+   *
+   * @param input - The goal payload to create.
+   * @param requestOptions - Per-request timeout and abort overrides.
+   * @returns The created goal returned by Tipply.
+   *
+   * @example
+   * ```typescript
+   * const goal = await client.goals.create({
+   *   title: "New microphone",
+   *   target: 50000,
+   *   initialValue: 0,
+   *   withoutCommission: false,
+   *   templateId: asTemplateId("template-123"),
+   * });
+   * ```
+   */
   create(input: CreateGoalInput, requestOptions?: RequestOptions): Promise<Goal> {
     return requestAndParse(
       this.transport,
@@ -92,6 +135,12 @@ export class GoalsResource {
     );
   }
 
+  /**
+   * Opens the scope for a single goal.
+   *
+   * @param goalId - The Tipply goal identifier.
+   * @returns A scoped helper for the selected goal.
+   */
   id(goalId: GoalId): GoalScope {
     return new GoalScope(this.transport, goalId);
   }

@@ -23,6 +23,13 @@ import { requestAndParse } from "../request";
 class TipAlertsSettingsResource {
   constructor(private readonly transport: TipplyTransport) {}
 
+  /**
+   * Replaces the user's `TIP_ALERT` configuration.
+   *
+   * @param input - The full tip alert configuration payload.
+   * @param requestOptions - Per-request timeout and abort overrides.
+   * @returns A promise that resolves when Tipply accepts the update.
+   */
   update(input: TipAlertConfiguration, requestOptions?: RequestOptions): Promise<void> {
     return this.transport.request(
       {
@@ -39,6 +46,13 @@ class TipAlertsSettingsResource {
 class CountdownSettingsResource {
   constructor(private readonly transport: TipplyTransport) {}
 
+  /**
+   * Replaces the user's `COUNTER_TO_END_LIVE` configuration.
+   *
+   * @param input - The full countdown configuration payload.
+   * @param requestOptions - Per-request timeout and abort overrides.
+   * @returns A promise that resolves when Tipply accepts the update.
+   */
   update(input: CounterToEndLiveConfiguration, requestOptions?: RequestOptions): Promise<void> {
     return this.transport.request(
       {
@@ -55,6 +69,13 @@ class CountdownSettingsResource {
 class AlertsSettingsResource {
   constructor(private readonly transport: TipplyTransport) {}
 
+  /**
+   * Enables or disables alerts globally.
+   *
+   * @param disabled - Whether alerts should be disabled.
+   * @param requestOptions - Per-request timeout and abort overrides.
+   * @returns The disabled state reported by Tipply after the update.
+   */
   toggle(disabled: boolean, requestOptions?: RequestOptions): Promise<ToggleDisabledResult> {
     return requestAndParse(
       this.transport,
@@ -74,6 +95,13 @@ class AlertsSettingsResource {
 class AlertSoundSettingsResource {
   constructor(private readonly transport: TipplyTransport) {}
 
+  /**
+   * Enables or disables alert sounds globally.
+   *
+   * @param disabled - Whether alert sounds should be disabled.
+   * @param requestOptions - Per-request timeout and abort overrides.
+   * @returns The disabled state reported by Tipply after the update.
+   */
   toggle(disabled: boolean, requestOptions?: RequestOptions): Promise<ToggleDisabledResult> {
     return requestAndParse(
       this.transport,
@@ -93,6 +121,12 @@ class AlertSoundSettingsResource {
 class ForbiddenWordsSettingsResource {
   constructor(private readonly transport: TipplyTransport) {}
 
+  /**
+   * Loads forbidden words settings.
+   *
+   * @param requestOptions - Per-request timeout and abort overrides.
+   * @returns The forbidden words configuration returned by Tipply.
+   */
   get(requestOptions?: RequestOptions): Promise<ForbiddenWordsSettings> {
     return requestAndParse(
       this.transport,
@@ -111,6 +145,12 @@ class ForbiddenWordsSettingsResource {
 class ProfanityFilterSettingsResource {
   constructor(private readonly transport: TipplyTransport) {}
 
+  /**
+   * Loads profanity filter settings.
+   *
+   * @param requestOptions - Per-request timeout and abort overrides.
+   * @returns The profanity filter configuration returned by Tipply.
+   */
   get(requestOptions?: RequestOptions): Promise<ProfanityFilterSettings> {
     return requestAndParse(
       this.transport,
@@ -143,6 +183,12 @@ export class SettingsResource {
     this.profanityFilter = new ProfanityFilterSettingsResource(transport);
   }
 
+  /**
+   * Lists all user configuration records available to the authenticated account.
+   *
+   * @param requestOptions - Per-request timeout and abort overrides.
+   * @returns The list of Tipply configuration records.
+   */
   list(requestOptions?: RequestOptions): Promise<UserConfiguration[]> {
     return requestAndParse(
       this.transport,

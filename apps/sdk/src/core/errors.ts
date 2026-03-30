@@ -1,5 +1,6 @@
 import type { TipplyTransportResponseContext } from "./types";
 
+/** Base class for SDK errors enriched with HTTP request context. */
 export class TipplyError extends Error {
   readonly code: string;
   readonly method: string;
@@ -20,6 +21,7 @@ export class TipplyError extends Error {
   }
 }
 
+/** Raised when an HTTP request fails, times out, or is aborted. */
 export class TipplyHttpError extends TipplyError {
   constructor(message: string, context: TipplyTransportResponseContext) {
     super(message, "HTTP_ERROR", context);
@@ -27,6 +29,7 @@ export class TipplyHttpError extends TipplyError {
   }
 }
 
+/** Raised when Tipply rejects the provided authentication context. */
 export class TipplyAuthenticationError extends TipplyHttpError {
   constructor(message: string, context: TipplyTransportResponseContext) {
     super(message, context);
@@ -40,6 +43,7 @@ export class TipplyAuthenticationError extends TipplyHttpError {
   }
 }
 
+/** Raised when a response payload cannot be validated against the expected schema. */
 export class TipplyResponseValidationError extends TipplyError {
   constructor(message: string, context: TipplyTransportResponseContext) {
     super(message, "RESPONSE_VALIDATION_ERROR", context);
@@ -47,6 +51,7 @@ export class TipplyResponseValidationError extends TipplyError {
   }
 }
 
+/** Raised when the client configuration is inconsistent for the requested operation. */
 export class TipplyConfigurationError extends TipplyError {
   constructor(message: string, context: TipplyTransportResponseContext) {
     super(message, "CONFIGURATION_ERROR", context);
@@ -54,6 +59,8 @@ export class TipplyConfigurationError extends TipplyError {
   }
 }
 
+/** Backward-compatible alias for {@link TipplyAuthenticationError}. */
 export class TipplyAuthError extends TipplyAuthenticationError {}
 
+/** Backward-compatible alias for {@link TipplyResponseValidationError}. */
 export class TipplyValidationError extends TipplyResponseValidationError {}
