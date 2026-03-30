@@ -1,15 +1,17 @@
-import type { TipplyHttpErrorContext } from "./types";
+import type { TipplyTransportResponseContext } from "./types";
 
 export class TipplyError extends Error {
+  readonly code: string;
   readonly method: string;
   readonly url: string;
   readonly status: number | undefined;
   readonly headers: Record<string, string> | undefined;
   readonly body: unknown;
 
-  constructor(message: string, context: TipplyHttpErrorContext) {
+  constructor(message: string, code: string, context: TipplyTransportResponseContext) {
     super(message);
     this.name = "TipplyError";
+    this.code = code;
     this.method = context.method;
     this.url = context.url;
     this.status = context.status;
@@ -19,22 +21,39 @@ export class TipplyError extends Error {
 }
 
 export class TipplyHttpError extends TipplyError {
-  constructor(message: string, context: TipplyHttpErrorContext) {
-    super(message, context);
+  constructor(message: string, context: TipplyTransportResponseContext) {
+    super(message, "HTTP_ERROR", context);
     this.name = "TipplyHttpError";
   }
 }
 
-export class TipplyAuthError extends TipplyHttpError {
-  constructor(message: string, context: TipplyHttpErrorContext) {
+export class TipplyAuthenticationError extends TipplyHttpError {
+  constructor(message: string, context: TipplyTransportResponseContext) {
     super(message, context);
-    this.name = "TipplyAuthError";
+    this.name = "TipplyAuthenticationError";
+    Object.defineProperty(this, "code", {
+      value: "AUTHENTICATION_ERROR",
+      enumerable: true,
+      configurable: true,
+      writable: false,
+    });
   }
 }
 
-export class TipplyValidationError extends TipplyError {
-  constructor(message: string, context: TipplyHttpErrorContext) {
-    super(message, context);
-    this.name = "TipplyValidationError";
+export class TipplyResponseValidationError extends TipplyError {
+  constructor(message: string, context: TipplyTransportResponseContext) {
+    super(message, "RESPONSE_VALIDATION_ERROR", context);
+    this.name = "TipplyResponseValidationError";
   }
 }
+
+export class TipplyConfigurationError extends TipplyError {
+  constructor(message: string, context: TipplyTransportResponseContext) {
+    super(message, "CONFIGURATION_ERROR", context);
+    this.name = "TipplyConfigurationError";
+  }
+}
+
+export class TipplyAuthError extends TipplyAuthenticationError {}
+
+export class TipplyValidationError extends TipplyResponseValidationError {}
