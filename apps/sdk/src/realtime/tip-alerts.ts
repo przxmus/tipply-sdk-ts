@@ -55,6 +55,19 @@ function toError(error: unknown): Error {
   return new Error("Unknown tip alerts socket error.");
 }
 
+/**
+ * Extracts a {@link UserId} from a `TIP_ALERT` widget URL or widget path.
+ *
+ * @param widgetUrl - A full widget URL such as `https://widgets.tipply.pl/TIP_ALERT/<userId>` or a raw `/TIP_ALERT/<userId>` path.
+ * @returns The parsed Tipply user identifier.
+ *
+ * @example
+ * ```typescript
+ * const userId = parseTipAlertsWidgetUrl("https://widgets.tipply.pl/TIP_ALERT/user-123");
+ * ```
+ *
+ * @throws {Error} If the input does not match the expected `TIP_ALERT` widget path shape.
+ */
 export function parseTipAlertsWidgetUrl(widgetUrl: TipAlertsWidgetUrl): UserId {
   const pathname =
     widgetUrl instanceof URL
@@ -78,6 +91,12 @@ export function parseTipAlertsWidgetUrl(widgetUrl: TipAlertsWidgetUrl): UserId {
   return asUserId(segments[1]);
 }
 
+/**
+ * Public realtime listener for Tipply `TIP_ALERT` events.
+ *
+ * The listener stays disconnected until {@link PublicTipAlertsListener.connect}
+ * is called.
+ */
 export class PublicTipAlertsListener
   extends TypedEventEmitter<TipAlertsListenerEvents>
   implements TipAlertsListener
@@ -105,6 +124,14 @@ export class PublicTipAlertsListener
     return this.socket?.connected ?? false;
   }
 
+  /**
+   * Connects to the `TIP_ALERT` websocket stream.
+   *
+   * @returns A promise that resolves after the socket fires the `ready` event.
+   *
+   * @throws {Error} If the listener has already been destroyed.
+   * @throws {Error} If the socket fails before the connection handshake completes.
+   */
   connect(): Promise<void> {
     if (this.destroyed) {
       return Promise.reject(new Error("Tip alerts listener has been destroyed."));
@@ -130,6 +157,11 @@ export class PublicTipAlertsListener
     return this.connectPromise;
   }
 
+  /**
+   * Disconnects the socket and removes all registered listeners.
+   *
+   * @returns Nothing.
+   */
   destroy(): void {
     this.destroyed = true;
     this.finishConnect(new Error("Tip alerts listener was destroyed before the connection was established."));
@@ -208,6 +240,16 @@ export class PublicTipAlertsListener
   }
 }
 
+/**
+ * Creates a public tip alerts listener directly from a widget URL.
+ *
+ * @param widgetUrl - A full `TIP_ALERT` widget URL or raw widget path.
+ * @param socketBaseUrl - The websocket base URL used to connect to Tipply alerts.
+ * @param options - Listener configuration such as reconnection behavior.
+ * @returns A disconnected {@link TipAlertsListener} ready to be connected.
+ *
+ * @throws {Error} If {@link widgetUrl} does not contain a valid `TIP_ALERT` user path.
+ */
 export function createTipAlertsListenerFromWidgetUrl(
   widgetUrl: TipAlertsWidgetUrl,
   socketBaseUrl: string,
