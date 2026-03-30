@@ -40,6 +40,7 @@ console.log(widgetMessageEnabled);
 ## Dokumentacja
 
 Pełna dokumentacja jest dostępna online pod adresem https://tipply-sdk.przxmus.dev.
+To nie jest oficjalna dokumentacja Tipply.pl i ten projekt nie jest z nim w żaden sposób powiązany.
 
 Lokalnie możesz ją uruchomić z aplikacji `apps/docs`, która zawiera:
 
