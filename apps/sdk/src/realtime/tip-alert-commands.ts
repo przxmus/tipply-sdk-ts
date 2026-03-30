@@ -62,7 +62,6 @@ function buildExtraHeaders(options: TipAlertCommandTransportOptions): Record<str
   return Object.keys(headers).length > 0 ? headers : undefined;
 }
 
-/** Sends authenticated realtime commands to the tip alerts websocket backend. */
 export class TipAlertCommandClient {
   private readonly socketFactory: CommandSocketFactory;
   private readonly transportOptions: TipAlertCommandTransportOptions;
@@ -77,7 +76,6 @@ export class TipAlertCommandClient {
     this.socketFactory = socketFactory;
   }
 
-  /** Sends the `skipMessage` command for the current user's active tip alert. */
   skipCurrent(): Promise<void> {
     const timeoutMs = this.transportOptions.timeoutMs ?? 5_000;
     const extraHeaders = buildExtraHeaders(this.transportOptions);
