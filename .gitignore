@@ -6,3 +6,4 @@ apps/**/dist
 apps/**/.astro
 apps/**/.vercel
 apps/**/.astro
+apps/sdk/examples/*.local.ts
