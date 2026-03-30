@@ -122,7 +122,7 @@ describe("http transport", () => {
     await expect(client.profile.pendingChanges.check()).resolves.toBe(false);
   });
 
-  test("allows reading public endpoints with response validation enabled", async () => {
+  test("allows reading public endpoints through the public client", async () => {
     const { fetch } = createMockFetch((request) => {
       if (request.url.pathname === "/api/templates/TIPS_GOAL/user-123") return jsonResponse(rawPublicGoalTemplatesFixture);
       if (request.url.pathname === "/api/configuration/TIPS_GOAL/user-123") return jsonResponse(rawPublicGoalConfigurationFixture);
@@ -156,5 +156,20 @@ describe("http transport", () => {
     const client = createTipplyClient({ authCookie: "cookie-123", fetch });
 
     await expect(client.me.get()).resolves.toEqual(currentUserFixture);
+  });
+
+  test("does not crash on malformed current user payloads", async () => {
+    const { fetch } = createMockFetch(() =>
+      jsonResponse({
+        ...rawCurrentUserFixture,
+        minimal_amount_allowed: false,
+      }),
+    );
+    const client = createTipplyClient({ authCookie: "cookie-123", fetch });
+
+    await expect(client.me.get()).resolves.toMatchObject({
+      ...currentUserFixture,
+      minimalAmountAllowed: 0,
+    });
   });
 });

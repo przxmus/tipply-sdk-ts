@@ -10,6 +10,7 @@ export async function requestAndParse<TOutput>(
   schema: ZodType<TOutput>,
   requestOptions?: RequestOptions,
   message?: string,
+  fallback?: (value: unknown) => TOutput,
 ): Promise<TOutput> {
   const response = await transport.request<unknown>(request, requestOptions);
 
@@ -21,5 +22,6 @@ export async function requestAndParse<TOutput>(
       url: request.path,
     },
     message,
+    fallback,
   );
 }

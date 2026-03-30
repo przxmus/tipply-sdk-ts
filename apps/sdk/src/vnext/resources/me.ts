@@ -1,5 +1,5 @@
 import type { RequestOptions } from "../../core/types";
-import { currentUserSchema } from "../../domain/account-schemas";
+import { currentUserSchema, parseCurrentUser } from "../../domain/account-schemas";
 import type { CurrentUser } from "../../domain/account";
 import { TipplyTransport } from "../../core/transport";
 import { requestAndParse } from "../request";
@@ -24,6 +24,7 @@ export class MeResource {
       currentUserSchema,
       requestOptions,
       "Invalid current user response.",
+      (value) => parseCurrentUser(value, { method: "GET", url: "/user" }),
     );
   }
 }

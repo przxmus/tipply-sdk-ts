@@ -7,7 +7,7 @@ TypeScript SDK for the Tipply API with a factory-based, fully typed vNext surfac
 - ESM-first package for Node 18+, Bun, and fetch-enabled browser/edge runtimes
 - Covers the current `proxy.tipply.pl` and `tipply.pl/api` endpoints exposed by this SDK
 - Unified client for authenticated and public flows
-- Runtime response validation is enabled by default
+- Tipply responses are mapped best-effort and do not throw schema validation errors
 - Public models are camelCase and use branded IDs for user, goal, template, media, moderator, withdrawal, and report identifiers
 
 ## Install
@@ -108,17 +108,6 @@ The SDK is session-cookie based:
 The SDK does not implement login or cookie acquisition against Tipply directly.
 
 Use `client.withSession({ authCookie })` or `client.withAuthCookie(cookie)` when you need an isolated client instance with a different Tipply session.
-
-## Runtime Validation
-
-Runtime validation is enabled by default. Disable it only when you need raw speed over schema validation:
-
-```ts
-const client = createTipplyClient({
-  session: { authCookie: process.env.TIPPLY_AUTH_COOKIE! },
-  validation: false,
-});
-```
 
 ## Live Tests
 

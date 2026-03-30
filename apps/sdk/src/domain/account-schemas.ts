@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { asUserId } from "./ids";
-import { isoDateStringSchema, minorUnitAmountSchema, parseWithSchema, unknownRecordSchema } from "./parsing";
+import { camelizeValue, isoDateStringSchema, minorUnitAmountSchema, parseWithSchema, unknownRecordSchema } from "./parsing";
 import { mediaItemSchema, notificationSchema, tipSchema } from "./shared-schemas";
 import type {
   CurrentUser,
@@ -223,8 +223,54 @@ export const recentTipListSchema = z.array(tipSchema).transform<RecentTip[]>((wi
 export const notificationListSchema = z.array(notificationSchema).transform<DashboardNotification[]>((wire) => wire);
 export const dashboardAnnouncementListSchema = z.array(dashboardAnnouncementSchema).transform<DashboardAnnouncement[]>((wire) => wire);
 
+function toCurrentUserFallback(value: unknown): CurrentUser {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return camelizeValue(value) as CurrentUser;
+  }
+
+  const wire = camelizeValue(value) as Record<string, unknown>;
+
+  return {
+    id: asUserId(String(wire.id ?? "")),
+    username: typeof wire.username === "string" ? wire.username : "",
+    email: typeof wire.email === "string" ? wire.email : "",
+    ...(Object.hasOwn(wire, "lastLogin") ? { lastLogin: (wire.lastLogin ?? null) as string | null } : {}),
+    isVerified: Boolean(wire.isVerified),
+    googleAuthEnabled: Boolean(wire.googleAuthEnabled),
+    hasPendingBankTransferValidationRequest: Boolean(
+      wire.hasPendingBankTransferValidationRequest ?? wire.hasPendingBanktransferValidationRequest,
+    ),
+    emailAuthEnabled: Boolean(wire.emailAuthEnabled),
+    ...(Object.hasOwn(wire, "googleId") ? { googleId: (wire.googleId ?? null) as string | null } : {}),
+    ...(Object.hasOwn(wire, "verifiedAt") ? { verifiedAt: (wire.verifiedAt ?? null) as string | null } : {}),
+    withdrawal2faEnabled: Boolean(wire.withdrawal2faEnabled),
+    commissionThreshold: Number(wire.commissionThreshold ?? 0),
+    paymentsDisabled: Boolean(wire.paymentsDisabled),
+    widgetMessageDisabled: Boolean(wire.widgetMessageDisabled),
+    widgetAlertsDisabled: Boolean(wire.widgetAlertsDisabled),
+    widgetAlertsSoundDisabled: Boolean(wire.widgetAlertsSoundDisabled),
+    missingPersonalData: Boolean(wire.missingPersonalData),
+    redirectToMissingDataForm: Boolean(wire.redirectToMissingDataForm),
+    newStatueAccepted: Boolean(wire.newStatueAccepted),
+    fraud: Boolean(wire.fraud),
+    fraudAmount: Number(wire.fraudAmount ?? 0),
+    moderationMode: Boolean(wire.moderationMode),
+    messageAudio: Boolean(wire.messageAudio),
+    ...(Object.hasOwn(wire, "colorTheme") ? { colorTheme: (wire.colorTheme ?? null) as string | null } : {}),
+    minimalAmountAllowed: Number(wire.minimalAmountAllowed ?? 0),
+    synthMigration: Boolean(wire.synthMigration),
+    bankStandardDisabled: Boolean(wire.bankStandardDisabled),
+    bankExpressDisabled: Boolean(wire.bankExpressDisabled),
+    paypalStandardDisabled: Boolean(wire.paypalStandardDisabled),
+    paypalExpressDisabled: Boolean(wire.paypalExpressDisabled),
+    ...(Object.hasOwn(wire, "fraudCheckTime") ? { fraudCheckTime: (wire.fraudCheckTime ?? null) as string | null } : {}),
+    bankTransferValidationRequested: Boolean(wire.bankTransferValidationRequested),
+    validatedWithBankTransfer: Boolean(wire.validatedWithBankTransfer),
+  };
+}
+
 export function parseCurrentUser(value: unknown, context: TipplyTransportResponseContext): CurrentUser {
-  return parseWithSchema(currentUserSchema, value, context, "Invalid current user response.");
+  return parseWithSchema(currentUserSchema, value, context, "Invalid current user response.", toCurrentUserFallback);
 }
 
 export function parseIncomeStatistics(value: unknown, context: TipplyTransportResponseContext): IncomeStatistics {
