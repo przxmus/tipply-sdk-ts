@@ -1,5 +1,4 @@
-import type { MaybePromise } from "../types/common";
-
+export type MaybePromise<T> = T | Promise<T>;
 export type FetchLike = typeof fetch;
 
 export type Validator<T> = (value: unknown) => asserts value is T;

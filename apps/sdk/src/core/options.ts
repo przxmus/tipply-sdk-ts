@@ -1,5 +1,4 @@
-import type { MaybePromise } from "../types/common";
-import type { FetchLike, TipplyClientOptions, TipplySessionOptions, TipplyTransportOptions } from "./types";
+import type { FetchLike, MaybePromise, TipplyClientOptions, TipplySessionOptions, TipplyTransportOptions } from "./types";
 
 export interface ResolvedTipplyClientOptions {
   session: TipplySessionOptions | undefined;
