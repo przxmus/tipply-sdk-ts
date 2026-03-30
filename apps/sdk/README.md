@@ -1,13 +1,14 @@
 # Tipply SDK TS
 
-TypeScript SDK for the Tipply API built from the provided Postman collection and `API.md`.
+TypeScript SDK for the Tipply API with a factory-based, fully typed vNext surface.
 
 ## Status
 
 - ESM-first package for Node 18+, Bun, and fetch-enabled browser/edge runtimes
-- Covers the documented `proxy.tipply.pl` and `tipply.pl/api` endpoints that make sense for SDK usage
-- Excludes Socket.IO realtime and Google reCAPTCHA / login reverse engineering
-- Auth is based on Tipply session cookies, with browser credentials or explicit `auth_token` injection
+- Covers the current `proxy.tipply.pl` and `tipply.pl/api` endpoints exposed by this SDK
+- Unified client for authenticated and public flows
+- Runtime response validation is enabled by default
+- Public models are camelCase and use branded IDs for user, goal, template, media, moderator, withdrawal, and report identifiers
 
 ## Install
 
@@ -21,67 +22,72 @@ bun install
 bun run build
 bun run typecheck
 bun run test
+bun run test:types
 bun run test:live
 ```
 
 ## Usage
 
-### Explicit `auth_token` cookie
+### Authenticated client
 
 ```ts
-import { TipplyClient } from "tipply-sdk-ts";
+import { createTipplyClient } from "tipply-sdk-ts";
 
-const client = new TipplyClient({
-  authCookie: process.env.TIPPLY_AUTH_COOKIE,
+const client = createTipplyClient({
+  session: {
+    authCookie: process.env.TIPPLY_AUTH_COOKIE!,
+  },
 });
 
-const currentUser = await client.identity.getCurrentUser();
+const currentUser = await client.me.get();
 const profile = await client.profile.get();
-const tips = await client.tips.list({ limit: 10, filter: "default", search: "" });
+const tips = await client.tips.list().filter("amount").search("microphone").limit(10).get();
 ```
 
 ### Async cookie provider
 
 ```ts
-import { TipplyClient } from "tipply-sdk-ts";
+import { createTipplyClient } from "tipply-sdk-ts";
 
-const client = new TipplyClient({
-  getAuthCookie: async () => {
-    return process.env.TIPPLY_AUTH_COOKIE;
+const client = createTipplyClient({
+  session: {
+    getAuthCookie: async () => process.env.TIPPLY_AUTH_COOKIE,
   },
 });
 
-const notifications = await client.dashboard.getNotifications();
+const notifications = await client.dashboard.notifications.list();
 ```
 
 ### Public-only usage
 
 ```ts
-import { TipplyClient } from "tipply-sdk-ts";
+import { asGoalId, asUserId } from "tipply-sdk-ts";
+import { createTipplyPublicClient } from "tipply-sdk-ts/public";
 
-const client = new TipplyClient();
+const client = createTipplyPublicClient();
+const user = client.user(asUserId("user-123"));
 
-const widget = await client.public.getGoalWidget("goal-123", "user-123");
-const isWidgetMessageEnabled = await client.public.getWidgetMessage("user-123");
+const widget = await user.goals.id(asGoalId("goal-123")).widget.get();
+const isWidgetMessageEnabled = await user.widgetMessage.get();
 ```
 
 ### Payment method update
 
 ```ts
-await client.paymentMethods.update("paypal", {
+await client.paymentMethods.method("paypal").update({
   minimalAmount: 1500,
 });
 ```
 
 ## Client Surface
 
-The main export is `TipplyClient`. It exposes the following namespaces:
+`createTipplyClient()` returns a client with the following namespaces:
 
-- `identity`
+- `me`
 - `dashboard`
 - `profile`
 - `paymentMethods`
-- `configurations`
+- `settings`
 - `goals`
 - `templates`
 - `tips`
@@ -93,28 +99,26 @@ The main export is `TipplyClient`. It exposes the following namespaces:
 
 ## Auth Model
 
-The recorded browser traffic for Tipply panel requests uses an `auth_token` cookie. For that reason the SDK is now cookie-first:
+The SDK is session-cookie based:
 
-- use `authCookie` when you want to inject the raw cookie value in Node/Bun
-- or `getAuthCookie` when the cookie has to be fetched lazily
-- or rely on `includeCredentials: true` when running in a browser with an already established Tipply session
+- use `session.authCookie` when you want to inject a raw cookie value in Node/Bun
+- or `session.getAuthCookie` when the cookie has to be fetched lazily
+- or use `session.browserSession` with `transport.includeCredentials: true` when running in a browser with an existing Tipply session
 
 The SDK does not implement login or cookie acquisition against Tipply directly.
 
-Use `client.withAuthCookie(cookie)` when you need an isolated client instance with a different Tipply session.
+Use `client.withSession({ authCookie })` or `client.withAuthCookie(cookie)` when you need an isolated client instance with a different Tipply session.
 
 ## Runtime Validation
 
-Set `validateResponses: true` to enable response guards for the supported contract checks:
+Runtime validation is enabled by default. Disable it only when you need raw speed over schema validation:
 
 ```ts
-const client = new TipplyClient({
-  authCookie: process.env.TIPPLY_AUTH_COOKIE,
-  validateResponses: true,
+const client = createTipplyClient({
+  session: { authCookie: process.env.TIPPLY_AUTH_COOKIE! },
+  validation: false,
 });
 ```
-
-This keeps runtime validation opt-in while preserving strict compile-time types by default.
 
 ## Live Tests
 
@@ -137,15 +141,17 @@ The live suite only performs authenticated reads by default and discovers `userI
 - Monetary values are represented as minor units.
 - Dates are returned as ISO 8601 strings.
 - Template updates are modeled as full payload replacement for `PUT /templates/{uuid}`.
-- `filter=undefined&search=undefined` from the recorded frontend traffic is intentionally not part of the SDK contract.
+- Response schemas tolerate additional unknown fields returned by Tipply.
+
 ### Browser session cookies
 
 ```ts
-import { TipplyClient } from "tipply-sdk-ts";
+import { createTipplyClient } from "tipply-sdk-ts";
 
-const client = new TipplyClient({
-  includeCredentials: true,
+const client = createTipplyClient({
+  session: { browserSession: true },
+  transport: { includeCredentials: true },
 });
 
-const me = await client.identity.getCurrentUser();
+const me = await client.me.get();
 ```

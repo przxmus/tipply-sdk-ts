@@ -1,27 +1,36 @@
-import { TipplyClient, type UserConfigurationRecord } from "../src";
+import { createTipplyClient, type UserConfiguration } from "../src";
 
-const client = new TipplyClient({
-  getAuthCookie: async () => process.env.TIPPLY_AUTH_COOKIE,
+const client = createTipplyClient({
+  session: {
+    getAuthCookie: async () => process.env.TIPPLY_AUTH_COOKIE,
+  },
 });
 
 async function readConfigurationTypes(): Promise<void> {
-  const configurations = await client.configurations.list();
+  const configurations = await client.settings.list();
 
   for (const configuration of configurations) {
     renderConfiguration(configuration);
   }
 }
 
-function renderConfiguration(configuration: UserConfigurationRecord): void {
+function renderConfiguration(configuration: UserConfiguration): void {
   switch (configuration.type) {
     case "COUNTER_TO_END_LIVE":
-      console.log(configuration.config.extraTime);
+      if ("extraTime" in configuration.config) {
+        console.log(configuration.config.extraTime);
+      }
       break;
     case "GLOBAL":
-      console.log(configuration.config.profanity_filter_enabled);
+      if ("profanityFilterEnabled" in configuration.config) {
+        console.log(configuration.config.profanityFilterEnabled);
+      }
       break;
     case "TIP_ALERT":
-      console.log(configuration.config.voiceMessages.enable);
+      if ("voiceMessages" in configuration.config) {
+        const config = configuration.config as { voiceMessages: { enabled: boolean } };
+        console.log(config.voiceMessages.enabled);
+      }
       break;
     default:
       console.log(configuration.type);
@@ -30,6 +39,6 @@ function renderConfiguration(configuration: UserConfigurationRecord): void {
 
 void readConfigurationTypes();
 
-client.paymentMethods.update("cashbill_blik", {
+client.paymentMethods.method("cashbill_blik").update({
   enabled: false,
 });
