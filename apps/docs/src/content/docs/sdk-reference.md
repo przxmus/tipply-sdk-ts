@@ -20,6 +20,7 @@ Ta referencja obejmuje wyłącznie metody, które są faktycznie zaimplementowan
 | --- | --- |
 | `client.withSession(session)` | Tworzy nową instancję klienta z inną konfiguracją sesji. |
 | `client.withAuthCookie(authCookie)` | Skrót do stworzenia nowej instancji z podanym tokenem. |
+| `client.close()` | Zatrzymuje background refresh uruchomiony przez `auth.refreshTokenEvery`. |
 
 ## Namespace'y klienta autoryzowanego
 
@@ -225,6 +226,9 @@ type RequestOptions = {
 ## Uwagi implementacyjne
 
 - `authCookie` to sama wartość `auth_token`
+- `auth.refreshTokenOnRequests` jest domyślnie włączone
+- `auth.refreshTokenEvery: true` oznacza refresh przez `/user` co 5 minut
+- `auth.reconnectTries` jest domyślnie ustawione na `3`
 - publiczne endpointy korzystają z `https://tipply.pl/api`
 - endpointy auth korzystają z `https://proxy.tipply.pl`
 - listener `TIP_ALERT` korzysta z `https://alert-ws.tipply.pl`

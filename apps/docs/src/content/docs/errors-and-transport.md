@@ -60,6 +60,7 @@ try {
 type TipplyClientOptions = {
   session?: TipplySessionOptions;
   transport?: TipplyTransportOptions;
+  auth?: TipplyAuthLifecycleOptions;
   validation?: boolean;
   authCookie?: string;
   getAuthCookie?: () => string | Promise<string | null | undefined> | null | undefined;
@@ -76,8 +77,26 @@ type TipplyClientOptions = {
 Najważniejsze informacje:
 
 - `authCookie` i `getAuthCookie` są skrótami dla konfiguracji sesji
+- `auth` steruje automatycznym odświeżaniem tokena i retry requestów auth
 - `validation` i `validateResponses` sterują walidacją odpowiedzi
 - `transport` pozwala nadpisać bazowe URL-e, timeout i `fetch`
+
+## `TipplyAuthLifecycleOptions`
+
+```ts
+type TipplyAuthLifecycleOptions = {
+  refreshTokenOnRequests?: boolean;
+  refreshTokenEvery?: boolean | { intervalMs?: number };
+  reconnectTries?: number | false;
+};
+```
+
+Domyślne wartości:
+
+- `refreshTokenOnRequests`: `true`
+- `refreshTokenEvery`: `false`
+- `refreshTokenEvery: true`: request do `/user` co `300000` ms
+- `reconnectTries`: `3`
 
 ## `TipplySessionOptions`
 
@@ -120,6 +139,10 @@ Domyślne wartości:
 ```ts
 const client = createTipplyClient({
   authCookie: process.env.TIPPLY_AUTH_COOKIE!,
+  auth: {
+    refreshTokenEvery: { intervalMs: 60_000 },
+    reconnectTries: 5,
+  },
   transport: {
     timeoutMs: 10_000,
     fetch: customFetch,
@@ -170,3 +193,11 @@ const client = createTipplyClient({
 ```
 
 W praktyce warto zostawić walidację aktywną, zwłaszcza jeśli SDK jest częścią większej integracji.
+
+## Zamykanie background refreshu
+
+Jeżeli włączysz `auth.refreshTokenEvery`, klient uruchamia background timer. Gdy kończysz pracę z instancją, zatrzymaj go:
+
+```ts
+client.close();
+```

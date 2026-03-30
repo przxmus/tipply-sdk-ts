@@ -100,4 +100,14 @@ export class TipplyClientVNext {
   withAuthCookie(authCookie: string): TipplyClientVNext {
     return this.withSession({ authCookie });
   }
+
+  /**
+   * Stops background auth token refresh timers owned by this client.
+   *
+   * Call this when you enabled `auth.refreshTokenEvery` and no longer need the
+   * client instance, especially in long-running tests or short-lived scripts.
+   */
+  close(): void {
+    this.transport.close();
+  }
 }

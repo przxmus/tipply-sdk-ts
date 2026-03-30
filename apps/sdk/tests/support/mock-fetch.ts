@@ -30,6 +30,16 @@ export function jsonResponse(body: unknown, init: ResponseInit = {}): Response {
   });
 }
 
+export function jsonResponseWithAuthCookie(body: unknown, authCookie: string, init: ResponseInit = {}): Response {
+  return jsonResponse(body, {
+    ...init,
+    headers: {
+      ...(init.headers ?? {}),
+      "set-cookie": `auth_token=${authCookie}; Path=/; HttpOnly`,
+    },
+  });
+}
+
 export function emptyResponse(status = 204): Response {
   return new Response(null, { status });
 }

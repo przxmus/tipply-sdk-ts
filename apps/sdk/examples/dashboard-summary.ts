@@ -8,6 +8,10 @@ if (!authCookie) {
 
 const client = createTipplyClient({
   authCookie,
+  auth: {
+    refreshTokenEvery: true,
+    reconnectTries: 3,
+  },
 });
 
 const [me, profile, income, points, recentTips, notifications] = await Promise.all([

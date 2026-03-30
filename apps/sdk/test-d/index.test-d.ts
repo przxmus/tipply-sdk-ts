@@ -25,9 +25,17 @@ import {
 import { createTipplyPublicClient } from "../dist/public.js";
 
 const client = createTipplyClient();
+const managedClient = createTipplyClient({
+  auth: {
+    refreshTokenOnRequests: false,
+    refreshTokenEvery: { intervalMs: 60_000 },
+    reconnectTries: 5,
+  },
+});
 const publicClient = createTipplyPublicClient();
 
 expectType<Promise<CurrentUser>>(client.me.get());
+expectType<void>(managedClient.close());
 expectType<Promise<TipAlertsListener>>(client.tipAlerts.createListener());
 expectType<Promise<Goal[]>>(client.goals.list());
 expectType<Promise<void>>(client.goals.id(asGoalId("goal-1")).reset());
