@@ -10,6 +10,12 @@ import { requestAndParse } from "../request";
 class MediaUsageResource {
   constructor(private readonly transport: TipplyTransport) {}
 
+  /**
+   * Loads media storage usage.
+   *
+   * @param requestOptions - Per-request timeout and abort overrides.
+   * @returns The current media usage summary.
+   */
   get(requestOptions?: RequestOptions): Promise<MediaUsage> {
     return requestAndParse(
       this.transport,
@@ -31,6 +37,12 @@ class MediaFormatsResource {
     private readonly mediaId: MediaId,
   ) {}
 
+  /**
+   * Loads generated formats for a media item.
+   *
+   * @param requestOptions - Per-request timeout and abort overrides.
+   * @returns The generated formats keyed by format name.
+   */
   get(requestOptions?: RequestOptions): Promise<MediaFormats> {
     return requestAndParse(
       this.transport,
@@ -61,6 +73,12 @@ export class MediaResource {
     this.usage = new MediaUsageResource(transport);
   }
 
+  /**
+   * Lists media items owned by the authenticated user.
+   *
+   * @param requestOptions - Per-request timeout and abort overrides.
+   * @returns The authenticated user's media inventory.
+   */
   list(requestOptions?: RequestOptions): Promise<MediaItem[]> {
     return requestAndParse(
       this.transport,
@@ -75,6 +93,12 @@ export class MediaResource {
     );
   }
 
+  /**
+   * Opens the scope for a single media item.
+   *
+   * @param mediaId - The Tipply media identifier.
+   * @returns A scoped helper for the selected media item.
+   */
   id(mediaId: MediaId): MediaScope {
     return new MediaScope(this.transport, mediaId);
   }

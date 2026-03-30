@@ -9,6 +9,12 @@ import { requestAndParse } from "../request";
 export class ReportsResource {
   constructor(private readonly transport: TipplyTransport) {}
 
+  /**
+   * Lists reports available to the authenticated user.
+   *
+   * @param requestOptions - Per-request timeout and abort overrides.
+   * @returns Generated report entries returned by Tipply.
+   */
   list(requestOptions?: RequestOptions): Promise<Report[]> {
     return requestAndParse(
       this.transport,

@@ -9,6 +9,12 @@ import { requestAndParse } from "../request";
 class ProfilePendingChangesResource {
   constructor(private readonly transport: TipplyTransport) {}
 
+  /**
+   * Checks whether the authenticated profile has pending changes.
+   *
+   * @param requestOptions - Per-request timeout and abort overrides.
+   * @returns `true` when Tipply reports pending profile changes; otherwise `false`.
+   */
   async check(requestOptions?: RequestOptions): Promise<boolean> {
     const response = await this.transport.request<unknown>(
       {
@@ -27,6 +33,20 @@ class ProfilePendingChangesResource {
 class ProfilePageResource {
   constructor(private readonly transport: TipplyTransport) {}
 
+  /**
+   * Updates writable page settings on the authenticated profile.
+   *
+   * @param input - The page settings patch to send to Tipply.
+   * @param requestOptions - Per-request timeout and abort overrides.
+   * @returns The updated user profile returned by Tipply.
+   *
+   * @example
+   * ```typescript
+   * await client.profile.page.updateSettings({
+   *   description: "Variety streamer and live coder.",
+   * });
+   * ```
+   */
   updateSettings(input: UpdatePageSettingsInput, requestOptions?: RequestOptions): Promise<UserProfile> {
     return requestAndParse(
       this.transport,
@@ -49,6 +69,12 @@ class PublicProfileSocialLinksResource {
     private readonly slug: string,
   ) {}
 
+  /**
+   * Lists public social media links for a profile slug.
+   *
+   * @param requestOptions - Per-request timeout and abort overrides.
+   * @returns Public social media links exposed for the selected profile slug.
+   */
   list(requestOptions?: RequestOptions): Promise<PublicSocialMediaLink[]> {
     return requestAndParse(
       this.transport,
@@ -84,6 +110,12 @@ export class ProfileResource {
     this.page = new ProfilePageResource(transport);
   }
 
+  /**
+   * Loads the authenticated user's profile.
+   *
+   * @param requestOptions - Per-request timeout and abort overrides.
+   * @returns The authenticated user profile.
+   */
   get(requestOptions?: RequestOptions): Promise<UserProfile> {
     return requestAndParse(
       this.transport,
@@ -98,6 +130,12 @@ export class ProfileResource {
     );
   }
 
+  /**
+   * Opens the public profile scope for a profile slug.
+   *
+   * @param slug - The public Tipply profile slug.
+   * @returns A scope exposing public profile endpoints for the slug.
+   */
   public(slug: string): PublicProfileScope {
     return new PublicProfileScope(this.transport, slug);
   }
