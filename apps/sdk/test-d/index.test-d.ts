@@ -5,6 +5,7 @@ import {
   asMediaId,
   asTemplateId,
   asUserId,
+  asWithdrawalId,
   createTipplyClient,
   type CurrentUser,
   type Goal,
@@ -36,8 +37,11 @@ expectType<Promise<PaymentMethodsConfiguration>>(client.paymentMethods.configura
 expectType<Promise<UserPaymentMethod>>(client.paymentMethods.method("paypal").update({ minimalAmount: 1500 }));
 expectType<Promise<PublicGoalWidget>>(client.public.user(asUserId("user-1")).goals.id(asGoalId("goal-1")).widget.get());
 expectType<Promise<boolean>>(publicClient.user(asUserId("user-1")).widgetMessage.get());
+expectType<Promise<string>>(publicClient.user(asUserId("user-1")).templateFonts.get());
 expectType<Promise<MediaFormats>>(client.media.id(asMediaId(1)).formats.get());
+expectType<Promise<ArrayBuffer>>(client.withdrawals.id(asWithdrawalId("withdrawal-1")).confirmationPdf.get());
 
 expectError(client.public.user(asGoalId("goal-1")));
 expectError(client.goals.id(asUserId("user-1")));
 expectError(client.media.id(asGoalId("goal-1")));
+expectError(client.withdrawals.id(asGoalId("goal-1")));

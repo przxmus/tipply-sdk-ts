@@ -74,6 +74,7 @@ export interface TipplyTransportRequest<TResponse> {
   headers?: Record<string, string>;
   auth?: boolean;
   scope?: TipplyRequestScope;
+  responseType?: "auto" | "text" | "arrayBuffer";
 }
 
 export interface TipplyTransportResponseContext {

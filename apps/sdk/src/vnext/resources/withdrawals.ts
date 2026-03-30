@@ -7,6 +7,7 @@ import type { Account, Withdrawal, WithdrawalMethodsConfiguration } from "../../
 import type { WithdrawalStatusFilter, WithdrawalsListQuery } from "../../domain/withdrawals";
 import { toWithdrawalStatusWire } from "../../domain/withdrawals";
 import { requestAndParse } from "../request";
+import type { WithdrawalId } from "../../domain/ids";
 
 class WithdrawalAccountsResource {
   constructor(private readonly transport: TipplyTransport) {}
@@ -108,6 +109,36 @@ class WithdrawalsListRequestBuilder {
   }
 }
 
+class WithdrawalConfirmationPdfResource {
+  constructor(
+    private readonly transport: TipplyTransport,
+    private readonly withdrawalId: WithdrawalId,
+  ) {}
+
+  get(requestOptions?: RequestOptions): Promise<ArrayBuffer> {
+    return this.transport.request(
+      {
+        method: "GET",
+        path: `/bank/print-confirmation/${this.withdrawalId}/pdf`,
+        auth: true,
+        headers: {
+          Accept: "application/pdf",
+        },
+        responseType: "arrayBuffer",
+      },
+      requestOptions,
+    ) as Promise<ArrayBuffer>;
+  }
+}
+
+class WithdrawalScope {
+  readonly confirmationPdf: WithdrawalConfirmationPdfResource;
+
+  constructor(transport: TipplyTransport, withdrawalId: WithdrawalId) {
+    this.confirmationPdf = new WithdrawalConfirmationPdfResource(transport, withdrawalId);
+  }
+}
+
 export class WithdrawalsResource {
   readonly accounts: WithdrawalAccountsResource;
   readonly methods: WithdrawalMethodsResource;
@@ -121,5 +152,9 @@ export class WithdrawalsResource {
 
   list(): WithdrawalsListRequestBuilder {
     return new WithdrawalsListRequestBuilder(this.transport);
+  }
+
+  id(withdrawalId: WithdrawalId): WithdrawalScope {
+    return new WithdrawalScope(this.transport, withdrawalId);
   }
 }

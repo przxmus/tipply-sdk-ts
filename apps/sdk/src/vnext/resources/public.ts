@@ -150,6 +150,28 @@ class PublicVotingResource {
   }
 }
 
+class PublicTemplateFontsResource {
+  constructor(
+    private readonly transport: TipplyTransport,
+    private readonly userId: UserId,
+  ) {}
+
+  get(requestOptions?: RequestOptions): Promise<string> {
+    return this.transport.request(
+      {
+        method: "GET",
+        path: `/templatefonts/${this.userId}`,
+        scope: "public",
+        headers: {
+          Accept: "text/css",
+        },
+        responseType: "text",
+      },
+      requestOptions,
+    ) as Promise<string>;
+  }
+}
+
 class PublicWidgetMessageResource {
   constructor(
     private readonly transport: TipplyTransport,
@@ -174,11 +196,13 @@ class PublicWidgetMessageResource {
 export class PublicUserScope {
   readonly goals: PublicGoalsResource;
   readonly voting: PublicVotingResource;
+  readonly templateFonts: PublicTemplateFontsResource;
   readonly widgetMessage: PublicWidgetMessageResource;
 
   constructor(transport: TipplyTransport, userId: UserId) {
     this.goals = new PublicGoalsResource(transport, userId);
     this.voting = new PublicVotingResource(transport, userId);
+    this.templateFonts = new PublicTemplateFontsResource(transport, userId);
     this.widgetMessage = new PublicWidgetMessageResource(transport, userId);
   }
 }

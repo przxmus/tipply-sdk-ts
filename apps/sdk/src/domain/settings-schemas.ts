@@ -190,14 +190,26 @@ export const tipAlertConfigurationSchema = z
     kickActivityTimer: wire.kickActivityTimer,
   }));
 
-export const tipsGoalConfigurationSchema = z
+const tipsGoalConfigurationValueSchema = z
   .object({
     goalValue: minorUnitAmountSchema,
     goalName: z.string(),
     sumPaymentsFrom: z.union([z.string(), unknownRecordSchema]),
     amountWithoutCommission: z.boolean(),
   })
-  .passthrough()
+  .passthrough();
+
+export const tipsGoalConfigurationSchema = z
+  .union([
+    tipsGoalConfigurationValueSchema,
+    z
+      .object({
+        type: z.string(),
+        config: tipsGoalConfigurationValueSchema,
+      })
+      .passthrough()
+      .transform((wire) => wire.config),
+  ])
   .transform<TipsGoalConfiguration>((wire) => ({
     goalValue: wire.goalValue,
     goalName: wire.goalName,

@@ -34,6 +34,23 @@ async function parseResponseBody(response: Response): Promise<unknown> {
   return text.length > 0 ? text : undefined;
 }
 
+async function parseResponseBodyAs(response: Response, responseType: "auto" | "text" | "arrayBuffer"): Promise<unknown> {
+  if (responseType === "auto") {
+    return parseResponseBody(response);
+  }
+
+  if (response.status === 204) {
+    return undefined;
+  }
+
+  if (responseType === "text") {
+    const text = await response.text();
+    return text.length > 0 ? text : undefined;
+  }
+
+  return response.arrayBuffer();
+}
+
 function resolveBaseUrl(scope: TipplyRequestScope, options: ReturnType<typeof resolveClientOptions>): string {
   return scope === "public" ? options.transport.publicBaseUrl : options.transport.proxyBaseUrl;
 }
@@ -129,7 +146,7 @@ export class TipplyTransport {
 
       const response = await this.resolvedOptions.transport.fetch(url, requestInit);
 
-      const responseBody = await parseResponseBody(response);
+      const responseBody = await parseResponseBodyAs(response, request.responseType ?? "auto");
       const context: TipplyTransportResponseContext = {
         method: request.method,
         url,

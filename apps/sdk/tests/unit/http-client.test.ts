@@ -1,9 +1,11 @@
 import { describe, expect, test } from "bun:test";
 
-import { TipplyAuthenticationError, asGoalId, asUserId, createTipplyClient } from "../../src";
+import { TipplyAuthenticationError, asGoalId, asUserId, asWithdrawalId, createTipplyClient } from "../../src";
 import { createTipplyPublicClient } from "../../src/public";
 import {
   currentUserFixture,
+  publicGoalConfigurationFixture,
+  publicTemplateFontsFixture,
   rawCurrentUserFixture,
   rawPublicGoalConfigurationFixture,
   rawPublicGoalTemplatesFixture,
@@ -126,6 +128,12 @@ describe("http transport", () => {
     const { fetch } = createMockFetch((request) => {
       if (request.url.pathname === "/api/templates/TIPS_GOAL/user-123") return jsonResponse(rawPublicGoalTemplatesFixture);
       if (request.url.pathname === "/api/configuration/TIPS_GOAL/user-123") return jsonResponse(rawPublicGoalConfigurationFixture);
+      if (request.url.pathname === "/api/templatefonts/user-123") {
+        return new Response(publicTemplateFontsFixture, {
+          status: 200,
+          headers: { "content-type": "text/css" },
+        });
+      }
       if (request.url.pathname === "/api/widget/goal/goal-123/user-123") return jsonResponse(rawPublicGoalWidgetFixture);
       if (request.url.pathname === "/api/templates/GOAL_VOTING/user-123") return jsonResponse(rawPublicVotingTemplatesFixture);
 
@@ -136,9 +144,30 @@ describe("http transport", () => {
     const user = client.user(asUserId("user-123"));
 
     await expect(user.goals.templates.list()).resolves.toHaveLength(1);
-    await expect(user.goals.configuration.get()).resolves.toEqual(rawPublicGoalConfigurationFixture);
+    await expect(user.goals.configuration.get()).resolves.toEqual(publicGoalConfigurationFixture);
+    await expect(user.templateFonts.get()).resolves.toEqual(publicTemplateFontsFixture);
     await expect(user.goals.id(asGoalId("goal-123")).widget.get()).resolves.toBeDefined();
     await expect(user.voting.templates.list()).resolves.toHaveLength(1);
+  });
+
+  test("reads binary confirmation pdf responses", async () => {
+    const { fetch, requests } = createMockFetch((request) => {
+      if (request.url.pathname === "/bank/print-confirmation/withdrawal-123/pdf") {
+        return new Response(Uint8Array.from([37, 80, 68, 70]), {
+          status: 200,
+          headers: { "content-type": "application/pdf" },
+        });
+      }
+
+      throw new Error(`Unhandled request: ${request.method} ${request.url.pathname}`);
+    });
+
+    const client = createTipplyClient({ authCookie: "cookie-123", fetch });
+    const result = await client.withdrawals.id(asWithdrawalId("withdrawal-123")).confirmationPdf.get();
+
+    expect(Array.from(new Uint8Array(result))).toEqual([37, 80, 68, 70]);
+    expect(requests[0]!.headers.get("accept")).toBe("application/pdf");
+    expectAuthCookie(requests[0]!.headers, "cookie-123");
   });
 
   test("sets origin for non-get authenticated requests", async () => {

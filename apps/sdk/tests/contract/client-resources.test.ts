@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 
-import { asGoalId, asMediaId, asModeratorId, asTemplateId, asUserId, createTipplyClient } from "../../src";
+import { asGoalId, asMediaId, asModeratorId, asTemplateId, asUserId, asWithdrawalId, createTipplyClient } from "../../src";
 import {
   accountFixture,
   countdownConfigurationFixture,
@@ -19,6 +19,7 @@ import {
   profileFixture,
   profanityFilterFixture,
   publicGoalConfigurationFixture,
+  publicTemplateFontsFixture,
   publicGoalTemplatesFixture,
   publicGoalWidgetFixture,
   publicVotingTemplatesFixture,
@@ -132,10 +133,22 @@ function createFixtureClient() {
     if (method === "GET" && pathname === "/user/reports") return jsonResponse([rawReportFixture]);
     if (method === "GET" && pathname === "/api/templates/TIPS_GOAL/user-123") return jsonResponse(rawPublicGoalTemplatesFixture);
     if (method === "GET" && pathname === "/api/configuration/TIPS_GOAL/user-123") return jsonResponse(rawPublicGoalConfigurationFixture);
+    if (method === "GET" && pathname === "/api/templatefonts/user-123") {
+      return new Response(publicTemplateFontsFixture, {
+        status: 200,
+        headers: { "content-type": "text/css" },
+      });
+    }
     if (method === "GET" && pathname === "/api/widget/goal/goal-123/user-123") return jsonResponse(rawPublicGoalWidgetFixture);
     if (method === "GET" && pathname === "/api/widgetmessage/user-123") return jsonResponse(true);
     if (method === "GET" && pathname === "/api/templates/GOAL_VOTING/user-123") return jsonResponse(rawPublicVotingTemplatesFixture);
     if (method === "GET" && pathname === "/api/configuration/GOAL_VOTING/user-123") return jsonResponse(rawVotingFixture);
+    if (method === "GET" && pathname === "/bank/print-confirmation/withdrawal-123/pdf") {
+      return new Response(Uint8Array.from([37, 80, 68, 70]), {
+        status: 200,
+        headers: { "content-type": "application/pdf" },
+      });
+    }
 
     throw new Error(`Unhandled request: ${method} ${pathname}`);
   });
@@ -259,6 +272,21 @@ describe("resource namespaces", () => {
         config: ["unexpected", "array"],
       },
     ]);
+  });
+
+  test("public namespace supports documented template fonts and wrapped goal configuration", async () => {
+    const { client } = createFixtureClient();
+    const publicUser = client.public.user(asUserId("user-123"));
+
+    await expect(publicUser.goals.configuration.get()).resolves.toEqual(publicGoalConfigurationFixture);
+    await expect(publicUser.templateFonts.get()).resolves.toEqual(publicTemplateFontsFixture);
+  });
+
+  test("withdrawals namespace downloads confirmation pdf bytes", async () => {
+    const { client } = createFixtureClient();
+    const bytes = new Uint8Array(await client.withdrawals.id(asWithdrawalId("withdrawal-123")).confirmationPdf.get());
+
+    expect(Array.from(bytes)).toEqual([37, 80, 68, 70]);
   });
 
   test("goals namespace supports list create update reset and voting", async () => {

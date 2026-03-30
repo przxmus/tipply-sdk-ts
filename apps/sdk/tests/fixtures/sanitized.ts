@@ -556,11 +556,16 @@ export const publicGoalConfigurationFixture: TipsGoalConfiguration = {
 };
 
 export const rawPublicGoalConfigurationFixture = {
-  goalValue: 20000,
-  goalName: "New microphone",
-  sumPaymentsFrom: "ALL",
-  amountWithoutCommission: true,
+  type: "TIPS_GOAL",
+  config: {
+    goalValue: 20000,
+    goalName: "New microphone",
+    sumPaymentsFrom: "ALL",
+    amountWithoutCommission: true,
+  },
 };
+
+export const publicTemplateFontsFixture = "@import url('https://fonts.example.com/sora.css');";
 
 export const publicGoalWidgetFixture: PublicGoalWidget = {
   config: goalFixture,
