@@ -69,6 +69,7 @@ const user = client.user(asUserId("user-123"));
 
 const widget = await user.goals.id(asGoalId("goal-123")).widget.get();
 const isWidgetMessageEnabled = await user.widgetMessage.get();
+const templateFontsCss = await user.templateFonts.get();
 ```
 
 ### Payment method update
@@ -77,6 +78,20 @@ const isWidgetMessageEnabled = await user.widgetMessage.get();
 await client.paymentMethods.method("paypal").update({
   minimalAmount: 1500,
 });
+```
+
+### Withdrawal confirmation PDF
+
+```ts
+import { asWithdrawalId, createTipplyClient } from "tipply-sdk-ts";
+
+const client = createTipplyClient({
+  session: {
+    authCookie: process.env.TIPPLY_AUTH_COOKIE!,
+  },
+});
+
+const pdf = await client.withdrawals.id(asWithdrawalId("withdrawal-123")).confirmationPdf.get();
 ```
 
 ## Client Surface
@@ -96,6 +111,11 @@ await client.paymentMethods.method("paypal").update({
 - `withdrawals`
 - `reports`
 - `public`
+
+Public user scope additions:
+
+- `client.public.user(userId).templateFonts.get()`
+- `client.public.user(userId).goals.configuration.get()` parses both legacy raw config payloads and the wrapped `{ type, config }` response documented in `tipply_new_openapi.yaml`
 
 ## Auth Model
 
