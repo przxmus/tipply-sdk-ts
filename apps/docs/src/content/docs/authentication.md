@@ -1,5 +1,5 @@
 ---
-title: Authentication
+title: Uwierzytelnienie
 description: Jak zdobyć auth token Tipply i jak poprawnie przekazać go do SDK.
 ---
 

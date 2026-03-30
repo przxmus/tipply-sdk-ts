@@ -1,5 +1,5 @@
 ---
-title: Authenticated Client
+title: Klient autoryzowany
 description: Jak pracować z pełnym klientem Tipply dla endpointów wymagających sesji.
 ---
 

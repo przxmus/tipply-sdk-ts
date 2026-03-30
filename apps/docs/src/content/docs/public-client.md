@@ -1,5 +1,5 @@
 ---
-title: Public Client
+title: Klient publiczny
 description: Publiczne endpointy Tipply bez auth tokena.
 ---
 

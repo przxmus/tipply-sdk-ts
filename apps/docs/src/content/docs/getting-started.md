@@ -1,5 +1,5 @@
 ---
-title: Getting Started
+title: Pierwsze kroki
 description: Instalacja, pierwszy klient i najszybsza ścieżka do pierwszego działającego requestu.
 ---
 

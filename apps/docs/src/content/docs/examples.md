@@ -1,5 +1,5 @@
 ---
-title: Usage Examples
+title: Przykłady użycia
 description: Krótkie, praktyczne scenariusze użycia SDK.
 ---
 

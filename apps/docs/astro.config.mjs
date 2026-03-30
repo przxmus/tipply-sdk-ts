@@ -11,26 +11,26 @@ export default defineConfig({
       plugins: [starlightThemeRapide()],
       sidebar: [
         {
-          label: "Start",
+          label: "Pierwsze kroki",
           items: [
-            { slug: "getting-started", label: "Getting Started" },
-            { slug: "authentication", label: "Authentication" },
+            { slug: "getting-started", label: "Pierwsze kroki" },
+            { slug: "authentication", label: "Uwierzytelnienie" },
           ],
         },
         {
-          label: "Guides",
+          label: "Przewodniki",
           items: [
-            { slug: "authenticated-client", label: "Authenticated Client" },
-            { slug: "public-client", label: "Public Client" },
-            { slug: "realtime-tip-alerts", label: "Realtime Tip Alerts" },
-            { slug: "errors-and-transport", label: "Errors and Transport" },
-            { slug: "examples", label: "Usage Examples" },
+            { slug: "authenticated-client", label: "Klient autoryzowany" },
+            { slug: "public-client", label: "Klient publiczny" },
+            { slug: "realtime-tip-alerts", label: "Realtime TIP_ALERT" },
+            { slug: "errors-and-transport", label: "Błędy i transport" },
+            { slug: "examples", label: "Przykłady użycia" },
           ],
         },
         {
-          label: "Reference",
+          label: "Referencja",
           items: [
-            { slug: "sdk-reference", label: "SDK Reference" },
+            { slug: "sdk-reference", label: "Referencja SDK" },
           ],
         },
       ],

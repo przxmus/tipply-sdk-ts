@@ -1,5 +1,5 @@
 ---
-title: Errors and Transport
+title: Błędy i transport
 description: Klasy błędów, opcje klienta i nadpisywanie transportu.
 ---
 

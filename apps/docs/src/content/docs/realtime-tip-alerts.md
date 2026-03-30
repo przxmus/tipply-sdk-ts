@@ -1,5 +1,5 @@
 ---
-title: Realtime Tip Alerts
+title: Realtime TIP_ALERT
 description: Listener `TIP_ALERT`, eventy i wzorce użycia w Bun, Node.js i przeglądarce.
 ---
 

@@ -1,5 +1,5 @@
 ---
-title: SDK Reference
+title: Referencja SDK
 description: Pełna referencja aktualnie zaimplementowanego surface `tipply-sdk-ts`.
 ---
 
@@ -7,9 +7,9 @@ description: Pełna referencja aktualnie zaimplementowanego surface `tipply-sdk-
 
 Ta referencja obejmuje wyłącznie metody, które są faktycznie zaimplementowane w obecnym SDK.
 
-## Root factories
+## Fabryki główne
 
-| Factory | Opis |
+| Fabryka | Opis |
 | --- | --- |
 | `createTipplyClient(options?)` | Tworzy pełny klient auth z dostępem do endpointów prywatnych i publicznych. |
 | `createTipplyPublicClient(options?)` | Tworzy klient publiczny z entrypointu `tipply-sdk-ts/public`. |
@@ -21,7 +21,7 @@ Ta referencja obejmuje wyłącznie metody, które są faktycznie zaimplementowan
 | `client.withSession(session)` | Tworzy nową instancję klienta z inną konfiguracją sesji. |
 | `client.withAuthCookie(authCookie)` | Skrót do stworzenia nowej instancji z podanym tokenem. |
 
-## Authenticated client namespaces
+## Namespace'y klienta autoryzowanego
 
 ### `me`
 
@@ -164,7 +164,7 @@ Dozwolone statusy buildera:
 | `client.public.user(userId).tipAlerts.createListener(options?)` | `TipAlertsListener` |
 | `client.public.tipAlerts.fromWidgetUrl(widgetUrl, options?)` | `TipAlertsListener` |
 
-## Public client
+## Klient publiczny
 
 | Metoda | Zwraca |
 | --- | --- |
