@@ -16,26 +16,42 @@ interface SocketLike {
 type SocketFactory = (url: string, options: { autoConnect: boolean; reconnection: boolean }) => SocketLike;
 
 export interface TipAlertsListenerEvents {
+  /** Fired after the socket connection is established. */
   ready: () => void;
+  /** Fired for each parsed `TIP_ALERT` donation payload. */
   donation: (donation: TipAlertDonation) => void;
+  /** Fired when the underlying socket disconnects. */
   disconnect: (reason: string) => void;
+  /** Fired when the socket or payload parsing fails. */
   error: (error: Error) => void;
 }
 
+/** Options used when creating a realtime tip alerts listener. */
 export interface TipAlertsListenerOptions {
+  /** Enables or disables automatic websocket reconnection. */
   reconnect?: boolean;
 }
 
+/** Accepts either a full TIP_ALERT widget URL or a raw `/TIP_ALERT/<userId>` path. */
 export type TipAlertsWidgetUrl = string | URL;
 
+/** Public contract implemented by realtime tip alerts listeners. */
 export interface TipAlertsListener {
+  /** User whose tip alerts stream is being observed. */
   readonly userId: UserId;
+  /** Whether the underlying socket is currently connected. */
   readonly connected: boolean;
+  /** Opens the websocket connection and resolves after the `ready` event. */
   connect(): Promise<void>;
+  /** Closes the socket and removes all listeners. */
   destroy(): void;
+  /** Subscribes to a listener event. */
   on<E extends keyof TipAlertsListenerEvents>(event: E, listener: TipAlertsListenerEvents[E]): this;
+  /** Subscribes to a listener event and removes the handler after the first call. */
   once<E extends keyof TipAlertsListenerEvents>(event: E, listener: TipAlertsListenerEvents[E]): this;
+  /** Removes a specific event listener. */
   off<E extends keyof TipAlertsListenerEvents>(event: E, listener: TipAlertsListenerEvents[E]): this;
+  /** Removes every listener, or only listeners for the selected event. */
   removeAllListeners<E extends keyof TipAlertsListenerEvents>(event?: E): this;
 }
 
@@ -55,6 +71,11 @@ function toError(error: unknown): Error {
   return new Error("Unknown tip alerts socket error.");
 }
 
+/**
+ * Extracts the user identifier from a `TIP_ALERT` widget URL or widget path.
+ *
+ * @throws {Error} When the path does not match the expected `/TIP_ALERT/<userId>` shape.
+ */
 export function parseTipAlertsWidgetUrl(widgetUrl: TipAlertsWidgetUrl): UserId {
   const pathname =
     widgetUrl instanceof URL
@@ -78,6 +99,7 @@ export function parseTipAlertsWidgetUrl(widgetUrl: TipAlertsWidgetUrl): UserId {
   return asUserId(segments[1]);
 }
 
+/** Socket-based listener for public Tipply `TIP_ALERT` events. */
 export class PublicTipAlertsListener
   extends TypedEventEmitter<TipAlertsListenerEvents>
   implements TipAlertsListener
@@ -91,6 +113,7 @@ export class PublicTipAlertsListener
   private destroyed = false;
 
   constructor(
+    /** User whose public tip alerts stream should be observed. */
     readonly userId: UserId,
     private readonly socketBaseUrl: string,
     options: TipAlertsListenerOptions = {},
@@ -101,10 +124,12 @@ export class PublicTipAlertsListener
     this.socketFactory = socketFactory;
   }
 
+  /** Whether the underlying socket is currently connected. */
   get connected(): boolean {
     return this.socket?.connected ?? false;
   }
 
+  /** Opens the websocket connection and resolves after the listener becomes ready. */
   connect(): Promise<void> {
     if (this.destroyed) {
       return Promise.reject(new Error("Tip alerts listener has been destroyed."));
@@ -130,6 +155,7 @@ export class PublicTipAlertsListener
     return this.connectPromise;
   }
 
+  /** Disconnects the socket and removes every registered event listener. */
   destroy(): void {
     this.destroyed = true;
     this.finishConnect(new Error("Tip alerts listener was destroyed before the connection was established."));
@@ -208,6 +234,7 @@ export class PublicTipAlertsListener
   }
 }
 
+/** Creates a public tip alerts listener from a widget URL without manually parsing the user id. */
 export function createTipAlertsListenerFromWidgetUrl(
   widgetUrl: TipAlertsWidgetUrl,
   socketBaseUrl: string,
