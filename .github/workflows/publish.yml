@@ -163,7 +163,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add apps/sdk/package.json
-          git commit -m "chore(release): publish v$NEXT_VERSION" -m "Release version $NEXT_VERSION of tipply-sdk-ts.\n\nCo-Authored-By: codex <codex@openai.com>"
+          git commit -m "chore(release): publish v$NEXT_VERSION" -m "Release version $NEXT_VERSION of tipply-sdk-ts."
           git tag "$TAG_NAME"
 
       - name: Publish package to npm
