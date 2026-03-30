@@ -1,25 +1,26 @@
-type EventMap = Record<string, (...args: any[]) => void>;
+type EventListener = (...args: any[]) => void;
+type EventKey<TEvents> = Extract<keyof TEvents, string | symbol>;
+type EventHandler<TEvents, TEvent extends EventKey<TEvents>> = Extract<TEvents[TEvent], EventListener>;
+type ListenerSet<TEvents, TEvent extends EventKey<TEvents>> = Set<EventHandler<TEvents, TEvent>>;
 
-type ListenerSet<TEvents extends EventMap, TEvent extends keyof TEvents> = Set<TEvents[TEvent]>;
+export class TypedEventEmitter<TEvents extends object> {
+  private readonly listeners = new Map<EventKey<TEvents>, Set<EventListener>>();
 
-export class TypedEventEmitter<TEvents extends EventMap> {
-  private readonly listeners = new Map<keyof TEvents, Set<TEvents[keyof TEvents]>>();
-
-  on<TEvent extends keyof TEvents>(event: TEvent, listener: TEvents[TEvent]): this {
+  on<TEvent extends EventKey<TEvents>>(event: TEvent, listener: EventHandler<TEvents, TEvent>): this {
     this.getListeners(event).add(listener);
     return this;
   }
 
-  once<TEvent extends keyof TEvents>(event: TEvent, listener: TEvents[TEvent]): this {
-    const onceListener = ((...args: Parameters<TEvents[TEvent]>) => {
-      this.off(event, onceListener as TEvents[TEvent]);
+  once<TEvent extends EventKey<TEvents>>(event: TEvent, listener: EventHandler<TEvents, TEvent>): this {
+    const onceListener = ((...args: Parameters<EventHandler<TEvents, TEvent>>) => {
+      this.off(event, onceListener as EventHandler<TEvents, TEvent>);
       listener(...args);
-    }) as TEvents[TEvent];
+    }) as EventHandler<TEvents, TEvent>;
 
     return this.on(event, onceListener);
   }
 
-  off<TEvent extends keyof TEvents>(event: TEvent, listener: TEvents[TEvent]): this {
+  off<TEvent extends EventKey<TEvents>>(event: TEvent, listener: EventHandler<TEvents, TEvent>): this {
     const listeners = this.listeners.get(event);
 
     if (!listeners) {
@@ -35,7 +36,7 @@ export class TypedEventEmitter<TEvents extends EventMap> {
     return this;
   }
 
-  removeAllListeners<TEvent extends keyof TEvents>(event?: TEvent): this {
+  removeAllListeners<TEvent extends EventKey<TEvents>>(event?: TEvent): this {
     if (event === undefined) {
       this.listeners.clear();
       return this;
@@ -45,25 +46,28 @@ export class TypedEventEmitter<TEvents extends EventMap> {
     return this;
   }
 
-  listenerCount<TEvent extends keyof TEvents>(event: TEvent): number {
+  listenerCount<TEvent extends EventKey<TEvents>>(event: TEvent): number {
     return this.listeners.get(event)?.size ?? 0;
   }
 
-  protected emit<TEvent extends keyof TEvents>(event: TEvent, ...args: Parameters<TEvents[TEvent]>): boolean {
+  protected emit<TEvent extends EventKey<TEvents>>(
+    event: TEvent,
+    ...args: Parameters<EventHandler<TEvents, TEvent>>
+  ): boolean {
     const listeners = this.listeners.get(event);
 
     if (!listeners || listeners.size === 0) {
       return false;
     }
 
-    for (const listener of [...listeners] as TEvents[TEvent][]) {
+    for (const listener of [...listeners] as EventHandler<TEvents, TEvent>[]) {
       listener(...args);
     }
 
     return true;
   }
 
-  private getListeners<TEvent extends keyof TEvents>(event: TEvent): ListenerSet<TEvents, TEvent> {
+  private getListeners<TEvent extends EventKey<TEvents>>(event: TEvent): ListenerSet<TEvents, TEvent> {
     const existing = this.listeners.get(event);
 
     if (existing) {
@@ -71,7 +75,7 @@ export class TypedEventEmitter<TEvents extends EventMap> {
     }
 
     const created: ListenerSet<TEvents, TEvent> = new Set();
-    this.listeners.set(event, created as Set<TEvents[keyof TEvents]>);
+    this.listeners.set(event, created as Set<EventListener>);
     return created;
   }
 }

@@ -5,4 +5,5 @@ await Bun.build({
   format: "esm",
   sourcemap: "external",
   minify: false,
+  external: ["socket.io-client"],
 });

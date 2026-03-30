@@ -52,6 +52,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "socket.io-client": "2.5.0",
     "zod": "^4.3.6"
   }
 }

@@ -30,6 +30,7 @@ export interface TipplyTransportOptions {
   fetch?: FetchLike;
   proxyBaseUrl?: string;
   publicBaseUrl?: string;
+  alertSocketBaseUrl?: string;
   appOrigin?: string;
   cookieName?: string;
   includeCredentials?: boolean;

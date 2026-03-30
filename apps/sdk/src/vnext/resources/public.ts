@@ -7,6 +7,7 @@ import { goalVotingConfigurationSchema, publicGoalWidgetSchema, publicTemplateSc
 import type { GoalId, UserId } from "../../domain/ids";
 import type { GoalVotingConfiguration, PublicGoalWidget, PublicTemplate, TipsGoalTemplateConfig } from "../../domain/shared";
 import type { TipsGoalConfiguration } from "../../domain/settings";
+import { PublicTipAlertsListener, type TipAlertsListener, type TipAlertsListenerOptions } from "../../realtime/tip-alerts";
 import { requestAndParse } from "../request";
 
 class PublicGoalWidgetResource {
@@ -193,17 +194,30 @@ class PublicWidgetMessageResource {
   }
 }
 
+class PublicTipAlertsResource {
+  constructor(
+    private readonly transport: TipplyTransport,
+    private readonly userId: UserId,
+  ) {}
+
+  createListener(options?: TipAlertsListenerOptions): TipAlertsListener {
+    return new PublicTipAlertsListener(this.userId, this.transport.config.transport.alertSocketBaseUrl, options);
+  }
+}
+
 export class PublicUserScope {
   readonly goals: PublicGoalsResource;
   readonly voting: PublicVotingResource;
   readonly templateFonts: PublicTemplateFontsResource;
   readonly widgetMessage: PublicWidgetMessageResource;
+  readonly tipAlerts: PublicTipAlertsResource;
 
   constructor(transport: TipplyTransport, userId: UserId) {
     this.goals = new PublicGoalsResource(transport, userId);
     this.voting = new PublicVotingResource(transport, userId);
     this.templateFonts = new PublicTemplateFontsResource(transport, userId);
     this.widgetMessage = new PublicWidgetMessageResource(transport, userId);
+    this.tipAlerts = new PublicTipAlertsResource(transport, userId);
   }
 }
 

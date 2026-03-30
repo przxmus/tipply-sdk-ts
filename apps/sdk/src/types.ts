@@ -1,6 +1,7 @@
 export type * from "./core/types";
 export type * from "./domain/ids";
 export type * from "./domain/shared";
+export type * from "./domain/alerts";
 export type * from "./domain/account";
 export type * from "./domain/settings";
 export type * from "./domain/goals";
@@ -8,3 +9,4 @@ export type * from "./domain/templates";
 export type * from "./domain/tips";
 export type * from "./domain/moderators";
 export type * from "./domain/withdrawals";
+export type * from "./realtime/tip-alerts";
