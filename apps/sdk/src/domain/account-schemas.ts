@@ -194,14 +194,14 @@ export const userProfileSchema = z
     fullname: wire.fullname,
     fullnameLocked: wire.fullname_locked,
     ...(wire.personal_number !== undefined ? { personalNumber: wire.personal_number } : {}),
-    ...(wire.address !== undefined && wire.address !== null ? { address: userProfileAddressSchema.parse(wire.address) } : {}),
+    ...(wire.address !== undefined && wire.address !== null ? { address: wire.address } : {}),
     ...(wire.bank_number !== undefined ? { bankNumber: wire.bank_number } : {}),
     ...(wire.bank_number_modification_date !== undefined
       ? { bankNumberModificationDate: wire.bank_number_modification_date }
       : {}),
     ...(wire.paypal_email !== undefined ? { paypalEmail: wire.paypal_email } : {}),
     ...(wire.google_avatar_url !== undefined ? { googleAvatarUrl: wire.google_avatar_url } : {}),
-    ...(wire.avatar !== undefined && wire.avatar !== null ? { avatar: userProfileAvatarSchema.parse(wire.avatar) } : {}),
+    ...(wire.avatar !== undefined && wire.avatar !== null ? { avatar: wire.avatar } : {}),
     ...(wire.theme_color !== undefined ? { themeColor: wire.theme_color } : {}),
     hits: wire.hits,
     ...(wire.social_media_link !== undefined ? { socialMediaLink: wire.social_media_link } : {}),

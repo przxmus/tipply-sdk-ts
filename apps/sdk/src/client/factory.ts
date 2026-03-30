@@ -1,4 +1,4 @@
-import { TipplyClient } from "../client";
+import { TipplyClientVNext } from "../vnext/client";
 import type { TipplyClientOptions } from "../core/types";
 
 /**
@@ -8,6 +8,6 @@ import type { TipplyClientOptions } from "../core/types";
  * the existing client implementation until the new domain surface is fully
  * migrated.
  */
-export function createTipplyClient(options: TipplyClientOptions = {}): TipplyClient {
-  return new TipplyClient(options);
+export function createTipplyClient(options: TipplyClientOptions = {}): TipplyClientVNext {
+  return new TipplyClientVNext(options);
 }

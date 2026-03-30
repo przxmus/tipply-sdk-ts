@@ -1,4 +1,4 @@
-import { TipplyClient } from "../client";
+import { TipplyPublicClient } from "../vnext/public-client";
 import type { TipplyClientOptions } from "../core/types";
 
 /**
@@ -8,6 +8,6 @@ import type { TipplyClientOptions } from "../core/types";
  * avoid authenticated operations until the dedicated public surface is
  * finalized.
  */
-export function createTipplyPublicClient(options: TipplyClientOptions = {}): TipplyClient {
-  return new TipplyClient(options);
+export function createTipplyPublicClient(options: TipplyClientOptions = {}): TipplyPublicClient {
+  return new TipplyPublicClient(options);
 }

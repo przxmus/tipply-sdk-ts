@@ -7,6 +7,7 @@ import { MeResource } from "./resources/me";
 import { ModeratorsResource } from "./resources/moderators";
 import { PaymentMethodsResource } from "./resources/payment-methods";
 import { ProfileResource } from "./resources/profile";
+import { PublicRootResource } from "./resources/public";
 import { ReportsResource } from "./resources/reports";
 import { SettingsResource } from "./resources/settings";
 import { TemplatesResource } from "./resources/templates";
@@ -29,6 +30,7 @@ export class TipplyClientVNext {
   readonly media: MediaResource;
   readonly withdrawals: WithdrawalsResource;
   readonly reports: ReportsResource;
+  readonly public: PublicRootResource;
 
   private readonly options: TipplyClientOptions;
   private readonly transport: TipplyTransport;
@@ -48,6 +50,7 @@ export class TipplyClientVNext {
     this.media = new MediaResource(this.transport);
     this.withdrawals = new WithdrawalsResource(this.transport);
     this.reports = new ReportsResource(this.transport);
+    this.public = new PublicRootResource(this.transport);
   }
 
   withSession(session: TipplySessionOptions): TipplyClientVNext {
