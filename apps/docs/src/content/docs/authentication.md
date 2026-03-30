@@ -9,7 +9,7 @@ description: Jak zdobyć auth token Tipply i jak poprawnie przekazać go do SDK.
 
 W praktyce do klienta przekazujesz samą wartość tokena, nie cały nagłówek `Cookie`.
 
-Auth client może potem sam aktualizować ten token na podstawie kolejnych nagłówków `Set-Cookie`, więc nie musisz ręcznie podmieniać `auth_token` po każdym requestcie.
+Auth client może potem sam aktualizować ten token na podstawie kolejnych nagłówków `Set-Cookie`.
 
 ## Jak pobrać `auth_token` z DevTools
 
