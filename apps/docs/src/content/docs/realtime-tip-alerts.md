@@ -13,6 +13,14 @@ const listener = await client.tipAlerts.createListener();
 
 Ten wariant najpierw odczytuje bieżącego użytkownika przez `client.me.get()`, a potem tworzy listener dla jego `userId`.
 
+Klient auth udostępnia też sterowanie aktualnie wyświetlanym alertem:
+
+```ts
+await client.tipAlerts.skipCurrent();
+```
+
+Ta operacja używa osobnego kanału komend websocket i skipuje tip, który jest aktualnie pokazywany przez alerty.
+
 ### Z klienta auth lub publicznego na podstawie widget URL
 
 ```ts
@@ -110,6 +118,16 @@ const listener = publicClient.tipAlerts.fromWidgetUrl(
   { reconnect: false },
 );
 ```
+
+## Komendy realtime
+
+`skipCurrent()` jest dostępne tylko na kliencie auth i działa dla bieżącej sesji użytkownika:
+
+```ts
+await client.tipAlerts.skipCurrent();
+```
+
+Pod spodem SDK łączy się z `https://ws.tipply.pl/socket.io` i wysyła komendę `skipMessage`.
 
 ## Domknięcie procesu
 

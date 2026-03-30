@@ -96,6 +96,7 @@ type TipplyTransportOptions = {
   proxyBaseUrl?: string;
   publicBaseUrl?: string;
   alertSocketBaseUrl?: string;
+  commandsSocketBaseUrl?: string;
   appOrigin?: string;
   cookieName?: string;
   includeCredentials?: boolean;
@@ -108,6 +109,7 @@ Domyślne wartości:
 - `proxyBaseUrl`: `https://proxy.tipply.pl`
 - `publicBaseUrl`: `https://tipply.pl/api`
 - `alertSocketBaseUrl`: `https://alert-ws.tipply.pl`
+- `commandsSocketBaseUrl`: `https://ws.tipply.pl`
 - `appOrigin`: `https://app.tipply.pl`
 - `cookieName`: `auth_token`
 - `includeCredentials`: `true`
