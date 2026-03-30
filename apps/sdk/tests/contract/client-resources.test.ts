@@ -118,6 +118,7 @@ function createFixtureClient() {
     if (method === "GET" && pathname === "/user/tipsmoderation/basket") return jsonResponse([{ id: "mod-tip-2" }]);
     if (method === "GET" && pathname === "/user/tipspending") return jsonResponse([{ id: "pending-tip-1" }]);
     if (method === "POST" && pathname === "/user/toggle-message-audio") return emptyResponse();
+    if (method === "POST" && pathname === "/test-tip") return jsonResponse({ ok: true, id: "test-tip-123" });
     if (method === "GET" && pathname === "/moderators") return jsonResponse([rawModeratorFixture]);
     if (method === "POST" && pathname === "/moderators") {
       return jsonResponse(rawModeratorFixture);
@@ -242,6 +243,7 @@ describe("resource namespaces", () => {
     const { client } = createFixtureClient();
 
     expect(typeof client.tips.id(asTipId("tip-123")).resend).toBe("function");
+    expect(typeof client.tips.sendTest).toBe("function");
     expect(typeof client.tipAlerts.skipCurrent).toBe("function");
   });
 
@@ -359,6 +361,10 @@ describe("resource namespaces", () => {
     await expect(client.tips.moderation.listBasket()).resolves.toEqual([{ id: "mod-tip-2" }]);
     await expect(client.tips.pending.list()).resolves.toEqual([{ id: "pending-tip-1" }]);
     await expect(client.tips.audio.toggle()).resolves.toBeUndefined();
+    await expect(client.tips.sendTest({ message: "testowa wiadomosc", amount: 1500 })).resolves.toEqual({
+      ok: true,
+      id: "test-tip-123",
+    });
   });
 
   test("moderators namespace supports read create remove and toggle", async () => {

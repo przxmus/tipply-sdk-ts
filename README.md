@@ -31,6 +31,10 @@ const client = createTipplyClient({
 });
 
 await client.tips.id(asTipId("tip-123")).resend();
+await client.tips.sendTest({
+  message: "SDK test tip",
+  amount: 1500,
+});
 await client.tipAlerts.skipCurrent();
 ```
 

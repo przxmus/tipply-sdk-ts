@@ -92,6 +92,7 @@ Ta referencja obejmuje wyłącznie metody, które są faktycznie zaimplementowan
 | Metoda | Zwraca |
 | --- | --- |
 | `client.tips.list().filter(filter).search(search).limit(limit).offset(offset).get(requestOptions?)` | `Promise<Tip[]>` |
+| `client.tips.sendTest(input, requestOptions?)` | `Promise<SendTestTipResult>` |
 | `client.tips.id(tipId).resend(requestOptions?)` | `Promise<void>` |
 | `client.tips.moderation.listQueue(requestOptions?)` | `Promise<TipModerationItem[]>` |
 | `client.tips.moderation.listBasket(requestOptions?)` | `Promise<TipModerationItem[]>` |

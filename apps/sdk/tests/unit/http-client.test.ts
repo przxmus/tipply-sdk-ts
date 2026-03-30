@@ -198,6 +198,33 @@ describe("http transport", () => {
     expectAuthCookie(requests[0]!.headers, "cookie-123");
   });
 
+  test("sends a test tip through the authenticated proxy API", async () => {
+    const { fetch, requests } = createMockFetch((request) => {
+      if (request.method === "POST" && request.url.pathname === "/test-tip") {
+        return jsonResponse({ ok: true, id: "test-tip-123" });
+      }
+
+      throw new Error(`Unhandled request: ${request.method} ${request.url.pathname}`);
+    });
+
+    const client = createTipplyClient({ authCookie: "cookie-123", fetch });
+
+    await expect(
+      client.tips.sendTest({
+        message: "testowa wiadomosc",
+        amount: 1500,
+      }),
+    ).resolves.toEqual({ ok: true, id: "test-tip-123" });
+
+    expect(requests[0]!.url.pathname).toBe("/test-tip");
+    expect(requests[0]!.body).toEqual({
+      message: "testowa wiadomosc",
+      amount: 1500,
+    });
+    expect(requests[0]!.headers.get("origin")).toBe("https://app.tipply.pl");
+    expectAuthCookie(requests[0]!.headers, "cookie-123");
+  });
+
   test("reads current user through the root factory", async () => {
     const { fetch } = createMockFetch(() => jsonResponse(rawCurrentUserFixture));
     const client = createTipplyClient({ authCookie: "cookie-123", fetch });

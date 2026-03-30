@@ -14,6 +14,7 @@ import {
   type PaymentMethodsConfiguration,
   type PublicGoalWidget,
   type PublicTemplate,
+  type SendTestTipResult,
   type TipAlertDonation,
   type TipAlertsListener,
   type Tip,
@@ -40,6 +41,7 @@ expectType<Promise<void>>(
 );
 expectType<Promise<Tip[]>>(client.tips.list().filter("amount").search("abc").limit(20).get());
 expectType<Promise<void>>(client.tips.id(asTipId("tip-1")).resend());
+expectType<Promise<SendTestTipResult>>(client.tips.sendTest({ message: "Test", amount: 1500 }));
 expectType<Promise<Withdrawal[]>>(client.withdrawals.list().status("accepted", "transferred").limit(10).get());
 expectType<Promise<PaymentMethodsConfiguration>>(client.paymentMethods.configuration.get());
 expectType<Promise<UserPaymentMethod>>(client.paymentMethods.method("paypal").update({ minimalAmount: 1500 }));

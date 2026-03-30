@@ -12,6 +12,10 @@ const client = createTipplyClient({
 });
 
 await client.tips.id(asTipId(tipId)).resend();
+await client.tips.sendTest({
+  message: "SDK test tip",
+  amount: 1500,
+});
 await client.tipAlerts.skipCurrent();
 
-console.log(`Resent tip ${tipId} and skipped the currently visible tip alert.`);
+console.log(`Resent tip ${tipId}, sent a test tip, and skipped the currently visible tip alert.`);
