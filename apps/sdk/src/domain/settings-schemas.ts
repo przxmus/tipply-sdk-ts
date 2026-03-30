@@ -212,22 +212,34 @@ const userConfigurationWireSchema = z
   })
   .passthrough();
 
-export const userConfigurationSchema = userConfigurationWireSchema.transform<UserConfiguration>((wire) => {
-  switch (wire.type) {
-    case "COUNTER_TO_END_LIVE":
-      return { type: wire.type, config: counterToEndLiveConfigurationSchema.parse(wire.config) };
-    case "GLOBAL":
-      return { type: wire.type, config: globalConfigurationSchema.parse(wire.config) };
-    case "TIP_ALERT":
-      return { type: wire.type, config: tipAlertConfigurationSchema.parse(wire.config) };
-    case "TIPS_GOAL":
-      return { type: wire.type, config: tipsGoalConfigurationSchema.parse(wire.config) };
+function parseKnownUserConfiguration(type: string, config: unknown): UserConfiguration["config"] {
+  switch (type) {
+    case "COUNTER_TO_END_LIVE": {
+      const parsed = counterToEndLiveConfigurationSchema.safeParse(config);
+      return parsed.success ? parsed.data : unknownRecordSchema.parse(config);
+    }
+    case "GLOBAL": {
+      const parsed = globalConfigurationSchema.safeParse(config);
+      return parsed.success ? parsed.data : unknownRecordSchema.parse(config);
+    }
+    case "TIP_ALERT": {
+      const parsed = tipAlertConfigurationSchema.safeParse(config);
+      return parsed.success ? parsed.data : unknownRecordSchema.parse(config);
+    }
+    case "TIPS_GOAL": {
+      const parsed = tipsGoalConfigurationSchema.safeParse(config);
+      return parsed.success ? parsed.data : unknownRecordSchema.parse(config);
+    }
     default:
-      return {
-        type: wire.type,
-        config: unknownRecordSchema.parse(wire.config),
-      };
+      return unknownRecordSchema.parse(config);
   }
+}
+
+export const userConfigurationSchema = userConfigurationWireSchema.transform<UserConfiguration>((wire) => {
+  return {
+    type: wire.type as UserConfiguration["type"],
+    config: parseKnownUserConfiguration(wire.type, wire.config),
+  } as UserConfiguration;
 });
 
 export const userConfigurationListSchema = z.array(userConfigurationSchema).transform<UserConfiguration[]>((wire) => wire);

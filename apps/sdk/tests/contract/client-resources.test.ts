@@ -201,6 +201,42 @@ describe("resource namespaces", () => {
     await expect(client.settings.profanityFilter.get()).resolves.toEqual(profanityFilterFixture);
   });
 
+  test("settings list tolerates malformed known config records", async () => {
+    const { fetch } = createMockFetch((request) => {
+      if (request.method === "GET" && request.url.pathname === "/user/configuration") {
+        return jsonResponse([
+          {
+            type: "GLOBAL",
+            config: {
+              forbidden_words: {
+                enabled: true,
+                words: ["blocked-word"],
+              },
+              profanity_filter_enabled: true,
+            },
+          },
+        ]);
+      }
+
+      throw new Error(`Unhandled request: ${request.method} ${request.url.pathname}`);
+    });
+
+    const client = createTipplyClient({ authCookie: "cookie-123", fetch });
+
+    await expect(client.settings.list()).resolves.toEqual([
+      {
+        type: "GLOBAL",
+        config: {
+          forbidden_words: {
+            enabled: true,
+            words: ["blocked-word"],
+          },
+          profanity_filter_enabled: true,
+        },
+      },
+    ]);
+  });
+
   test("goals namespace supports list create update reset and voting", async () => {
     const { client } = createFixtureClient();
     await expect(client.goals.list()).resolves.toEqual([goalFixture]);

@@ -28,7 +28,9 @@ function renderConfiguration(configuration: UserConfiguration): void {
       break;
     case "TIP_ALERT":
       if ("voiceMessages" in configuration.config) {
-        const config = configuration.config as { voiceMessages: { enabled: boolean } };
+        const config = configuration.config as {
+          voiceMessages: { enabled: boolean };
+        };
         console.log(config.voiceMessages.enabled);
       }
       break;
@@ -39,6 +41,10 @@ function renderConfiguration(configuration: UserConfiguration): void {
 
 void readConfigurationTypes();
 
-client.paymentMethods.method("cashbill_blik").update({
-  enabled: false,
-});
+// client.paymentMethods.method("cashbill_blik").update({
+//   minimalAmount: 10000,
+// });
+
+// client.me.get().then((me) => {
+//   console.log(me.email);
+// });
