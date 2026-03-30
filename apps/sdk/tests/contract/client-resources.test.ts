@@ -224,6 +224,20 @@ describe("resource namespaces", () => {
     expect(typeof listener.on).toBe("function");
   });
 
+  test("public client can create a tip alert listener from a widget URL", () => {
+    const client = createTipplyPublicClient();
+    const listener = client.tipAlerts.fromWidgetUrl("https://widgets.tipply.pl/TIP_ALERT/user-123");
+
+    expect(listener.userId).toBe("user-123");
+  });
+
+  test("authenticated client can create a tip alert listener from the current session user", async () => {
+    const { client } = createFixtureClient();
+    const listener = await client.tipAlerts.createListener();
+
+    expect(listener.userId).toBe(currentUserFixture.id);
+  });
+
   test("settings list tolerates malformed known config records", async () => {
     const { fetch } = createMockFetch((request) => {
       if (request.method === "GET" && request.url.pathname === "/user/configuration") {

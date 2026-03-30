@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 
 import { asUserId } from "../../src";
 import { parseTipAlertDonation } from "../../src/domain/alerts-schemas";
-import { PublicTipAlertsListener } from "../../src/realtime/tip-alerts";
+import { parseTipAlertsWidgetUrl, PublicTipAlertsListener } from "../../src/realtime/tip-alerts";
 
 const rawDonationPayload = {
   receiver_id: "ec645d33-15b7-42c4-bc85-82da124b83bf",
@@ -135,6 +135,26 @@ describe("tip alert donation parser", () => {
     expect(donation.audioUrl).toBeNull();
     expect(donation.goalId).toBeNull();
     expect(donation.goalTitle).toBeNull();
+  });
+
+  test("extracts the user id from a full widget URL", () => {
+    const userId = parseTipAlertsWidgetUrl(
+      "https://widgets.tipply.pl/TIP_ALERT/ec645d33-15b7-42c4-bc85-82da124b83bf",
+    );
+
+    expect(userId).toBe("ec645d33-15b7-42c4-bc85-82da124b83bf");
+  });
+
+  test("extracts the user id from a raw TIP_ALERT path", () => {
+    const userId = parseTipAlertsWidgetUrl("/TIP_ALERT/ec645d33-15b7-42c4-bc85-82da124b83bf");
+
+    expect(userId).toBe("ec645d33-15b7-42c4-bc85-82da124b83bf");
+  });
+
+  test("rejects non-TIP_ALERT widget URLs", () => {
+    expect(() => parseTipAlertsWidgetUrl("https://widgets.tipply.pl/TIPS_GOAL/user-123")).toThrow(
+      "Invalid TIP_ALERT widget URL",
+    );
   });
 });
 

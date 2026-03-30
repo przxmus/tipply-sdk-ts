@@ -26,6 +26,7 @@ const client = createTipplyClient();
 const publicClient = createTipplyPublicClient();
 
 expectType<Promise<CurrentUser>>(client.me.get());
+expectType<Promise<TipAlertsListener>>(client.tipAlerts.createListener());
 expectType<Promise<Goal[]>>(client.goals.list());
 expectType<Promise<void>>(client.goals.id(asGoalId("goal-1")).reset());
 expectType<Promise<void>>(
@@ -44,6 +45,8 @@ expectType<Promise<boolean>>(publicClient.user(asUserId("user-1")).widgetMessage
 expectType<Promise<string>>(publicClient.user(asUserId("user-1")).templateFonts.get());
 expectType<Promise<PublicTemplate<"TIPS_GOAL", TipsGoalTemplateConfig>[]>>(publicClient.user(asUserId("user-1")).goals.templates.list());
 expectType<TipAlertsListener>(publicClient.user(asUserId("user-1")).tipAlerts.createListener());
+expectType<TipAlertsListener>(publicClient.tipAlerts.fromWidgetUrl("https://widgets.tipply.pl/TIP_ALERT/user-1"));
+expectType<TipAlertsListener>(client.tipAlerts.fromWidgetUrl("https://widgets.tipply.pl/TIP_ALERT/user-1"));
 expectType<Promise<MediaFormats>>(client.media.id(asMediaId(1)).formats.get());
 expectType<Promise<ArrayBuffer>>(client.withdrawals.id(asWithdrawalId("withdrawal-1")).confirmationPdf.get());
 
