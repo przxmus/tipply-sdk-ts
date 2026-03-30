@@ -1,5 +1,6 @@
 import type { MinorUnitAmount, UnknownConfiguration, UnknownThresholdEntry, UserConfigurationType } from "./shared";
 
+/** Configuration record for the `COUNTER_TO_END_LIVE` widget. */
 export interface CounterToEndLiveConfiguration {
   priceFromAddTime: MinorUnitAmount;
   extraTime: number;
@@ -11,21 +12,25 @@ export interface CounterToEndLiveConfiguration {
   isCountdownRunning: boolean;
 }
 
+/** Global moderation settings grouped under the `GLOBAL` record. */
 export interface GlobalConfiguration {
   forbiddenWords: string[];
   profanityFilterEnabled: boolean;
 }
 
+/** Text-to-speech configuration for tip alert voice messages. */
 export interface TipAlertVoiceMessagesConfiguration {
   enabled: boolean;
   amount: MinorUnitAmount;
 }
 
+/** Delay settings applied before queued tips are shown. */
 export interface TipAlertDelayConfiguration {
   enabled: boolean;
   delay: number;
 }
 
+/** Default sound selection used by the tip alert widget. */
 export interface TipAlertDefaultSoundSelection {
   fileId: string;
   fileName: string;
@@ -33,10 +38,12 @@ export interface TipAlertDefaultSoundSelection {
   mediumId: number | string;
 }
 
+/** Default template selection used by the tip alert widget. */
 export interface TipAlertDefaultTemplateSelection {
   templateId: string;
 }
 
+/** Threshold-specific speech synthesis settings for tip alerts. */
 export interface TipAlertSynthThreshold {
   options: {
     volume: number;
@@ -51,6 +58,7 @@ export interface TipAlertSynthThreshold {
   templateId: string;
 }
 
+/** Visual and threshold settings for tip alert presentation. */
 export interface TipAlertDisplaySettings {
   defaults: {
     sounds: TipAlertDefaultSoundSelection;
@@ -63,6 +71,7 @@ export interface TipAlertDisplaySettings {
   };
 }
 
+/** Full `TIP_ALERT` configuration record. */
 export interface TipAlertConfiguration {
   voiceMessages: TipAlertVoiceMessagesConfiguration;
   delayingTips: TipAlertDelayConfiguration;
@@ -71,6 +80,7 @@ export interface TipAlertConfiguration {
   kickActivityTimer: number;
 }
 
+/** Public and private configuration for the `TIPS_GOAL` widget. */
 export interface TipsGoalConfiguration {
   goalValue: MinorUnitAmount;
   goalName: string;
@@ -78,24 +88,29 @@ export interface TipsGoalConfiguration {
   amountWithoutCommission: boolean;
 }
 
+/** Result returned by alert visibility and sound toggle endpoints. */
 export interface ToggleDisabledResult {
   disabled: boolean;
 }
 
+/** Forbidden words moderation settings. */
 export interface ForbiddenWordsSettings {
   enabled: boolean;
   words: string[];
 }
 
+/** Profanity filter enablement state. */
 export interface ProfanityFilterSettings {
   enabled: boolean;
 }
 
+/** Generic user configuration record keyed by Tipply configuration type. */
 export interface UserConfigurationRecord<TType extends string = UserConfigurationType, TConfig = UnknownConfiguration> {
   type: TType;
   config: TConfig;
 }
 
+/** Union of known user configuration records exposed by the SDK. */
 export type UserConfiguration =
   | UserConfigurationRecord<"COUNTER_TO_END_LIVE", CounterToEndLiveConfiguration>
   | UserConfigurationRecord<"GLOBAL", GlobalConfiguration>
