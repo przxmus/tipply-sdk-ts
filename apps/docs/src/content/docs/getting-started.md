@@ -54,11 +54,18 @@ const enabled = await publicUser.widgetMessage.get();
 ## Realtime tip alerts
 
 ```ts
-import { asUserId } from "tipply-sdk-ts";
+import { createTipplyClient } from "tipply-sdk-ts";
 import { createTipplyPublicClient } from "tipply-sdk-ts/public";
 
-const client = createTipplyPublicClient();
-const listener = client.user(asUserId("user-123")).tipAlerts.createListener();
+const listener = process.env.TIPPLY_AUTH_COOKIE
+  ? await createTipplyClient({
+      session: {
+        authCookie: process.env.TIPPLY_AUTH_COOKIE,
+      },
+    }).tipAlerts.createListener()
+  : createTipplyPublicClient().tipAlerts.fromWidgetUrl(
+      "https://widgets.tipply.pl/TIP_ALERT/user-123",
+    );
 
 listener.on("ready", () => {
   console.log("Connected");
@@ -74,5 +81,6 @@ await listener.connect();
 ```
 
 Realtime tip alerts are officially supported in Bun, Node.js, and browser runtimes. Edge runtimes are outside the supported websocket target for this API.
+If you only have a widget URL, you do not need to extract the user ID manually. The SDK can create the listener directly from the `TIP_ALERT` link.
 
 Continue to the [SDK Reference](/sdk-reference/) for the full namespace list.

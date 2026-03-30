@@ -35,10 +35,16 @@ The authenticated client exposes:
 - `client.withdrawals.list().status("accepted", "transferred").limit(20).get()`
 - `client.public.user(userId).goals.id(goalId).widget.get()`
 - `client.public.user(userId).tipAlerts.createListener(options?)`
+- `client.public.tipAlerts.fromWidgetUrl(widgetUrl, options?)`
+- `await client.tipAlerts.createListener(options?)`
 
 ## Realtime Tip Alerts
 
-`client.public.user(userId).tipAlerts.createListener(options?)` returns a typed realtime listener with:
+You can create a typed realtime listener with any of these entrypoints:
+
+- `client.public.user(userId).tipAlerts.createListener(options?)`
+- `client.public.tipAlerts.fromWidgetUrl(widgetUrl, options?)`
+- `await client.tipAlerts.createListener(options?)`
 
 - `connect()`
 - `destroy()`
@@ -57,11 +63,18 @@ Supported events:
 ## Example
 
 ```ts
-import { asUserId } from "tipply-sdk-ts";
+import { createTipplyClient } from "tipply-sdk-ts";
 import { createTipplyPublicClient } from "tipply-sdk-ts/public";
 
-const client = createTipplyPublicClient();
-const listener = client.user(asUserId("user-123")).tipAlerts.createListener();
+const listener = process.env.TIPPLY_AUTH_COOKIE
+  ? await createTipplyClient({
+      session: {
+        authCookie: process.env.TIPPLY_AUTH_COOKIE,
+      },
+    }).tipAlerts.createListener()
+  : createTipplyPublicClient().tipAlerts.fromWidgetUrl(
+      "https://widgets.tipply.pl/TIP_ALERT/user-123",
+    );
 
 listener.on("donation", (donation) => {
   console.log(donation);

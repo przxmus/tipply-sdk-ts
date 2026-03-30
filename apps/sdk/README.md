@@ -75,11 +75,18 @@ const templateFontsCss = await user.templateFonts.get();
 ### Realtime tip alerts
 
 ```ts
-import { asUserId } from "tipply-sdk-ts";
+import { createTipplyClient } from "tipply-sdk-ts";
 import { createTipplyPublicClient } from "tipply-sdk-ts/public";
 
-const client = createTipplyPublicClient();
-const listener = client.user(asUserId("user-123")).tipAlerts.createListener();
+const listener = process.env.TIPPLY_AUTH_COOKIE
+  ? await createTipplyClient({
+      session: {
+        authCookie: process.env.TIPPLY_AUTH_COOKIE,
+      },
+    }).tipAlerts.createListener()
+  : createTipplyPublicClient().tipAlerts.fromWidgetUrl(
+      "https://widgets.tipply.pl/TIP_ALERT/user-123",
+    );
 
 listener.on("ready", () => {
   console.log("Tip alerts listener connected");
@@ -139,6 +146,8 @@ Public user scope additions:
 - `client.public.user(userId).templateFonts.get()`
 - `client.public.user(userId).goals.configuration.get()` parses both legacy raw config payloads and the wrapped `{ type, config }` response documented in `tipply_new_openapi.yaml`
 - `client.public.user(userId).tipAlerts.createListener(options?)` listens for realtime `TIP_ALERT` donations
+- `client.public.tipAlerts.fromWidgetUrl(widgetUrl, options?)` creates a realtime listener directly from a `TIP_ALERT` widget URL
+- `await client.tipAlerts.createListener(options?)` resolves the current authenticated user and creates the realtime listener without passing a user ID
 
 ## Auth Model
 
@@ -175,6 +184,7 @@ The live suite only performs authenticated reads by default and discovers `userI
 - Template updates are modeled as full payload replacement for `PUT /templates/{uuid}`.
 - Response schemas tolerate additional unknown fields returned by Tipply.
 - Realtime tip alerts are officially supported in Bun, Node.js, and browser runtimes. Edge-style runtimes are not an official websocket target for this API.
+- If you only have a public widget URL, use `client.public.tipAlerts.fromWidgetUrl(...)` or `createTipplyPublicClient().tipAlerts.fromWidgetUrl(...)`. The user ID is the segment after `/TIP_ALERT/` in that URL.
 
 ### Browser session cookies
 

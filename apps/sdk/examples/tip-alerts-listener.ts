@@ -1,17 +1,23 @@
-import { asUserId } from "../src";
+import { createTipplyClient } from "../src";
 import { createTipplyPublicClient } from "../src/public";
 
-const userId = process.env.TIPPLY_USER_ID;
+const authCookie = process.env.TIPPLY_AUTH_COOKIE;
+const widgetUrl = process.env.TIPPLY_WIDGET_URL;
 
-if (!userId) {
-  throw new Error("Set TIPPLY_USER_ID to the Tipply user ID used by the TIP_ALERT widget.");
+if (!authCookie && !widgetUrl) {
+  throw new Error("Set either TIPPLY_AUTH_COOKIE or TIPPLY_WIDGET_URL.");
 }
 
-const client = createTipplyPublicClient();
-const listener = client.user(asUserId(userId)).tipAlerts.createListener();
+const listener = authCookie
+  ? await createTipplyClient({
+      session: {
+        authCookie,
+      },
+    }).tipAlerts.createListener()
+  : createTipplyPublicClient().tipAlerts.fromWidgetUrl(widgetUrl!);
 
 listener.on("ready", () => {
-  console.log(`Listening for donations on user ${userId}`);
+  console.log(`Listening for donations on user ${listener.userId}`);
 });
 
 listener.on("donation", (donation) => {
