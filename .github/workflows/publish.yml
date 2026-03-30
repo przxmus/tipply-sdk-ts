@@ -25,7 +25,6 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write
 
 concurrency:
   group: publish-sdk
@@ -154,8 +153,6 @@ jobs:
 
           echo "next_version=$NEXT_VERSION" >> "$GITHUB_OUTPUT"
           echo "tag_name=v$NEXT_VERSION" >> "$GITHUB_OUTPUT"
-          echo "release_branch=release/sdk-v$NEXT_VERSION" >> "$GITHUB_OUTPUT"
-
       - name: Bump package version
         env:
           NEXT_VERSION: ${{ steps.version.outputs.next_version }}
@@ -190,59 +187,12 @@ jobs:
         if: always()
         run: rm -f apps/sdk/README.md
 
-      - name: Push release branch and tag
+      - name: Push commit and tag
         env:
-          RELEASE_BRANCH: ${{ steps.version.outputs.release_branch }}
           TAG_NAME: ${{ steps.version.outputs.tag_name }}
         run: |
-          git push origin "HEAD:refs/heads/$RELEASE_BRANCH"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
           git push origin "$TAG_NAME"
-
-      - name: Create release pull request
-        id: release_pr
-        uses: actions/github-script@v7
-        env:
-          NEXT_VERSION: ${{ steps.version.outputs.next_version }}
-          RELEASE_BRANCH: ${{ steps.version.outputs.release_branch }}
-          TAG_NAME: ${{ steps.version.outputs.tag_name }}
-          NPM_TAG: ${{ inputs.npm_tag }}
-        with:
-          script: |
-            const { owner, repo } = context.repo;
-            const base = context.payload.repository.default_branch;
-            const head = process.env.RELEASE_BRANCH;
-
-            const existing = await github.rest.pulls.list({
-              owner,
-              repo,
-              state: "open",
-              head: `${owner}:${head}`,
-              base,
-            });
-
-            let pullRequest = existing.data[0];
-
-            if (!pullRequest) {
-              const created = await github.rest.pulls.create({
-                owner,
-                repo,
-                head,
-                base,
-                title: `chore(release): publish v${process.env.NEXT_VERSION}`,
-                body: [
-                  `Prepare repository changes for npm release \`${process.env.NEXT_VERSION}\`.`,
-                  "",
-                  `- Package: \`tipply-sdk-ts\``,
-                  `- Version: \`${process.env.NEXT_VERSION}\``,
-                  `- npm tag: \`${process.env.NPM_TAG}\``,
-                  `- git tag: \`${process.env.TAG_NAME}\``,
-                ].join("\n"),
-              });
-
-              pullRequest = created.data;
-            }
-
-            core.setOutput("html_url", pullRequest.html_url);
 
       - name: Generate release notes
         id: release_notes
@@ -279,8 +229,6 @@ jobs:
         env:
           NEXT_VERSION: ${{ steps.version.outputs.next_version }}
           TAG_NAME: ${{ steps.version.outputs.tag_name }}
-          RELEASE_BRANCH: ${{ steps.version.outputs.release_branch }}
-          RELEASE_PR_URL: ${{ steps.release_pr.outputs.html_url }}
           RELEASE_URL: ${{ steps.github_release.outputs.html_url }}
         run: |
           {
@@ -288,9 +236,7 @@ jobs:
             echo
             echo "- Package: \`tipply-sdk-ts\`"
             echo "- Version: \`$NEXT_VERSION\`"
-            echo "- Release branch: \`$RELEASE_BRANCH\`"
             echo "- Git tag: \`$TAG_NAME\`"
             echo "- npm tag: \`${{ inputs.npm_tag }}\`"
-            echo "- Release PR: $RELEASE_PR_URL"
             echo "- GitHub release: $RELEASE_URL"
           } >> "$GITHUB_STEP_SUMMARY"
