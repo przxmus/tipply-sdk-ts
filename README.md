@@ -39,7 +39,9 @@ console.log(widgetMessageEnabled);
 
 ## Dokumentacja
 
-Pełna dokumentacja jest w aplikacji `apps/docs` i zawiera:
+Pełna dokumentacja jest dostępna online pod adresem https://tipply-sdk.przxmus.dev.
+
+Lokalnie możesz ją uruchomić z aplikacji `apps/docs`, która zawiera:
 
 - pobieranie `auth_token` z DevToolsów Tipply
 - konfigurację klienta auth i klienta publicznego

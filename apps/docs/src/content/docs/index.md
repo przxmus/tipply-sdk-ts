@@ -12,6 +12,8 @@ hero:
       variant: minimal
 ---
 
+Dokumentacja online jest dostępna pod adresem https://tipply-sdk.przxmus.dev.
+
 Dokumentacja obejmuje cały aktualnie zaimplementowany surface `tipply-sdk-ts`: konfigurację klienta, sposób pobrania `auth_token`, przykłady użycia, realtime `TIP_ALERT` oraz pełną referencję metod.
 
 ## Co znajdziesz w środku
