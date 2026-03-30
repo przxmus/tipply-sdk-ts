@@ -1,11 +1,16 @@
 import type { FetchLike, MaybePromise, TipplyClientOptions, TipplySessionOptions, TipplyTransportOptions } from "./types";
 
+/** Fully normalized client options used internally by the SDK transport layer. */
 export interface ResolvedTipplyClientOptions {
+  /** Normalized session configuration used for authenticated requests. */
   session: TipplySessionOptions | undefined;
+  /** Normalized transport configuration with defaults applied. */
   transport: ResolvedTipplyTransportOptions;
+  /** Whether response validation is enabled for parsed requests. */
   validation: boolean;
 }
 
+/** Fully normalized transport configuration with defaults applied. */
 export interface ResolvedTipplyTransportOptions {
   fetch: FetchLike;
   proxyBaseUrl: string;
@@ -42,6 +47,7 @@ function resolveSession(options: TipplyClientOptions): TipplySessionOptions | un
   return undefined;
 }
 
+/** Resolves high-level client options into the normalized internal configuration shape. */
 export function resolveClientOptions(options: TipplyClientOptions = {}): ResolvedTipplyClientOptions {
   const fetchImpl = options.transport?.fetch ?? options.fetch ?? globalThis.fetch;
 
@@ -68,6 +74,7 @@ export function resolveClientOptions(options: TipplyClientOptions = {}): Resolve
   };
 }
 
+/** Resolves the current session cookie value from any supported session strategy. */
 export async function resolveSessionCookie(session: TipplySessionOptions | undefined): Promise<string | undefined> {
   if (!session) {
     return undefined;

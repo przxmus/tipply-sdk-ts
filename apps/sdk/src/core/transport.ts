@@ -79,6 +79,7 @@ function createAbortSignal(timeoutMs: number, signal: AbortSignal | undefined): 
   };
 }
 
+/** Low-level HTTP transport shared by every SDK resource. */
 export class TipplyTransport {
   private readonly resolvedOptions: ReturnType<typeof resolveClientOptions>;
 
@@ -86,14 +87,17 @@ export class TipplyTransport {
     this.resolvedOptions = resolveClientOptions(options);
   }
 
+  /** Returns a new transport instance with a different top-level client configuration. */
   withOptions(options: TipplyClientOptions): TipplyTransport {
     return new TipplyTransport(options);
   }
 
+  /** Returns the normalized runtime transport configuration. */
   get config(): ReturnType<typeof resolveClientOptions> {
     return this.resolvedOptions;
   }
 
+  /** Executes a low-level HTTP request against either the proxy or public API. */
   async request<TResponse>(request: TipplyTransportRequest<TResponse>, requestOptions: RequestOptions = {}): Promise<TResponse> {
     const scope = request.scope ?? "proxy";
     const baseUrl = resolveBaseUrl(scope, this.resolvedOptions);

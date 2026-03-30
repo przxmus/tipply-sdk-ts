@@ -1,6 +1,7 @@
 import type { UserId } from "./ids";
 import type { IsoDateString, MinorUnitAmount, Notification, Tip, UnknownSocialMediaLink, UnknownProviderMetadata } from "./shared";
 
+/** Authenticated account payload returned by `client.me.get()`. */
 export interface CurrentUser {
   id: UserId;
   username: string;
@@ -37,8 +38,10 @@ export interface CurrentUser {
   validatedWithBankTransfer: boolean;
 }
 
+/** Raw dashboard announcement payload returned by Tipply. */
 export type DashboardAnnouncement = Record<string, unknown>;
 
+/** Aggregated income metrics shown on the dashboard. */
 export interface IncomeStatistics {
   total: MinorUnitAmount;
   last28: MinorUnitAmount;
@@ -48,6 +51,7 @@ export interface IncomeStatistics {
   currentMonthPercentChange: number;
 }
 
+/** Aggregated tip metrics shown on the dashboard. */
 export interface TipStatistics {
   count: number;
   countPercentage: number;
@@ -55,6 +59,7 @@ export interface TipStatistics {
   messagesLengthPercentage: number;
 }
 
+/** Postal address stored on the user's profile. */
 export interface UserProfileAddress {
   city: string;
   street: string;
@@ -62,6 +67,7 @@ export interface UserProfileAddress {
   country: string;
 }
 
+/** Avatar metadata embedded in the user profile response. */
 export interface UserProfileAvatar {
   id: number;
   providerMetadata: UnknownProviderMetadata;
@@ -79,6 +85,7 @@ export interface UserProfileAvatar {
   size: number;
 }
 
+/** Authenticated profile payload returned by `client.profile.get()`. */
 export interface UserProfile {
   id: UserId;
   link: string;
@@ -105,11 +112,15 @@ export interface UserProfile {
   showRankingAndMessages: boolean;
 }
 
+/** Writable subset of page settings exposed by `client.profile.page.updateSettings()`. */
 export interface UpdatePageSettingsInput {
   description?: string;
   replaceEmotes?: boolean;
 }
 
+/** Public social media link entry returned for profile slugs. */
 export type PublicSocialMediaLink = UnknownSocialMediaLink;
+/** Alias used for dashboard recent tips. */
 export type RecentTip = Tip;
+/** Alias used for dashboard notifications. */
 export type DashboardNotification = Notification;

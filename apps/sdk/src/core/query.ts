@@ -4,6 +4,7 @@ function appendQueryValue(searchParams: URLSearchParams, key: string, value: str
   searchParams.append(key, String(value));
 }
 
+/** Serializes a request query object into a URL query string. */
 export function serializeQuery(query?: RequestQuery): string {
   if (!query) {
     return "";

@@ -1,6 +1,7 @@
 import type { TemplateId } from "./ids";
 import type { IsoDateString, MinorUnitAmount } from "./shared";
 
+/** Input required to create a new goal. */
 export interface CreateGoalInput {
   title: string;
   target: MinorUnitAmount;
@@ -9,12 +10,14 @@ export interface CreateGoalInput {
   templateId: TemplateId;
 }
 
+/** Full goal payload accepted by the update endpoint. */
 export interface UpdateGoalInput extends CreateGoalInput {
   countFrom: IsoDateString;
   createdAt: IsoDateString;
   isDefault: boolean;
 }
 
+/** Serializes a goal creation payload to the wire format expected by Tipply. */
 export function toCreateGoalWire(input: CreateGoalInput): Record<string, unknown> {
   return {
     title: input.title,
@@ -25,6 +28,7 @@ export function toCreateGoalWire(input: CreateGoalInput): Record<string, unknown
   };
 }
 
+/** Serializes a goal update payload to the wire format expected by Tipply. */
 export function toUpdateGoalWire(input: UpdateGoalInput): Record<string, unknown> {
   return {
     title: input.title,
