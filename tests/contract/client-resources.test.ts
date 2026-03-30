@@ -134,7 +134,7 @@ function createFixtureClient() {
   });
 
   const client = new TipplyClient({
-    accessToken: "token-123",
+    authCookie: "cookie-123",
     fetch,
     validateResponses: true,
   });

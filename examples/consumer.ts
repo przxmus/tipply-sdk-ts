@@ -1,7 +1,7 @@
 import { TipplyClient, type UserConfigurationRecord } from "../src";
 
 const client = new TipplyClient({
-  getAccessToken: async () => process.env.TIPPLY_ACCESS_TOKEN,
+  getAuthCookie: async () => process.env.TIPPLY_AUTH_COOKIE,
 });
 
 async function readConfigurationTypes(): Promise<void> {

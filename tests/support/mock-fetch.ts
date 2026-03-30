@@ -5,6 +5,7 @@ export interface CapturedRequest {
   url: URL;
   headers: Headers;
   body: unknown;
+  credentials: RequestCredentials | undefined;
 }
 
 async function parseBody(body: BodyInit | null | undefined): Promise<unknown> {
@@ -45,6 +46,7 @@ export function createMockFetch(
       url: new URL(request.url),
       headers: new Headers(request.headers),
       body: await parseBody(init?.body),
+      credentials: init?.credentials,
     };
 
     requests.push(capturedRequest);
@@ -57,6 +59,6 @@ export function createMockFetch(
   };
 }
 
-export function expectBearerToken(headers: Headers, token: string): void {
-  expect(headers.get("authorization")).toBe(`Bearer ${token}`);
+export function expectAuthCookie(headers: Headers, cookieValue: string, cookieName = "auth_token"): void {
+  expect(headers.get("cookie")).toBe(`${cookieName}=${cookieValue}`);
 }

@@ -15,8 +15,11 @@ export type RequestQueryValue =
 export type RequestQuery = Record<string, RequestQueryValue>;
 
 export interface TipplyClientOptions {
-  accessToken?: string;
-  getAccessToken?: () => MaybePromise<string | null | undefined>;
+  authCookie?: string;
+  getAuthCookie?: () => MaybePromise<string | null | undefined>;
+  cookieName?: string;
+  includeCredentials?: boolean;
+  appOrigin?: string;
   fetch?: FetchLike;
   proxyBaseUrl?: string;
   publicBaseUrl?: string;

@@ -3,8 +3,11 @@ import { serializeQuery } from "./query";
 import type { TipplyClientOptions, TipplyRequestOptions, Validator } from "./types";
 
 interface ResolvedClientOptions {
-  accessToken: string | undefined;
-  getAccessToken: TipplyClientOptions["getAccessToken"] | undefined;
+  authCookie: string | undefined;
+  getAuthCookie: TipplyClientOptions["getAuthCookie"] | undefined;
+  cookieName: string;
+  includeCredentials: boolean;
+  appOrigin: string;
   fetch: typeof fetch;
   proxyBaseUrl: string;
   publicBaseUrl: string;
@@ -52,8 +55,11 @@ export class HttpClient {
     }
 
     this.options = {
-      accessToken: options.accessToken,
-      getAccessToken: options.getAccessToken,
+      authCookie: options.authCookie,
+      getAuthCookie: options.getAuthCookie,
+      cookieName: options.cookieName ?? "auth_token",
+      includeCredentials: options.includeCredentials ?? true,
+      appOrigin: normalizeBaseUrl(options.appOrigin ?? "https://app.tipply.pl"),
       fetch: this.fetchImpl,
       proxyBaseUrl: normalizeBaseUrl(options.proxyBaseUrl ?? "https://proxy.tipply.pl"),
       publicBaseUrl: normalizeBaseUrl(options.publicBaseUrl ?? "https://tipply.pl/api"),
@@ -61,25 +67,28 @@ export class HttpClient {
     };
   }
 
-  withAccessToken(accessToken: string): HttpClient {
+  withAuthCookie(authCookie: string): HttpClient {
     const nextOptions: TipplyClientOptions = {
       fetch: this.options.fetch,
+      appOrigin: this.options.appOrigin,
+      cookieName: this.options.cookieName,
+      includeCredentials: this.options.includeCredentials,
       proxyBaseUrl: this.options.proxyBaseUrl,
       publicBaseUrl: this.options.publicBaseUrl,
       validateResponses: this.options.validateResponses,
-      accessToken,
+      authCookie,
     };
 
     return new HttpClient(nextOptions);
   }
 
-  private async resolveAccessToken(): Promise<string | undefined> {
-    if (this.options.accessToken) {
-      return this.options.accessToken;
+  private async resolveAuthCookie(): Promise<string | undefined> {
+    if (this.options.authCookie) {
+      return this.options.authCookie;
     }
 
-    const token = await this.options.getAccessToken?.();
-    return token ?? undefined;
+    const authCookie = await this.options.getAuthCookie?.();
+    return authCookie ?? undefined;
   }
 
   private resolveUrl(path: string, scope: "proxy" | "public", query?: TipplyRequestOptions<unknown>["query"]): string {
@@ -99,22 +108,27 @@ export class HttpClient {
     }
 
     if (options.requiresAuth) {
-      const accessToken = await this.resolveAccessToken();
+      headers.set("Referer", `${this.options.appOrigin}/`);
 
-      if (!accessToken) {
-        throw new TipplyAuthError("This endpoint requires an access token.", {
-          method: options.method,
-          url,
-        });
+      if (options.method !== "GET") {
+        headers.set("Origin", this.options.appOrigin);
       }
 
-      headers.set("Authorization", `Bearer ${accessToken}`);
+      const authCookie = await this.resolveAuthCookie();
+
+      if (authCookie) {
+        headers.set("Cookie", `${this.options.cookieName}=${authCookie}`);
+      }
     }
 
     const requestInit: RequestInit = {
       method: options.method,
       headers,
     };
+
+    if (options.requiresAuth && this.options.includeCredentials) {
+      requestInit.credentials = "include";
+    }
 
     if (options.body !== undefined) {
       requestInit.body = JSON.stringify(options.body);

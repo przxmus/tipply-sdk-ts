@@ -50,11 +50,23 @@ export class TipplyClient {
     this.reports = new ReportsApi(this.httpClient);
   }
 
-  withAccessToken(accessToken: string): TipplyClient {
-    const nextOptions: TipplyClientOptions = { accessToken };
+  withAuthCookie(authCookie: string): TipplyClient {
+    const nextOptions: TipplyClientOptions = { authCookie };
 
     if (this.options.fetch) {
       nextOptions.fetch = this.options.fetch;
+    }
+
+    if (this.options.appOrigin) {
+      nextOptions.appOrigin = this.options.appOrigin;
+    }
+
+    if (this.options.cookieName) {
+      nextOptions.cookieName = this.options.cookieName;
+    }
+
+    if (this.options.includeCredentials !== undefined) {
+      nextOptions.includeCredentials = this.options.includeCredentials;
     }
 
     if (this.options.proxyBaseUrl) {

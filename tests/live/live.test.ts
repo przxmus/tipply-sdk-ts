@@ -2,19 +2,19 @@ import { describe, expect, test } from "bun:test";
 
 import { TipplyClient } from "../../src";
 
-const accessToken = process.env.TIPPLY_ACCESS_TOKEN;
+const authCookie = process.env.TIPPLY_AUTH_COOKIE;
 const allowMutations = process.env.TIPPLY_ALLOW_MUTATIONS === "true";
 
-const liveDescribe = accessToken ? describe : describe.skip;
-const liveMutationDescribe = accessToken && allowMutations ? describe : describe.skip;
+const liveDescribe = authCookie ? describe : describe.skip;
+const liveMutationDescribe = authCookie && allowMutations ? describe : describe.skip;
 
 function createLiveClient(): TipplyClient {
-  if (!accessToken) {
-    throw new Error("TIPPLY_ACCESS_TOKEN is required for live tests.");
+  if (!authCookie) {
+    throw new Error("TIPPLY_AUTH_COOKIE is required for live tests.");
   }
 
   return new TipplyClient({
-    accessToken,
+    authCookie,
     validateResponses: false,
   });
 }
