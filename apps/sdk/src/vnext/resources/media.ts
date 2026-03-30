@@ -1,0 +1,80 @@
+import { z } from "zod";
+
+import type { RequestOptions } from "../../core/types";
+import { TipplyTransport } from "../../core/transport";
+import { mediaFormatsSchema, mediaItemSchema, mediaUsageSchema } from "../../domain/shared-schemas";
+import type { MediaFormats, MediaItem, MediaUsage } from "../../domain/shared";
+import { requestAndParse } from "../request";
+
+class MediaUsageResource {
+  constructor(private readonly transport: TipplyTransport) {}
+
+  get(requestOptions?: RequestOptions): Promise<MediaUsage> {
+    return requestAndParse(
+      this.transport,
+      {
+        method: "GET",
+        path: "/user/media/usage",
+        auth: true,
+      },
+      mediaUsageSchema,
+      requestOptions,
+      "Invalid media usage response.",
+    );
+  }
+}
+
+class MediaFormatsResource {
+  constructor(
+    private readonly transport: TipplyTransport,
+    private readonly mediaId: number,
+  ) {}
+
+  get(requestOptions?: RequestOptions): Promise<MediaFormats> {
+    return requestAndParse(
+      this.transport,
+      {
+        method: "GET",
+        path: `/medium/${this.mediaId}/formats`,
+        auth: true,
+      },
+      mediaFormatsSchema,
+      requestOptions,
+      "Invalid media formats response.",
+    );
+  }
+}
+
+class MediaScope {
+  readonly formats: MediaFormatsResource;
+
+  constructor(transport: TipplyTransport, mediaId: number) {
+    this.formats = new MediaFormatsResource(transport, mediaId);
+  }
+}
+
+export class MediaResource {
+  readonly usage: MediaUsageResource;
+
+  constructor(private readonly transport: TipplyTransport) {
+    this.usage = new MediaUsageResource(transport);
+  }
+
+  list(requestOptions?: RequestOptions): Promise<MediaItem[]> {
+    return requestAndParse(
+      this.transport,
+      {
+        method: "GET",
+        path: "/user/media",
+        auth: true,
+      },
+      z.array(mediaItemSchema),
+      requestOptions,
+      "Invalid media list response.",
+    );
+  }
+
+  id(mediaId: number): MediaScope {
+    return new MediaScope(this.transport, mediaId);
+  }
+}

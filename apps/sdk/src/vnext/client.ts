@@ -2,13 +2,16 @@ import type { TipplyClientOptions, TipplySessionOptions } from "../core/types";
 import { TipplyTransport } from "../core/transport";
 import { DashboardResource } from "./resources/dashboard";
 import { GoalsResource } from "./resources/goals";
+import { MediaResource } from "./resources/media";
 import { MeResource } from "./resources/me";
 import { ModeratorsResource } from "./resources/moderators";
 import { PaymentMethodsResource } from "./resources/payment-methods";
 import { ProfileResource } from "./resources/profile";
+import { ReportsResource } from "./resources/reports";
 import { SettingsResource } from "./resources/settings";
 import { TemplatesResource } from "./resources/templates";
 import { TipsResource } from "./resources/tips";
+import { WithdrawalsResource } from "./resources/withdrawals";
 
 /**
  * Internal vNext client under active migration.
@@ -23,6 +26,9 @@ export class TipplyClientVNext {
   readonly templates: TemplatesResource;
   readonly tips: TipsResource;
   readonly moderators: ModeratorsResource;
+  readonly media: MediaResource;
+  readonly withdrawals: WithdrawalsResource;
+  readonly reports: ReportsResource;
 
   private readonly options: TipplyClientOptions;
   private readonly transport: TipplyTransport;
@@ -39,6 +45,9 @@ export class TipplyClientVNext {
     this.templates = new TemplatesResource(this.transport);
     this.tips = new TipsResource(this.transport);
     this.moderators = new ModeratorsResource(this.transport);
+    this.media = new MediaResource(this.transport);
+    this.withdrawals = new WithdrawalsResource(this.transport);
+    this.reports = new ReportsResource(this.transport);
   }
 
   withSession(session: TipplySessionOptions): TipplyClientVNext {
