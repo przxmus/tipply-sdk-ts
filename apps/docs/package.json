@@ -1,0 +1,16 @@
+{
+  "name": "@tipply/docs",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev --host localhost",
+    "build": "astro build",
+    "preview": "astro preview --host localhost",
+    "typecheck": "astro check"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "^0.34.0",
+    "astro": "^5.6.0",
+    "starlight-theme-rapide": "^0.5.1"
+  }
+}
