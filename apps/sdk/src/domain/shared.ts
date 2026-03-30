@@ -184,6 +184,8 @@ export interface PaymentMethodConfigurationEntry {
 
 export type PaymentMethodsConfiguration = Partial<Record<PaymentMethodConfigurationKey, PaymentMethodConfigurationEntry>>;
 
+export type UpdatePaymentMethodInput = { enabled: boolean } | { minimalAmount: MinorUnitAmount };
+
 export interface Account {
   accountId: AccountId;
   balance: MinorUnitAmount;
