@@ -5,6 +5,7 @@ import { TipplyTransport } from "../../core/transport";
 import { unknownRecordSchema } from "../../domain/parsing";
 import { tipSchema } from "../../domain/shared-schemas";
 import type { Tip } from "../../domain/shared";
+import type { TipId } from "../../domain/ids";
 import type { PendingTip, TipFilter, TipModerationItem, TipsListQuery } from "../../domain/tips";
 import { requestAndParse } from "../request";
 
@@ -118,6 +119,24 @@ class TipsAudioResource {
   }
 }
 
+class TipScope {
+  constructor(
+    private readonly transport: TipplyTransport,
+    private readonly tipId: TipId,
+  ) {}
+
+  resend(requestOptions?: RequestOptions): Promise<void> {
+    return this.transport.request(
+      {
+        method: "POST",
+        path: `/tip/${this.tipId}/resend`,
+        auth: true,
+      },
+      requestOptions,
+    );
+  }
+}
+
 export class TipsResource {
   readonly moderation: TipsModerationResource;
   readonly pending: PendingTipsResource;
@@ -131,5 +150,9 @@ export class TipsResource {
 
   list(): TipsListRequestBuilder {
     return new TipsListRequestBuilder(this.transport);
+  }
+
+  id(tipId: TipId): TipScope {
+    return new TipScope(this.transport, tipId);
   }
 }

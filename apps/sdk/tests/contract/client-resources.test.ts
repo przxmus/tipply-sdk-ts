@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 
-import { asGoalId, asMediaId, asModeratorId, asTemplateId, asUserId, asWithdrawalId, createTipplyClient } from "../../src";
+import { asGoalId, asMediaId, asModeratorId, asTemplateId, asTipId, asUserId, asWithdrawalId, createTipplyClient } from "../../src";
 import { createTipplyPublicClient } from "../../src/public";
 import {
   accountFixture,
@@ -236,6 +236,13 @@ describe("resource namespaces", () => {
     const listener = await client.tipAlerts.createListener();
 
     expect(listener.userId).toBe(currentUserFixture.id);
+  });
+
+  test("authenticated client exposes tip resend and skip controls", () => {
+    const { client } = createFixtureClient();
+
+    expect(typeof client.tips.id(asTipId("tip-123")).resend).toBe("function");
+    expect(typeof client.tipAlerts.skipCurrent).toBe("function");
   });
 
   test("settings list tolerates malformed known config records", async () => {
