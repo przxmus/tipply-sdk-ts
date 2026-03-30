@@ -181,12 +181,19 @@ jobs:
       - name: Publish package to npm
         working-directory: apps/sdk
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: bun publish --access public --tag "${{ inputs.npm_tag }}"
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_USERCONFIG: ${{ github.workspace }}/apps/sdk/.npmrc
+        run: |
+          cat > .npmrc <<EOF
+          //registry.npmjs.org/:_authToken=${NPM_TOKEN}
+          always-auth=true
+          EOF
 
-      - name: Remove copied package README
+          bun publish --access public --tag "${{ inputs.npm_tag }}"
+
+      - name: Remove copied package README and npm config
         if: always()
-        run: rm -f apps/sdk/README.md
+        run: rm -f apps/sdk/README.md apps/sdk/.npmrc
 
       - name: Push commit and tag
         env:
