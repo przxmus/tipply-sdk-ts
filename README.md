@@ -121,5 +121,3 @@ Najprościej:
 3. Wejdź w `Application` -> `Cookies` -> `https://app.tipply.pl`.
 4. Znajdź wiersz z `Name = auth_token`.
 5. Skopiuj tylko wartość z kolumny `Value`.
-
-Do SDK przekazujesz sam token, bez `auth_token=` i bez żadnych dodatkowych znaków. Szczegółowy opis znajdziesz też w dokumentacji strony docs.

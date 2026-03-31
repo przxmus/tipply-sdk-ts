@@ -21,20 +21,6 @@ Auth client może potem sam aktualizować ten token na podstawie kolejnych nagł
 6. W tabeli cookies znajdź wiersz, w którym kolumna `Name` ma wartość `auth_token`.
 7. Skopiuj wartość z kolumny `Value` z tego wiersza.
 
-To właśnie ta jedna wartość jest potrzebna SDK. Nie kopiuj całego wiersza, `auth_token=...` ani żadnych średników.
-
-Przykład:
-
-```txt
-Cookie: auth_token=twoj-token-tutaj
-```
-
-Do SDK trafia wyłącznie:
-
-```txt
-twoj-token-tutaj
-```
-
 ## Sposoby przekazania sesji
 
 ### `authCookie`
