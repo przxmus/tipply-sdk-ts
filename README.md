@@ -80,7 +80,7 @@ To nie jest oficjalna dokumentacja Tipply.pl i ten projekt nie jest z nim w żad
 
 Lokalnie możesz ją uruchomić z aplikacji `apps/docs`, która zawiera:
 
-- pobieranie `auth_token` z DevToolsów Tipply
+- pobieranie `auth_token` po zalogowaniu do panelu użytkownika Tipply i użyciu DevToolsów
 - konfigurację klienta auth i klienta publicznego
 - przykłady użycia
 - realtime `TIP_ALERT`
@@ -112,4 +112,12 @@ bun run build
 
 ## Auth token
 
-SDK nie implementuje logowania. Potrzebujesz aktywnej sesji Tipply i wartości ciasteczka `auth_token`. Szczegółowy opis pobrania tokena jest w dokumentacji strony docs.
+SDK nie implementuje logowania. Potrzebujesz aktywnej sesji Tipply i wartości ciasteczka `auth_token`.
+
+Najprościej:
+
+1. Otwórz <a href="https://app.tipply.pl/panel-uzytkownika" target="_blank" rel="noopener noreferrer">panel użytkownika Tipply</a> i zaloguj się.
+2. Otwórz DevTools klawiszem `F12`.
+3. Wejdź w `Application` -> `Cookies` -> `https://app.tipply.pl`.
+4. Znajdź wiersz z `Name = auth_token`.
+5. Skopiuj tylko wartość z kolumny `Value`.

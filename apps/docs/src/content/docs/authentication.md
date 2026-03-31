@@ -13,26 +13,42 @@ Auth client może potem sam aktualizować ten token na podstawie kolejnych nagł
 
 ## Jak pobrać `auth_token` z DevTools
 
-1. Zaloguj się do panelu użytkownika Tipply.
+1. Otwórz <a href="https://app.tipply.pl/panel-uzytkownika" target="_blank" rel="noopener noreferrer">panel użytkownika Tipply</a> i zaloguj się.
 2. Otwórz DevTools skrótem `F12`.
-3. Przejdź do zakładki `Network`.
-4. Odśwież stronę.
-5. Kliknij jedno z pierwszych żądań z pomarańczową ikoną, na przykład `tips` albo `points`.
-6. Otwórz sekcję `Response Headers`.
-7. Znajdź nagłówek `Set-Cookie`.
-8. Skopiuj tylko fragment po `auth_token=` i przed pierwszym średnikiem.
+3. Przejdź do zakładki `Application`.
+4. Rozwiń `Cookies`.
+5. Wybierz domenę `https://app.tipply.pl`.
+6. W tabeli cookies znajdź wiersz, w którym kolumna `Name` ma wartość `auth_token`.
+7. Skopiuj wartość z kolumny `Value` z tego wiersza.
 
-Przykład:
+## Jak to wygląda
 
-```txt
-Set-Cookie: auth_token=twoj-token-tutaj; Path=/; Secure; HttpOnly
-```
+Na screenach poniżej widać dokładnie, gdzie wejść i czego szukać.
+> Dotyczą one procesu już po zalogowaniu i wejściu na stronę panelu użytkownika Tipply.
 
-Do SDK trafia wyłącznie:
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;margin:1rem 0 0;">
+  <figure style="margin:0;">
+    <img
+      src="/authentication/auth-token-1.png"
+      alt="DevTools na zakładce Application z sekcją Storage i Cookies"
+      style="display:block;width:100%;height:auto;border:1px solid var(--sl-color-gray-5);border-radius:12px;"
+    />
+    <figcaption style="margin-top:0.5rem;">
+      1. Wciśnij F12 lub kliknij prawym na stronę i kliknij w "Zbadaj", a następnie wejdź w Application.
+    </figcaption>
+  </figure>
 
-```txt
-twoj-token-tutaj
-```
+  <figure style="margin:0;">
+    <img
+      src="/authentication/auth-token-2.png"
+      alt="Tabela cookies dla domeny app.tipply.pl z wierszem auth_token"
+      style="display:block;width:100%;height:auto;border:1px solid var(--sl-color-gray-5);border-radius:12px;"
+    />
+    <figcaption style="margin-top:0.5rem;">
+      2. Rozwiń Cookies, wybierz https://app.tipply.pl i skopiuj Value z wiersza auth_token.
+    </figcaption>
+  </figure>
+</div>
 
 ## Sposoby przekazania sesji
 
