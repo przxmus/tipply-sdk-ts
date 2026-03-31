@@ -24,6 +24,7 @@ Auth client może potem sam aktualizować ten token na podstawie kolejnych nagł
 ## Jak to wygląda
 
 Na screenach poniżej widać dokładnie, gdzie wejść i czego szukać.
+> Dotyczą one procesu już po zalogowaniu i wejściu na stronę panelu użytkownika Tipply.
 
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;margin:1rem 0 0;">
   <figure style="margin:0;">
@@ -33,7 +34,7 @@ Na screenach poniżej widać dokładnie, gdzie wejść i czego szukać.
       style="display:block;width:100%;height:auto;border:1px solid var(--sl-color-gray-5);border-radius:12px;"
     />
     <figcaption style="margin-top:0.5rem;">
-      1. Wejdź w Application.
+      1. Wciśnij F12 lub kliknij prawym na stronę i kliknij w "Zbadaj", a następnie wejdź w Application.
     </figcaption>
   </figure>
 
