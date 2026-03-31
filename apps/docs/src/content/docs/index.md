@@ -20,7 +20,7 @@ Dokumentacja obejmuje cały aktualnie zaimplementowany surface `tipply-sdk-ts`: 
 ## Co znajdziesz w środku
 
 - szybki start z `bun add tipply-sdk-ts`
-- dokładny opis zdobycia `auth_token` z DevToolsów Tipply
+- dokładny opis zdobycia `auth_token` po zalogowaniu do panelu użytkownika Tipply i użyciu DevToolsów
 - przewodniki dla klienta auth i klienta publicznego
 - pełny opis `TIP_ALERT` listenera
 - dokumentację błędów, transportu i opcji klienta

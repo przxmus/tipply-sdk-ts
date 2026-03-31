@@ -13,19 +13,20 @@ Auth client może potem sam aktualizować ten token na podstawie kolejnych nagł
 
 ## Jak pobrać `auth_token` z DevTools
 
-1. Zaloguj się do panelu użytkownika Tipply.
+1. Otwórz <a href="https://app.tipply.pl/panel-uzytkownika" target="_blank" rel="noopener noreferrer">panel użytkownika Tipply</a> i zaloguj się.
 2. Otwórz DevTools skrótem `F12`.
-3. Przejdź do zakładki `Network`.
-4. Odśwież stronę.
-5. Kliknij jedno z pierwszych żądań z pomarańczową ikoną, na przykład `tips` albo `points`.
-6. Otwórz sekcję `Response Headers`.
-7. Znajdź nagłówek `Set-Cookie`.
-8. Skopiuj tylko fragment po `auth_token=` i przed pierwszym średnikiem.
+3. Przejdź do zakładki `Application`.
+4. W lewym panelu rozwiń `Storage`, a potem `Cookies`.
+5. Wybierz domenę `https://app.tipply.pl`.
+6. W tabeli cookies znajdź wiersz, w którym kolumna `Name` ma wartość `auth_token`.
+7. Skopiuj wartość z kolumny `Value` z tego wiersza.
+
+To właśnie ta jedna wartość jest potrzebna SDK. Nie kopiuj całego wiersza, `auth_token=...` ani żadnych średników.
 
 Przykład:
 
 ```txt
-Set-Cookie: auth_token=twoj-token-tutaj; Path=/; Secure; HttpOnly
+Cookie: auth_token=twoj-token-tutaj
 ```
 
 Do SDK trafia wyłącznie:
