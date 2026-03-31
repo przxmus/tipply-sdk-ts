@@ -1,0 +1,37 @@
+# Tipply SDK TS
+
+English documentation for the unofficial TypeScript SDK for Tipply.
+
+## Summary
+
+- Package: `tipply-sdk-ts`
+- Audience: developers integrating Tipply from TypeScript or JavaScript runtimes
+- Main entry points: `createTipplyClient()` and `createTipplyPublicClient()`
+- Core topics: authentication, public widget reads, realtime `TIP_ALERT`, transport behavior, validation, and typed identifiers
+
+## Important Facts
+
+- The SDK is unofficial and is not an official Tipply product.
+- The authenticated client requires an existing Tipply session.
+- The SDK does not implement login.
+- The public client supports widgets, templates, voting, and realtime reads without auth.
+- Monetary values are modeled as numbers in minor units.
+
+## Recommended Pages
+
+- `/getting-started/overview/`
+- `/getting-started/installation/`
+- `/getting-started/authentication/`
+- `/guides/authenticated-client/`
+- `/guides/public-client/`
+- `/guides/realtime-tip-alerts/`
+- `/guides/transport-and-errors/`
+- `/guides/examples/`
+- `/reference/client-surface/`
+- `/reference/authenticated-resources/`
+- `/reference/public-resources/`
+- `/reference/types-and-identifiers/`
+
+## Canonical Site
+
+- `https://tipply-sdk.przxmus.dev`

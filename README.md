@@ -1,14 +1,14 @@
 # tipply-sdk-ts
 
-TypeScript SDK do Tipply z klientem auth, klientem publicznym i realtime listenerem dla `TIP_ALERT`.
+Unofficial TypeScript SDK for Tipply with authenticated resources, public widget reads, and realtime `TIP_ALERT` helpers.
 
-## Instalacja
+## Installation
 
 ```bash
 bun add tipply-sdk-ts
 ```
 
-## Szybki start
+## Authenticated Quick Start
 
 ```ts
 import { createTipplyClient } from "tipply-sdk-ts";
@@ -23,13 +23,27 @@ const recentTips = await client.dashboard.tips.recent.list();
 console.log(me.username, recentTips.length);
 ```
 
-## Automatyczne odświeżanie `auth_token`
+## Public Quick Start
 
-Auth client potrafi sam utrzymywać świeży `auth_token`:
+```ts
+import { asUserId } from "tipply-sdk-ts";
+import { createTipplyPublicClient } from "tipply-sdk-ts/public";
 
-- `auth.refreshTokenOnRequests`: domyślnie `true`, przechwytuje `Set-Cookie` z odpowiedzi i podmienia token używany przez kolejne requesty
-- `auth.refreshTokenEvery`: domyślnie wyłączone, po włączeniu wysyła cykliczny request do `/user`; `true` oznacza domyślne `5` minut, a `{ intervalMs }` pozwala ustawić własny interwał
-- `auth.reconnectTries`: domyślnie `3`; przy błędach auth, timeoutach i wybranych błędach transportu klient ponawia request, a przed ostatnią próbą najpierw odświeża sesję przez `/user`
+const client = createTipplyPublicClient();
+const user = client.user(asUserId("user-123"));
+
+const widgetMessageEnabled = await user.widgetMessage.get();
+
+console.log(widgetMessageEnabled);
+```
+
+## Auth Lifecycle
+
+The authenticated client can keep `auth_token` usable across longer runs:
+
+- `auth.refreshTokenOnRequests`: defaults to `true`; stores new `auth_token` values returned in `Set-Cookie`
+- `auth.refreshTokenEvery`: disabled by default; `true` uses a 5 minute interval and `{ intervalMs }` lets you choose a custom one
+- `auth.reconnectTries`: defaults to `3`; retries selected auth and transport failures
 
 ```ts
 const client = createTipplyClient({
@@ -42,7 +56,7 @@ const client = createTipplyClient({
 });
 ```
 
-Jeżeli włączysz `auth.refreshTokenEvery`, możesz zatrzymać background refresh przez `client.close()`.
+If you enable `auth.refreshTokenEvery`, stop the background timer with `client.close()` when you are done.
 
 ```ts
 import { asTipId, createTipplyClient } from "tipply-sdk-ts";
@@ -59,65 +73,36 @@ await client.tips.sendTest({
 await client.tipAlerts.skipCurrent();
 ```
 
-## Klient publiczny
+## Examples
 
-```ts
-import { asUserId } from "tipply-sdk-ts";
-import { createTipplyPublicClient } from "tipply-sdk-ts/public";
-
-const client = createTipplyPublicClient();
-const user = client.user(asUserId("user-123"));
-
-const widgetMessageEnabled = await user.widgetMessage.get();
-
-console.log(widgetMessageEnabled);
-```
-
-## Dokumentacja
-
-Pełna dokumentacja jest dostępna online pod adresem https://tipply-sdk.przxmus.dev.
-To nie jest oficjalna dokumentacja Tipply.pl i ten projekt nie jest z nim w żaden sposób powiązany.
-
-Lokalnie możesz ją uruchomić z aplikacji `apps/docs`, która zawiera:
-
-- pobieranie `auth_token` po zalogowaniu do panelu użytkownika Tipply i użyciu DevToolsów
-- konfigurację klienta auth i klienta publicznego
-- przykłady użycia
-- realtime `TIP_ALERT`
-- błędy, transport i pełną referencję API
-
-Lokalnie:
-
-```bash
-cd apps/docs
-bun run dev
-```
-
-## Przykłady
-
-Aktualne przykłady znajdziesz w `apps/sdk/examples`:
+Maintained examples live in `apps/sdk/examples`:
 
 - `dashboard-summary.ts`
 - `public-goal-widget.ts`
 - `tip-controls.ts`
 - `tip-alerts-listener.ts`
+- `playground.local.ts`
 
-## Skrypty workspace
+## Authentication
+
+The SDK does not implement login. Authenticated requests require an existing Tipply session and the value of the `auth_token` cookie.
+
+Get it from browser DevTools after signing in to the Tipply user panel:
+
+1. Open `https://app.tipply.pl/panel-uzytkownika`.
+2. Sign in.
+3. Open DevTools with `F12`.
+4. Go to `Application` -> `Cookies` -> `https://app.tipply.pl`.
+5. Copy the `Value` for `auth_token`.
+
+## Workspace Commands
 
 ```bash
+bun run build
 bun run typecheck
 bun run test
-bun run build
 ```
 
-## Auth token
+Full documentation is available at `https://tipply-sdk.przxmus.dev`.
 
-SDK nie implementuje logowania. Potrzebujesz aktywnej sesji Tipply i wartości ciasteczka `auth_token`.
-
-Najprościej:
-
-1. Otwórz <a href="https://app.tipply.pl/panel-uzytkownika" target="_blank" rel="noopener noreferrer">panel użytkownika Tipply</a> i zaloguj się.
-2. Otwórz DevTools klawiszem `F12`.
-3. Wejdź w `Application` -> `Cookies` -> `https://app.tipply.pl`.
-4. Znajdź wiersz z `Name = auth_token`.
-5. Skopiuj tylko wartość z kolumny `Value`.
+This project is unofficial and is not affiliated with Tipply.

@@ -1,42 +1,46 @@
 ---
-title: Tipply SDK TS
+title: Documentation
+description: English documentation for the unofficial TypeScript SDK for Tipply, with guides for auth, public endpoints, realtime TIP_ALERT, and API reference.
 template: splash
 hero:
-  tagline: Typowane SDK do pracy z Tipply, publicznymi widgetami i realtime alertami.
+  tagline: Unofficial TypeScript SDK for Tipply with authenticated APIs, public widget reads, and realtime TIP_ALERT helpers.
   actions:
-    - text: Start
-      link: /getting-started/
+    - text: Getting Started
+      link: /getting-started/overview/
       icon: right-arrow
-    - text: Pełna Referencja
-      link: /sdk-reference/
+    - text: API Reference
+      link: /reference/client-surface/
       variant: minimal
 ---
 
-Dokumentacja online jest dostępna pod adresem https://tipply-sdk.przxmus.dev.
-To nie jest oficjalna dokumentacja Tipply.pl i ten projekt nie jest z nim w żaden sposób powiązany.
+This site documents the current `tipply-sdk-ts` API surface. It is an unofficial project and is not affiliated with Tipply.
 
-Dokumentacja obejmuje cały aktualnie zaimplementowany surface `tipply-sdk-ts`: konfigurację klienta, sposób pobrania `auth_token`, przykłady użycia, realtime `TIP_ALERT` oraz pełną referencję metod.
+Use this SDK when you need typed access to authenticated Tipply endpoints, public goal and voting widgets, or realtime `TIP_ALERT` events from Bun, Node.js, or the browser.
 
-## Co znajdziesz w środku
+## What You Will Find Here
 
-- szybki start z `bun add tipply-sdk-ts`
-- dokładny opis zdobycia `auth_token` po zalogowaniu do panelu użytkownika Tipply i użyciu DevToolsów
-- przewodniki dla klienta auth i klienta publicznego
-- pełny opis `TIP_ALERT` listenera
-- dokumentację błędów, transportu i opcji klienta
-- kompletną listę wszystkich metod wystawianych przez SDK
+- installation and first-request setup
+- authenticated and public client guides
+- realtime `TIP_ALERT` connection patterns
+- transport, validation, and error handling details
+- API reference split into focused pages instead of one long list
 
-## Dla kogo jest to SDK
+## Documentation Map
 
-`tipply-sdk-ts` sprawdza się, gdy:
+- Start with [Overview](/getting-started/overview/) for the shortest path to a working client.
+- Read [Authentication](/getting-started/authentication/) if you need private endpoints.
+- Use [Authenticated Client](/guides/authenticated-client/) or [Public Client](/guides/public-client/) depending on the data you need.
+- Keep [Client Surface](/reference/client-surface/) and the resource reference pages open while integrating.
 
-- piszesz własne narzędzie dla streamera
-- budujesz integrację z Tipply w aplikacji Node.js, Bun albo webowej
-- chcesz czytać publiczne widgety bez logowania
-- chcesz nasłuchiwać napiwków w czasie rzeczywistym przez `TIP_ALERT`
+## Main Capabilities
 
-## Następne kroki
+- authenticated resources such as `me`, `dashboard`, `profile`, `settings`, `tips`, `withdrawals`, and `reports`
+- public resources such as goal widgets, voting configuration, template fonts, and widget message flags
+- realtime listeners for `TIP_ALERT`
+- typed ID helpers such as `asUserId()` and `asTipId()`
 
-1. Przejdź do [Getting Started](/getting-started/).
-2. Jeżeli potrzebujesz sesji auth, przeczytaj [Authentication](/authentication/).
-3. Potem wybierz [Authenticated Client](/authenticated-client/) albo [Public Client](/public-client/).
+## Next Steps
+
+1. Open [Overview](/getting-started/overview/).
+2. Pick [Authenticated Client](/guides/authenticated-client/) or [Public Client](/guides/public-client/).
+3. Use the [Reference](/reference/client-surface/) section when wiring the full integration.

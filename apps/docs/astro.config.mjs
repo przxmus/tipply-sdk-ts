@@ -3,35 +3,80 @@ import starlight from "@astrojs/starlight";
 import starlightThemeRapide from "starlight-theme-rapide";
 
 export default defineConfig({
-  site: "http://localhost:4321",
+  site: "https://tipply-sdk.przxmus.dev",
   integrations: [
     starlight({
       title: "Tipply SDK TS",
-      description: "Pełna dokumentacja TypeScript SDK do Tipply.",
+      description:
+        "English documentation for the unofficial TypeScript SDK for Tipply, including authenticated and public clients, realtime TIP_ALERT helpers, transport behavior, and typed resources.",
       plugins: [starlightThemeRapide()],
+      social: [
+        {
+          icon: "github",
+          label: "GitHub",
+          href: "https://github.com/przxmus/tipply-sdk-ts",
+        },
+      ],
+      head: [
+        {
+          tag: "meta",
+          attrs: {
+            name: "author",
+            content: "przxmus",
+          },
+        },
+        {
+          tag: "meta",
+          attrs: {
+            name: "robots",
+            content: "index,follow,max-image-preview:large",
+          },
+        },
+        {
+          tag: "script",
+          attrs: {
+            type: "application/ld+json",
+          },
+          content: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            name: "Tipply SDK TS",
+            description:
+              "English documentation for the unofficial TypeScript SDK for Tipply, including authenticated and public clients, realtime TIP_ALERT helpers, transport behavior, and typed resources.",
+            url: "https://tipply-sdk.przxmus.dev",
+            inLanguage: "en",
+          }),
+        },
+        {
+          tag: "script",
+          attrs: {
+            type: "application/ld+json",
+          },
+          content: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "SoftwareSourceCode",
+            name: "tipply-sdk-ts",
+            description:
+              "Unofficial TypeScript SDK for Tipply with authenticated resources, public widget reads, and realtime TIP_ALERT helpers.",
+            codeRepository: "https://github.com/przxmus/tipply-sdk-ts",
+            programmingLanguage: "TypeScript",
+            runtimePlatform: ["Bun", "Node.js", "Web Browser"],
+            url: "https://tipply-sdk.przxmus.dev",
+          }),
+        },
+      ],
       sidebar: [
         {
-          label: "Pierwsze kroki",
-          items: [
-            { slug: "getting-started", label: "Pierwsze kroki" },
-            { slug: "authentication", label: "Uwierzytelnienie" },
-          ],
+          label: "Getting Started",
+          autogenerate: { directory: "getting-started" },
         },
         {
-          label: "Przewodniki",
-          items: [
-            { slug: "authenticated-client", label: "Klient autoryzowany" },
-            { slug: "public-client", label: "Klient publiczny" },
-            { slug: "realtime-tip-alerts", label: "Realtime TIP_ALERT" },
-            { slug: "errors-and-transport", label: "Błędy i transport" },
-            { slug: "examples", label: "Przykłady użycia" },
-          ],
+          label: "Guides",
+          autogenerate: { directory: "guides" },
         },
         {
-          label: "Referencja",
-          items: [
-            { slug: "sdk-reference", label: "Referencja SDK" },
-          ],
+          label: "Reference",
+          autogenerate: { directory: "reference" },
         },
       ],
     }),
