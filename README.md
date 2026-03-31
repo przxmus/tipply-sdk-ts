@@ -73,19 +73,6 @@ await client.tips.sendTest({
 await client.tipAlerts.skipCurrent();
 ```
 
-## Documentation
-
-Full docs are available at `https://tipply-sdk.przxmus.dev`.
-
-This project is unofficial and is not affiliated with Tipply.
-
-Local docs app:
-
-```bash
-cd apps/docs
-bun run dev
-```
-
 ## Examples
 
 Maintained examples live in `apps/sdk/examples`:
@@ -115,3 +102,7 @@ bun run build
 bun run typecheck
 bun run test
 ```
+
+Full documentation is available at `https://tipply-sdk.przxmus.dev`.
+
+This project is unofficial and is not affiliated with Tipply.
