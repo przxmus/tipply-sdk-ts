@@ -80,9 +80,9 @@ const listener = client.tipAlerts.fromWidgetUrl(
 );
 ```
 
-## Public Profile Social Links
+## Public Profile By Slug
 
-The social links helper is exposed on the authenticated client, but it reads a public proxy endpoint:
+The public profile helper is exposed on the authenticated client, but it reads public proxy endpoints addressed by slug:
 
 ```ts
 import { createTipplyClient } from "tipply-sdk-ts";
@@ -91,5 +91,6 @@ const client = createTipplyClient({
   authCookie: process.env.TIPPLY_AUTH_COOKIE!,
 });
 
+const profile = await client.profile.public("streamer-link").get();
 const socialLinks = await client.profile.public("streamer-link").socialLinks.list();
 ```

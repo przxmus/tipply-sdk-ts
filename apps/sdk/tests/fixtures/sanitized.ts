@@ -26,6 +26,7 @@ import type {
   PaymentMethodsConfiguration,
   ProfanityFilterSettings,
   PublicGoalWidget,
+  PublicUserProfile,
   PublicTemplate,
   Tip,
   TipAlertConfiguration,
@@ -206,6 +207,38 @@ export const profileFixture: UserProfile = {
   emotesInit: true,
   socialMediaLinks: [{ label: "Twitch", url: "https://twitch.tv/streamer" }],
   showRankingAndMessages: true,
+};
+
+export const rawPublicUserProfileFixture = {
+  id: "userId",
+  nick_name: "przxmus",
+  description: "",
+  google_avatar_url: "https://cdn.example.com/avatar.png",
+  theme_color: "green",
+  show_ranking_and_messages: true,
+  voice_message_minimal_amount: 500,
+  payments_disabled: false,
+  verified: false,
+  moderation_mode_enabled: false,
+  missing_personal_data: true,
+  is_fraud: false,
+  paypal_enabled: true,
+};
+
+export const publicUserProfileFixture: PublicUserProfile = {
+  id: asUserId("userId"),
+  nickName: "przxmus",
+  description: "",
+  googleAvatarUrl: "https://cdn.example.com/avatar.png",
+  themeColor: "green",
+  showRankingAndMessages: true,
+  voiceMessageMinimalAmount: 500,
+  paymentsDisabled: false,
+  verified: false,
+  moderationModeEnabled: false,
+  missingPersonalData: true,
+  isFraud: false,
+  paypalEnabled: true,
 };
 
 export const tipAlertConfigurationFixture: TipAlertConfiguration = {
@@ -525,7 +558,10 @@ export const rawTemplateFixture = {
   },
 };
 
-export const publicGoalTemplateFixture: PublicTemplate<"TIPS_GOAL", TipsGoalTemplateConfig> = {
+export const publicGoalTemplateFixture: PublicTemplate<
+  "TIPS_GOAL",
+  TipsGoalTemplateConfig
+> = {
   id: asTemplateId("template-123"),
   type: "TIPS_GOAL",
   updatedAt: "2026-03-30T00:49:33+02:00",
@@ -581,7 +617,10 @@ export const rawPublicGoalTemplateFixture = {
   },
 };
 
-export const publicGoalTemplatesFixture: PublicTemplate<"TIPS_GOAL", TipsGoalTemplateConfig>[] = [publicGoalTemplateFixture];
+export const publicGoalTemplatesFixture: PublicTemplate<
+  "TIPS_GOAL",
+  TipsGoalTemplateConfig
+>[] = [publicGoalTemplateFixture];
 export const rawPublicGoalTemplatesFixture = [rawPublicGoalTemplateFixture];
 
 export const publicVotingTemplatesFixture: PublicTemplate<"GOAL_VOTING">[] = [
@@ -623,7 +662,8 @@ export const rawPublicGoalConfigurationFixture = {
   },
 };
 
-export const publicTemplateFontsFixture = "@import url('https://fonts.example.com/sora.css');";
+export const publicTemplateFontsFixture =
+  "@import url('https://fonts.example.com/sora.css');";
 
 export const publicGoalWidgetFixture: PublicGoalWidget = {
   config: goalFixture,
@@ -865,8 +905,12 @@ export const rawNotificationFixture = {
   read_at: null,
 };
 
-export const dashboardAnnouncementFixture: DashboardAnnouncement = { id: "announcement-1" };
-export const extraDashboardAnnouncementFixture: DashboardAnnouncement = { id: "announcement-2" };
+export const dashboardAnnouncementFixture: DashboardAnnouncement = {
+  id: "announcement-1",
+};
+export const extraDashboardAnnouncementFixture: DashboardAnnouncement = {
+  id: "announcement-2",
+};
 
 export const forbiddenWordsFixture: ForbiddenWordsSettings = {
   enabled: true,

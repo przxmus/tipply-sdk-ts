@@ -19,8 +19,9 @@ const client = createTipplyClient({
 
 const me = await client.me.get();
 const recentTips = await client.dashboard.tips.recent.list();
+const publicProfile = await client.profile.public("przxmus").get();
 
-console.log(me.username, recentTips.length);
+console.log(me.username, recentTips.length, publicProfile.nickName);
 ```
 
 ## Public Quick Start
@@ -78,6 +79,7 @@ await client.tipAlerts.skipCurrent();
 Maintained examples live in `apps/sdk/examples`:
 
 - `dashboard-summary.ts`
+- `public-profile.ts`
 - `public-goal-widget.ts`
 - `tip-controls.ts`
 - `tip-alerts-listener.ts`
