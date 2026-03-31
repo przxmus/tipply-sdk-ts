@@ -33,7 +33,7 @@ Na screenach poniżej widać dokładnie, gdzie wejść i czego szukać.
       style="display:block;width:100%;height:auto;border:1px solid var(--sl-color-gray-5);border-radius:12px;"
     />
     <figcaption style="margin-top:0.5rem;">
-      1. Wejdź w `Application`, potem `Storage` i `Cookies`.
+      1. Wejdź w Application, potem Storage i Cookies.
     </figcaption>
   </figure>
 
@@ -44,7 +44,7 @@ Na screenach poniżej widać dokładnie, gdzie wejść i czego szukać.
       style="display:block;width:100%;height:auto;border:1px solid var(--sl-color-gray-5);border-radius:12px;"
     />
     <figcaption style="margin-top:0.5rem;">
-      2. Wybierz `https://app.tipply.pl` i skopiuj `Value` z wiersza `auth_token`.
+      2. Wybierz https://app.tipply.pl i skopiuj Value z wiersza auth_token.
     </figcaption>
   </figure>
 </div>
