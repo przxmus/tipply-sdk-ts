@@ -16,11 +16,10 @@ Auth client może potem sam aktualizować ten token na podstawie kolejnych nagł
 1. Otwórz <a href="https://app.tipply.pl/panel-uzytkownika" target="_blank" rel="noopener noreferrer">panel użytkownika Tipply</a> i zaloguj się.
 2. Otwórz DevTools skrótem `F12`.
 3. Przejdź do zakładki `Application`.
-4. W lewym panelu wybierz stałą sekcję `Storage`.
-5. Otwórz `Cookies`.
-6. Wybierz domenę `https://app.tipply.pl`.
-7. W tabeli cookies znajdź wiersz, w którym kolumna `Name` ma wartość `auth_token`.
-8. Skopiuj wartość z kolumny `Value` z tego wiersza.
+4. Rozwiń `Cookies`.
+5. Wybierz domenę `https://app.tipply.pl`.
+6. W tabeli cookies znajdź wiersz, w którym kolumna `Name` ma wartość `auth_token`.
+7. Skopiuj wartość z kolumny `Value` z tego wiersza.
 
 ## Jak to wygląda
 
@@ -34,7 +33,7 @@ Na screenach poniżej widać dokładnie, gdzie wejść i czego szukać.
       style="display:block;width:100%;height:auto;border:1px solid var(--sl-color-gray-5);border-radius:12px;"
     />
     <figcaption style="margin-top:0.5rem;">
-      1. Wejdź w Application. Storage jest stałą sekcją po lewej, a potem otwórz Cookies.
+      1. Wejdź w Application.
     </figcaption>
   </figure>
 
@@ -45,7 +44,7 @@ Na screenach poniżej widać dokładnie, gdzie wejść i czego szukać.
       style="display:block;width:100%;height:auto;border:1px solid var(--sl-color-gray-5);border-radius:12px;"
     />
     <figcaption style="margin-top:0.5rem;">
-      2. Wybierz https://app.tipply.pl i skopiuj Value z wiersza auth_token.
+      2. Rozwiń Cookies, wybierz https://app.tipply.pl i skopiuj Value z wiersza auth_token.
     </figcaption>
   </figure>
 </div>
