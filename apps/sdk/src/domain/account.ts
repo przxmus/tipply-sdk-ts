@@ -112,6 +112,23 @@ export interface UserProfile {
   showRankingAndMessages: boolean;
 }
 
+/** Public profile payload returned by `client.profile.public(slug).get()`. */
+export interface PublicUserProfile {
+  id: UserId;
+  nickName: string;
+  description: string;
+  googleAvatarUrl?: string | null;
+  themeColor?: string | null;
+  showRankingAndMessages: boolean;
+  voiceMessageMinimalAmount: MinorUnitAmount;
+  paymentsDisabled: boolean;
+  verified: boolean;
+  moderationModeEnabled: boolean;
+  missingPersonalData: boolean;
+  isFraud: boolean;
+  paypalEnabled: boolean;
+}
+
 /** Writable subset of profile page settings supported by the SDK. */
 export interface UpdatePageSettingsInput {
   description?: string;

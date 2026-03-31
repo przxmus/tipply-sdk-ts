@@ -1,9 +1,7 @@
-import { z } from "zod";
-
 import type { RequestOptions } from "../../core/types";
 import { TipplyTransport } from "../../core/transport";
-import { publicSocialMediaLinkListSchema, toUpdatePageSettingsWire, userProfileSchema } from "../../domain/account-schemas";
-import type { PublicSocialMediaLink, UpdatePageSettingsInput, UserProfile } from "../../domain/account";
+import { publicSocialMediaLinkListSchema, publicUserProfileSchema, toUpdatePageSettingsWire, userProfileSchema } from "../../domain/account-schemas";
+import type { PublicSocialMediaLink, PublicUserProfile, UpdatePageSettingsInput, UserProfile } from "../../domain/account";
 import { requestAndParse } from "../request";
 
 class ProfilePendingChangesResource {
@@ -90,11 +88,50 @@ class PublicProfileSocialLinksResource {
   }
 }
 
+class PublicProfileResource {
+  constructor(
+    private readonly transport: TipplyTransport,
+    private readonly slug: string,
+  ) {}
+
+  /**
+   * Loads the public profile payload for a profile slug.
+   *
+   * @param requestOptions - Per-request timeout and abort overrides.
+   * @returns Public profile information exposed for the selected profile slug.
+   */
+  get(requestOptions?: RequestOptions): Promise<PublicUserProfile> {
+    return requestAndParse(
+      this.transport,
+      {
+        method: "GET",
+        path: `/public/user/profile/${encodeURIComponent(this.slug)}`,
+        scope: "proxy",
+      },
+      publicUserProfileSchema,
+      requestOptions,
+      "Invalid public user profile response.",
+    );
+  }
+}
+
 class PublicProfileScope {
   readonly socialLinks: PublicProfileSocialLinksResource;
+  private readonly profile: PublicProfileResource;
 
   constructor(transport: TipplyTransport, slug: string) {
+    this.profile = new PublicProfileResource(transport, slug);
     this.socialLinks = new PublicProfileSocialLinksResource(transport, slug);
+  }
+
+  /**
+   * Loads the public profile payload for the selected slug.
+   *
+   * @param requestOptions - Per-request timeout and abort overrides.
+   * @returns Public profile information exposed for the selected profile slug.
+   */
+  get(requestOptions?: RequestOptions): Promise<PublicUserProfile> {
+    return this.profile.get(requestOptions);
   }
 }
 

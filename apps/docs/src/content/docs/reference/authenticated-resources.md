@@ -30,6 +30,7 @@ sidebar:
 | `client.profile.get(requestOptions?)` | `Promise<UserProfile>` |
 | `client.profile.pendingChanges.check(requestOptions?)` | `Promise<boolean>` |
 | `client.profile.page.updateSettings(input, requestOptions?)` | `Promise<UserProfile>` |
+| `client.profile.public(slug).get(requestOptions?)` | `Promise<PublicUserProfile>` |
 | `client.profile.public(slug).socialLinks.list(requestOptions?)` | `Promise<PublicSocialMediaLink[]>` |
 
 ## `paymentMethods`

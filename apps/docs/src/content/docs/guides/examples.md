@@ -1,6 +1,6 @@
 ---
 title: Examples
-description: Run maintained Tipply SDK examples for dashboard reads, public widgets, alert listeners, and tip control flows.
+description: Run maintained Tipply SDK examples for dashboard reads, public profiles, public widgets, alert listeners, and tip control flows.
 sidebar:
   order: 5
 ---
@@ -10,6 +10,7 @@ sidebar:
 Maintained runnable examples live in `apps/sdk/examples`:
 
 - `dashboard-summary.ts`
+- `public-profile.ts`
 - `public-goal-widget.ts`
 - `tip-controls.ts`
 - `tip-alerts-listener.ts`
@@ -46,6 +47,20 @@ const user = client.user(asUserId("user-123"));
 const widget = await user.goals.id(asGoalId("goal-123")).widget.get();
 
 console.log(widget.config.title, widget.stats.amount);
+```
+
+## Public Profile By Slug
+
+```ts
+import { createTipplyClient } from "tipply-sdk-ts";
+
+const client = createTipplyClient({
+  authCookie: process.env.TIPPLY_AUTH_COOKIE!,
+});
+
+const profile = await client.profile.public("przxmus").get();
+
+console.log(profile.nickName, profile.voiceMessageMinimalAmount);
 ```
 
 ## `TIP_ALERT` Listener

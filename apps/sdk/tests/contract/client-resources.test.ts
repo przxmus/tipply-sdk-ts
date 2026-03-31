@@ -19,6 +19,7 @@ import {
   paymentMethodsConfigurationFixture,
   profileFixture,
   profanityFilterFixture,
+  publicUserProfileFixture,
   publicGoalConfigurationFixture,
   publicTemplateFontsFixture,
   publicGoalTemplatesFixture,
@@ -32,6 +33,7 @@ import {
   rawNotificationFixture,
   rawPaymentMethodsConfigurationFixture,
   rawProfileFixture,
+  rawPublicUserProfileFixture,
   rawPublicGoalConfigurationFixture,
   rawPublicGoalTemplatesFixture,
   rawPublicGoalWidgetFixture,
@@ -93,6 +95,7 @@ function createFixtureClient() {
     if (method === "GET" && pathname === "/user/profile" && url.searchParams.get("pending") === "true") return jsonResponse({ pending: true });
     if (method === "GET" && pathname === "/user/profile") return jsonResponse(rawProfileFixture);
     if (method === "PATCH" && pathname === "/user/profile/page_settings") return jsonResponse(rawProfileFixture);
+    if (method === "GET" && pathname === "/public/user/profile/streamer") return jsonResponse(rawPublicUserProfileFixture);
     if (method === "GET" && pathname === "/public/profile/streamer/social-media") {
       return jsonResponse([{ label: "Twitch", url: "https://twitch.tv/streamer" }]);
     }
@@ -195,6 +198,7 @@ describe("resource namespaces", () => {
     await expect(client.profile.get()).resolves.toEqual(profileFixture);
     await expect(client.profile.pendingChanges.check()).resolves.toBe(true);
     await expect(client.profile.page.updateSettings({ description: profileFixture.description })).resolves.toEqual(profileFixture);
+    await expect(client.profile.public("streamer").get()).resolves.toEqual(publicUserProfileFixture);
     await expect(client.profile.public("streamer").socialLinks.list()).resolves.toEqual(profileFixture.socialMediaLinks);
   });
 

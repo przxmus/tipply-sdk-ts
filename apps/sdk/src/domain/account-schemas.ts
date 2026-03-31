@@ -8,6 +8,7 @@ import type {
   DashboardAnnouncement,
   DashboardNotification,
   IncomeStatistics,
+  PublicUserProfile,
   PublicSocialMediaLink,
   RecentTip,
   TipStatistics,
@@ -219,6 +220,39 @@ export const publicSocialMediaLinkListSchema = z
   .array(unknownRecordSchema)
   .transform<PublicSocialMediaLink[]>((wire) => wire);
 
+export const publicUserProfileSchema = z
+  .object({
+    id: z.string(),
+    nick_name: z.string(),
+    description: z.string(),
+    google_avatar_url: z.string().nullish(),
+    theme_color: z.string().nullish(),
+    show_ranking_and_messages: z.boolean(),
+    voice_message_minimal_amount: minorUnitAmountSchema,
+    payments_disabled: z.boolean(),
+    verified: z.boolean(),
+    moderation_mode_enabled: z.boolean(),
+    missing_personal_data: z.boolean(),
+    is_fraud: z.boolean(),
+    paypal_enabled: z.boolean(),
+  })
+  .passthrough()
+  .transform<PublicUserProfile>((wire) => ({
+    id: asUserId(wire.id),
+    nickName: wire.nick_name,
+    description: wire.description,
+    ...(wire.google_avatar_url !== undefined ? { googleAvatarUrl: wire.google_avatar_url } : {}),
+    ...(wire.theme_color !== undefined ? { themeColor: wire.theme_color } : {}),
+    showRankingAndMessages: wire.show_ranking_and_messages,
+    voiceMessageMinimalAmount: wire.voice_message_minimal_amount,
+    paymentsDisabled: wire.payments_disabled,
+    verified: wire.verified,
+    moderationModeEnabled: wire.moderation_mode_enabled,
+    missingPersonalData: wire.missing_personal_data,
+    isFraud: wire.is_fraud,
+    paypalEnabled: wire.paypal_enabled,
+  }));
+
 export const recentTipListSchema = z.array(tipSchema).transform<RecentTip[]>((wire) => wire);
 export const notificationListSchema = z.array(notificationSchema).transform<DashboardNotification[]>((wire) => wire);
 export const dashboardAnnouncementListSchema = z.array(dashboardAnnouncementSchema).transform<DashboardAnnouncement[]>((wire) => wire);
@@ -302,6 +336,10 @@ export function parsePublicSocialMediaLinks(
   context: TipplyTransportResponseContext,
 ): PublicSocialMediaLink[] {
   return parseWithSchema(publicSocialMediaLinkListSchema, value, context, "Invalid public social media response.");
+}
+
+export function parsePublicUserProfile(value: unknown, context: TipplyTransportResponseContext): PublicUserProfile {
+  return parseWithSchema(publicUserProfileSchema, value, context, "Invalid public user profile response.");
 }
 
 export function toUpdatePageSettingsWire(input: UpdatePageSettingsInput): Record<string, unknown> {

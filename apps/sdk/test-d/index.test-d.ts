@@ -13,6 +13,7 @@ import {
   type MediaFormats,
   type PaymentMethodsConfiguration,
   type PublicGoalWidget,
+  type PublicUserProfile,
   type PublicTemplate,
   type SendTestTipResult,
   type TipAlertDonation,
@@ -53,6 +54,7 @@ expectType<Promise<SendTestTipResult>>(client.tips.sendTest({ message: "Test", a
 expectType<Promise<Withdrawal[]>>(client.withdrawals.list().status("accepted", "transferred").limit(10).get());
 expectType<Promise<PaymentMethodsConfiguration>>(client.paymentMethods.configuration.get());
 expectType<Promise<UserPaymentMethod>>(client.paymentMethods.method("paypal").update({ minimalAmount: 1500 }));
+expectType<Promise<PublicUserProfile>>(client.profile.public("streamer").get());
 expectType<Promise<PublicGoalWidget>>(client.public.user(asUserId("user-1")).goals.id(asGoalId("goal-1")).widget.get());
 expectType<Promise<boolean>>(publicClient.user(asUserId("user-1")).widgetMessage.get());
 expectType<Promise<string>>(publicClient.user(asUserId("user-1")).templateFonts.get());
