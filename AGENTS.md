@@ -8,5 +8,5 @@
 - Treat examples as supported entry points, not throwaway snippets. Keep them runnable and aligned with the current API surface.
 - For SDK changes, verify the package still builds, typechecks, and passes tests before wrapping up.
 - For docs changes, make sure the docs app still builds and the navigation stays coherent.
-- Always add docstrings to everything new or changed in the SDK, and update existing ones if they become inaccurate.
+- Always add docstrings (use skill if you have one) to everything new or changed in the SDK, and update existing ones if they become inaccurate.
 - README.md equals apps/sdk/README.md.
