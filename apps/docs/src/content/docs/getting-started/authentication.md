@@ -42,7 +42,7 @@ Pass only the cookie value, not the full `Cookie` header.
       style="display:block;width:100%;height:auto;border:1px solid var(--sl-color-gray-5);border-radius:12px;"
     />
     <figcaption style="margin-top:0.5rem;">
-      Open the cookies for `https://app.tipply.pl` and copy the `auth_token` value.
+      Open the cookies for https://app.tipply.pl and copy the auth_token value.
     </figcaption>
   </figure>
 </div>
