@@ -21,6 +21,34 @@ Auth client może potem sam aktualizować ten token na podstawie kolejnych nagł
 6. W tabeli cookies znajdź wiersz, w którym kolumna `Name` ma wartość `auth_token`.
 7. Skopiuj wartość z kolumny `Value` z tego wiersza.
 
+## Jak to wygląda
+
+Na screenach poniżej widać dokładnie, gdzie wejść i czego szukać.
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;margin:1rem 0 0;">
+  <figure style="margin:0;">
+    <img
+      src="/authentication/auth-token-1.png"
+      alt="DevTools na zakładce Application z rozwiniętym menu Storage i Cookies"
+      style="display:block;width:100%;height:auto;border:1px solid var(--sl-color-gray-5);border-radius:12px;"
+    />
+    <figcaption style="margin-top:0.5rem;">
+      1. Wejdź w `Application`, potem `Storage` i `Cookies`.
+    </figcaption>
+  </figure>
+
+  <figure style="margin:0;">
+    <img
+      src="/authentication/auth-token-2.png"
+      alt="Tabela cookies dla domeny app.tipply.pl z wierszem auth_token"
+      style="display:block;width:100%;height:auto;border:1px solid var(--sl-color-gray-5);border-radius:12px;"
+    />
+    <figcaption style="margin-top:0.5rem;">
+      2. Wybierz `https://app.tipply.pl` i skopiuj `Value` z wiersza `auth_token`.
+    </figcaption>
+  </figure>
+</div>
+
 ## Sposoby przekazania sesji
 
 ### `authCookie`
