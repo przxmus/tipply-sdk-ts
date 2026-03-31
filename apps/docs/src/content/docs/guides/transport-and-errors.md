@@ -1,21 +1,23 @@
 ---
-title: Błędy i transport
-description: Klasy błędów, opcje klienta i nadpisywanie transportu.
+title: Transport And Errors
+description: Understand Tipply SDK transport options, session settings, validation behavior, request overrides, and exported error classes.
+sidebar:
+  order: 4
 ---
 
-## Klasy błędów
+## Error Classes
 
-SDK eksportuje pięć głównych klas błędów:
+The SDK exports these error classes:
 
 - `TipplyError`
 - `TipplyHttpError`
 - `TipplyAuthenticationError`
 - `TipplyResponseValidationError`
 - `TipplyConfigurationError`
+- `TipplyAuthError`
+- `TipplyValidationError`
 
-## Co zawiera błąd
-
-Każdy błąd dziedziczący po `TipplyError` niesie kontekst requestu:
+All errors derived from `TipplyError` include:
 
 - `code`
 - `method`
@@ -24,7 +26,7 @@ Każdy błąd dziedziczący po `TipplyError` niesie kontekst requestu:
 - `headers`
 - `body`
 
-## Typowy wzorzec obsługi
+## Typical Handling Pattern
 
 ```ts
 import {
@@ -41,12 +43,12 @@ try {
   await client.me.get();
 } catch (error) {
   if (error instanceof TipplyAuthenticationError) {
-    console.error("Token jest nieważny albo wygasł.");
+    console.error("The Tipply session is missing or expired.");
     throw error;
   }
 
   if (error instanceof TipplyConfigurationError) {
-    console.error("Klient jest źle skonfigurowany.");
+    console.error("The client configuration is inconsistent.");
     throw error;
   }
 
@@ -74,12 +76,14 @@ type TipplyClientOptions = {
 };
 ```
 
-Najważniejsze informacje:
+## `TipplySessionOptions`
 
-- `authCookie` i `getAuthCookie` są skrótami dla konfiguracji sesji
-- `auth` steruje automatycznym odświeżaniem tokena i retry requestów auth
-- `validation` i `validateResponses` sterują walidacją odpowiedzi
-- `transport` pozwala nadpisać bazowe URL-e, timeout i `fetch`
+```ts
+type TipplySessionOptions =
+  | { authCookie: string }
+  | { getAuthCookie: () => string | Promise<string | null | undefined> | null | undefined }
+  | { browserSession: true };
+```
 
 ## `TipplyAuthLifecycleOptions`
 
@@ -91,21 +95,12 @@ type TipplyAuthLifecycleOptions = {
 };
 ```
 
-Domyślne wartości:
+Default behavior:
 
 - `refreshTokenOnRequests`: `true`
 - `refreshTokenEvery`: `false`
-- `refreshTokenEvery: true`: request do `/user` co `300000` ms
+- `refreshTokenEvery: true`: refreshes through `/user` every `300000` ms
 - `reconnectTries`: `3`
-
-## `TipplySessionOptions`
-
-```ts
-type TipplySessionOptions =
-  | { authCookie: string }
-  | { getAuthCookie: () => string | Promise<string | null | undefined> | null | undefined }
-  | { browserSession: true };
-```
 
 ## `TipplyTransportOptions`
 
@@ -123,7 +118,7 @@ type TipplyTransportOptions = {
 };
 ```
 
-Domyślne wartości:
+Default endpoints:
 
 - `proxyBaseUrl`: `https://proxy.tipply.pl`
 - `publicBaseUrl`: `https://tipply.pl/api`
@@ -134,31 +129,9 @@ Domyślne wartości:
 - `includeCredentials`: `true`
 - `timeoutMs`: `30000`
 
-## Nadpisanie transportu
+## Per-Request Overrides
 
-```ts
-const client = createTipplyClient({
-  authCookie: process.env.TIPPLY_AUTH_COOKIE!,
-  auth: {
-    refreshTokenEvery: { intervalMs: 60_000 },
-    reconnectTries: 5,
-  },
-  transport: {
-    timeoutMs: 10_000,
-    fetch: customFetch,
-  },
-});
-```
-
-To jest przydatne w:
-
-- testach
-- własnych runtime'ach
-- środowiskach z niestandardowym `fetch`
-
-## `RequestOptions`
-
-Większość metod przyjmuje opcjonalny drugi argument:
+Most resource methods accept:
 
 ```ts
 type RequestOptions = {
@@ -167,23 +140,18 @@ type RequestOptions = {
 };
 ```
 
-Przykład:
-
 ```ts
 const abortController = new AbortController();
 
-const tips = await client.tips
-  .list()
-  .limit(20)
-  .get({
-    signal: abortController.signal,
-    timeoutMs: 5_000,
-  });
+const tips = await client.tips.list().limit(20).get({
+  signal: abortController.signal,
+  timeoutMs: 5_000,
+});
 ```
 
-## Walidacja odpowiedzi
+## Validation
 
-Walidacja odpowiedzi jest domyślnie włączona. Możesz ją wyłączyć:
+Response validation is enabled by default.
 
 ```ts
 const client = createTipplyClient({
@@ -192,11 +160,11 @@ const client = createTipplyClient({
 });
 ```
 
-W praktyce warto zostawić walidację aktywną, zwłaszcza jeśli SDK jest częścią większej integracji.
+Leave validation enabled unless you have a strong reason to bypass schema checks.
 
-## Zamykanie background refreshu
+## Closing Background Work
 
-Jeżeli włączysz `auth.refreshTokenEvery`, klient uruchamia background timer. Gdy kończysz pracę z instancją, zatrzymaj go:
+If you enable periodic refreshes with `auth.refreshTokenEvery`, stop the timer when the client is no longer needed:
 
 ```ts
 client.close();
