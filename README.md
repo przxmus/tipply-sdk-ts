@@ -27,16 +27,19 @@ console.log(me.username, recentTips.length, publicProfile.nickName);
 ## Public Quick Start
 
 ```ts
-import { asUserId } from "tipply-sdk-ts";
-import { createTipplyPublicClient } from "tipply-sdk-ts/public";
+import { createTipplyClient } from "tipply-sdk-ts";
 
-const client = createTipplyPublicClient();
-const user = client.user(asUserId("user-123"));
+const client = createTipplyClient({
+  authCookie: process.env.TIPPLY_AUTH_COOKIE!,
+});
+const me = await client.me.get();
 
-const widgetMessageEnabled = await user.widgetMessage.get();
+const widgetMessageEnabled = await client.public.user(me.id).widgetMessage.get();
 
 console.log(widgetMessageEnabled);
 ```
+
+Tipply no longer exposes other users' internal `userId` values on public endpoints. Public widget reads still accept a `userId`, but in practice you usually get it from your own authenticated session or from a previously stored widget identifier.
 
 ## Auth Lifecycle
 

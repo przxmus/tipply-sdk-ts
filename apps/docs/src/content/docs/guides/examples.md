@@ -38,11 +38,13 @@ console.log(me.username, income.total, points, recentTips.length);
 ## Public Goal Widget
 
 ```ts
-import { asGoalId, asUserId } from "tipply-sdk-ts";
-import { createTipplyPublicClient } from "tipply-sdk-ts/public";
+import { asGoalId, createTipplyClient } from "tipply-sdk-ts";
 
-const client = createTipplyPublicClient();
-const user = client.user(asUserId("user-123"));
+const client = createTipplyClient({
+  authCookie: process.env.TIPPLY_AUTH_COOKIE!,
+});
+const me = await client.me.get();
+const user = client.public.user(me.id);
 
 const widget = await user.goals.id(asGoalId("goal-123")).widget.get();
 
@@ -62,6 +64,8 @@ const profile = await client.profile.public("przxmus").get();
 
 console.log(profile.nickName, profile.voiceMessageMinimalAmount);
 ```
+
+`profile.public(slug).get()` no longer returns the user's internal `id`.
 
 ## `TIP_ALERT` Listener
 

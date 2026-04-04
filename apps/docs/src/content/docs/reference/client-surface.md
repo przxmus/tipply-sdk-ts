@@ -48,6 +48,8 @@ See [Authenticated Resources](/reference/authenticated-resources/) for the full 
 
 The per-user public methods are documented in [Public Resources](/reference/public-resources/).
 
+`client.user(userId)` requires a previously known internal Tipply `userId`. Public profile reads by slug do not expose it anymore.
+
 ## Package Exports
 
 The main package exports:
