@@ -13,7 +13,6 @@ const client = createTipplyClient({
 const profile = await client.profile.public("przxmus").get();
 
 console.log({
-  id: profile.id,
   nickName: profile.nickName,
   themeColor: profile.themeColor,
   voiceMessageMinimalAmount: profile.voiceMessageMinimalAmount,

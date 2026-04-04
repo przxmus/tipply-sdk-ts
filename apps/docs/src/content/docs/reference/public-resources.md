@@ -12,6 +12,8 @@ sidebar:
 | `client.user(userId)` | `PublicUserScope` |
 | `client.tipAlerts.fromWidgetUrl(widgetUrl, options?)` | `TipAlertsListener` |
 
+`userId` here means a previously known internal Tipply identifier. Public profile payloads no longer expose another user's `id`.
+
 ## Per-User Public Scope
 
 ### Goals
@@ -45,7 +47,7 @@ The realtime helpers accept a full widget URL such as:
 https://widgets.tipply.pl/TIP_ALERT/user-123
 ```
 
-The SDK extracts the `userId` automatically before opening the websocket connection.
+The SDK extracts the `userId` automatically before opening the websocket connection when the widget URL contains it.
 
 ## Notes
 

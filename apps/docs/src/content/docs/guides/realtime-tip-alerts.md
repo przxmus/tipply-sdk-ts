@@ -26,7 +26,8 @@ const listener = client.tipAlerts.fromWidgetUrl(
 ### From the public client and a known `userId`
 
 ```ts
-const listener = publicClient.user(asUserId("user-123")).tipAlerts.createListener();
+const me = await authenticatedClient.me.get();
+const listener = publicClient.user(me.id).tipAlerts.createListener();
 ```
 
 ## Listener Lifecycle

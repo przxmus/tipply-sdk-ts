@@ -18,6 +18,8 @@ Use `createTipplyPublicClient()` when you only need public data:
 - widget message status
 - realtime `TIP_ALERT`
 
+The public widget endpoints still require an internal `userId`. Tipply no longer returns another user's `userId` from public profile endpoints, so this client is most practical when you already know that identifier, for example from your own authenticated session or a stored widget configuration.
+
 ## Create A Client
 
 ```ts
@@ -28,14 +30,19 @@ const client = createTipplyPublicClient();
 
 ## Work In A User Scope
 
-Most public methods live under `client.user(userId)`.
+Most public methods live under `client.user(userId)`, where `userId` is a previously known internal Tipply ID.
 
 ```ts
-import { asGoalId, asUserId } from "tipply-sdk-ts";
+import { asGoalId, createTipplyClient } from "tipply-sdk-ts";
 import { createTipplyPublicClient } from "tipply-sdk-ts/public";
 
+const authenticated = createTipplyClient({
+  authCookie: process.env.TIPPLY_AUTH_COOKIE!,
+});
+const me = await authenticated.me.get();
+
 const client = createTipplyPublicClient();
-const user = client.user(asUserId("user-123"));
+const user = client.user(me.id);
 
 const [templates, configuration, widget, fontsCss, widgetMessageEnabled] = await Promise.all([
   user.goals.templates.list(),
@@ -66,10 +73,10 @@ const [templates, configuration, widget, fontsCss, widgetMessageEnabled] = await
 
 ## Realtime Without Authentication
 
-If you know the user ID:
+If you already know the internal `userId`:
 
 ```ts
-const listener = client.user(asUserId("user-123")).tipAlerts.createListener();
+const listener = client.user(me.id).tipAlerts.createListener();
 ```
 
 If you only know the widget URL:
@@ -94,3 +101,5 @@ const client = createTipplyClient({
 const profile = await client.profile.public("streamer-link").get();
 const socialLinks = await client.profile.public("streamer-link").socialLinks.list();
 ```
+
+That public profile payload no longer includes the user's internal `id`.

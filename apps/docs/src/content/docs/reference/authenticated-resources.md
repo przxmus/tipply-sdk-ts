@@ -33,6 +33,8 @@ sidebar:
 | `client.profile.public(slug).get(requestOptions?)` | `Promise<PublicUserProfile>` |
 | `client.profile.public(slug).socialLinks.list(requestOptions?)` | `Promise<PublicSocialMediaLink[]>` |
 
+`client.profile.public(slug).get()` no longer returns the user's internal `id`.
+
 ## `paymentMethods`
 
 | Method | Returns |
@@ -149,3 +151,5 @@ Allowed withdrawal statuses:
 | `client.public.user(userId).widgetMessage.get(requestOptions?)` | `Promise<boolean>` |
 | `client.public.user(userId).tipAlerts.createListener(options?)` | `TipAlertsListener` |
 | `client.public.tipAlerts.fromWidgetUrl(widgetUrl, options?)` | `TipAlertsListener` |
+
+For `client.public.user(userId)`, `userId` must already be known. Tipply no longer exposes another user's internal ID on public profile endpoints.

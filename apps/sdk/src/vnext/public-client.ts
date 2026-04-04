@@ -7,15 +7,21 @@ import { PublicRootResource, type PublicRootTipAlertsResource } from "./resource
  * Public-only Tipply SDK client.
  *
  * This client is intended for unauthenticated widget, template, voting, and
- * realtime `TIP_ALERT` reads.
+ * realtime `TIP_ALERT` reads once you already know the internal Tipply
+ * `userId` required by those endpoints.
  *
  * @example
  * ```typescript
- * import { asUserId } from "tipply-sdk-ts";
+ * import { createTipplyClient } from "tipply-sdk-ts";
  * import { createTipplyPublicClient } from "tipply-sdk-ts/public";
  *
+ * const authenticated = createTipplyClient({
+ *   authCookie: process.env.TIPPLY_AUTH_COOKIE!,
+ * });
+ * const me = await authenticated.me.get();
+ *
  * const client = createTipplyPublicClient();
- * const goalTemplates = await client.user(asUserId("user-123")).goals.templates.list();
+ * const goalTemplates = await client.user(me.id).goals.templates.list();
  * ```
  */
 export class TipplyPublicClient {
@@ -33,7 +39,8 @@ export class TipplyPublicClient {
   /**
    * Opens the public resource scope for a specific user.
    *
-   * @param userId - The Tipply user identifier to read public data for.
+   * @param userId - A known internal Tipply user identifier. Tipply no longer
+   * exposes other users' IDs on public profile payloads.
    * @returns A scoped public resource object for the selected user.
    */
   user(userId: UserId) {

@@ -21,7 +21,7 @@ bun add tipply-sdk-ts
 
 Use `createTipplyClient()` when you need private account data, settings, moderation, payouts, or control commands.
 
-Use `createTipplyPublicClient()` when you only need public widget, template, voting, or realtime reads.
+Use `createTipplyPublicClient()` when you only need public widget, template, voting, or realtime reads and you already know the internal `userId` used by Tipply's widget endpoints.
 
 ## First Authenticated Request
 
@@ -40,16 +40,19 @@ console.log(me.username);
 ## First Public Request
 
 ```ts
-import { asUserId } from "tipply-sdk-ts";
-import { createTipplyPublicClient } from "tipply-sdk-ts/public";
+import { createTipplyClient } from "tipply-sdk-ts";
 
-const client = createTipplyPublicClient();
-const user = client.user(asUserId("user-123"));
+const client = createTipplyClient({
+  authCookie: process.env.TIPPLY_AUTH_COOKIE!,
+});
+const me = await client.me.get();
 
-const widgetMessageEnabled = await user.widgetMessage.get();
+const widgetMessageEnabled = await client.public.user(me.id).widgetMessage.get();
 
 console.log(widgetMessageEnabled);
 ```
+
+Public profile payloads no longer expose `userId`, so the SDK cannot discover another user's internal ID from `client.profile.public(slug).get()`.
 
 ## What The SDK Covers
 
