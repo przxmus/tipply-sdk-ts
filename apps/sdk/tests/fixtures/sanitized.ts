@@ -210,7 +210,6 @@ export const profileFixture: UserProfile = {
 };
 
 export const rawPublicUserProfileFixture = {
-  id: "userId",
   nick_name: "przxmus",
   description: "",
   google_avatar_url: "https://cdn.example.com/avatar.png",
@@ -226,7 +225,6 @@ export const rawPublicUserProfileFixture = {
 };
 
 export const publicUserProfileFixture: PublicUserProfile = {
-  id: asUserId("userId"),
   nickName: "przxmus",
   description: "",
   googleAvatarUrl: "https://cdn.example.com/avatar.png",

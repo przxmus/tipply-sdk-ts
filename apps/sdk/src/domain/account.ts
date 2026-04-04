@@ -114,7 +114,6 @@ export interface UserProfile {
 
 /** Public profile payload returned by `client.profile.public(slug).get()`. */
 export interface PublicUserProfile {
-  id: UserId;
   nickName: string;
   description: string;
   googleAvatarUrl?: string | null;

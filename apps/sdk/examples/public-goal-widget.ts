@@ -5,7 +5,9 @@ const userId = process.env.TIPPLY_USER_ID;
 const goalId = process.env.TIPPLY_GOAL_ID;
 
 if (!userId || !goalId) {
-  throw new Error("Set TIPPLY_USER_ID and TIPPLY_GOAL_ID before running this example.");
+  throw new Error(
+    "Set TIPPLY_USER_ID and TIPPLY_GOAL_ID before running this example. TIPPLY_USER_ID must be a previously known internal user ID, for example from an authenticated client session.",
+  );
 }
 
 const client = createTipplyPublicClient();

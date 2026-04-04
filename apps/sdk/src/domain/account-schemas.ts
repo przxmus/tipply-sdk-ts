@@ -222,7 +222,6 @@ export const publicSocialMediaLinkListSchema = z
 
 export const publicUserProfileSchema = z
   .object({
-    id: z.string(),
     nick_name: z.string(),
     description: z.string(),
     google_avatar_url: z.string().nullish(),
@@ -238,7 +237,6 @@ export const publicUserProfileSchema = z
   })
   .passthrough()
   .transform<PublicUserProfile>((wire) => ({
-    id: asUserId(wire.id),
     nickName: wire.nick_name,
     description: wire.description,
     ...(wire.google_avatar_url !== undefined ? { googleAvatarUrl: wire.google_avatar_url } : {}),

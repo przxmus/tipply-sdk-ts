@@ -308,7 +308,8 @@ export class PublicRootResource {
   /**
    * Opens the public resource scope for a user.
    *
-   * @param userId - The Tipply user identifier to read public data for.
+   * @param userId - A known internal Tipply user identifier. Public profile
+   * endpoints no longer expose other users' IDs.
    * @returns A scope exposing public widget, template, voting, and realtime endpoints.
    */
   user(userId: UserId): PublicUserScope {

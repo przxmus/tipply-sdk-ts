@@ -15,7 +15,7 @@ const listener = authCookie
   : createTipplyPublicClient().tipAlerts.fromWidgetUrl(widgetUrl!);
 
 listener.on("ready", () => {
-  console.log(`Connected to TIP_ALERT for user ${listener.userId}`);
+  console.log("Connected to TIP_ALERT");
 });
 
 listener.on("donation", (donation) => {
