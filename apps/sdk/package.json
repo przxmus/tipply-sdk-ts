@@ -1,6 +1,6 @@
 {
   "name": "tipply-sdk-ts",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "TypeScript SDK for the Tipply API",
   "type": "module",
   "license": "MIT",
